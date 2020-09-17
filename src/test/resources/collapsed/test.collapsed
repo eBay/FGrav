@@ -1,0 +1,21 @@
+java-?/GC task thread#0 (ParallelGC);start_thread;[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so] 19
+java-?/GC task thread#0 (ParallelGC);start_thread;[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so] 30
+java-?/GC task thread#0 (ParallelGC);start_thread;[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libc-2.24.so] 1
+java-?/GC task thread#0 (ParallelGC);start_thread;[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so] 35
+java-?/GC task thread#0 (ParallelGC);start_thread;[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libc-2.24.so] 1
+java-?/GC task thread#0 (ParallelGC);start_thread;[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so] 9
+java-?/GC task thread#0 (ParallelGC);start_thread;[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so] 5
+java-?/GC task thread#0 (ParallelGC);start_thread;[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so] 4
+java-?/GC task thread#0 (ParallelGC);start_thread;[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so] 13
+java-?/GC task thread#0 (ParallelGC);start_thread;[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];page_fault_[k];do_page_fault_[k];__do_page_fault_[k];handle_mm_fault_[k];do_huge_pmd_anonymous_page_[k];clear_page_[k] 1
+java-?/GC task thread#1 (ParallelGC);start_thread;[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so] 22
+java-?/GC task thread#1 (ParallelGC);start_thread;[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libc-2.24.so] 2
+java-?/GC task thread#1 (ParallelGC);start_thread;[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so] 24
+java-?/GC task thread#1 (ParallelGC);start_thread;[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so] 31
+java-?/GC task thread#1 (ParallelGC);start_thread;[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so] 18
+java-?/GC task thread#1 (ParallelGC);start_thread;[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so] 4
+java-?/GC task thread#1 (ParallelGC);start_thread;[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so] 6
+java-?/GC task thread#1 (ParallelGC);start_thread;[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so] 11
+java-?/GC task thread#1 (ParallelGC);start_thread;[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];[libjvm.so];page_fault_[k];do_page_fault_[k];__do_page_fault_[k];handle_mm_fault_[k];do_wp_page_[k];wp_page_copy_[k];ptep_clear_flush_[k];flush_tlb_page_[k];native_flush_tlb_others_[k];smp_call_function_many_[k] 1
+
+

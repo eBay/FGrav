@@ -1,0 +1,87 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!--
+/************************************************************************
+ Copyright 2020 eBay Inc.
+ Author/Developer: Amir Langer
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ https://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ **************************************************************************/
+-->
+<svg id="svg" version="1.1" width="724" height="150" onload="init(evt)" viewBox="0 0 724 150"
+	 xmlns="http://www.w3.org/2000/svg">
+<defs >
+	<linearGradient id="background" y1="0" y2="1" x1="0" x2="0" >
+		<stop stop-color="#eeeeee" offset="5%" />
+		<stop stop-color="#eeeeb0" offset="95%" />
+	</linearGradient>
+</defs>
+<style type="text/css">
+	.event-details {
+		padding: 10px;
+		background: rgba(0,0,0,0.8);
+		color: #bbb;
+		font-size: 12px;
+		position: absolute;
+		z-index: 99999;
+		text-align: center;
+		border-radius: 3px;
+	}
+
+	.event-details:after {
+		-moz-box-sizing: border-box;
+		box-sizing: border-box;
+		position: absolute;
+		left: 50%;
+		height: 5px;
+		width: 5px;
+		bottom: -10px;
+		margin: 0 0 0 -5px;
+		content: " ";
+		border: 5px solid transparent;
+		border-top-color: rgba(0,0,0,0.8);
+	}
+	text { font-family:Verdana; fill:rgb(0,0,0); }
+	.func_g:hover { stroke:black; stroke-width:0.5; cursor:pointer; }
+</style>
+<script href="js/FGrav.js"/>
+<script href="js/FGravResponse.js"/>
+<script href="js/FGravDraw.js"/>
+<script href="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"/>
+<script href="js/CGDraw.js"/>
+<script href="js/CGEvents.js"/>
+<script href="js/CG.js"/>
+<script href="js/color/CG_Color.js"/>
+<script type="text/ecmascript">
+<![CDATA[
+	"use strict";
+
+	var cg = new CG();
+
+	function init(evt) {
+		var draw = new CGDraw(cg);
+		var calEventsUrl = cg.getRequiredParameter("url");
+		var calendarEvents = new CalendarEvents();
+		calendarEvents.loadCalendarEvents(calEventsUrl,
+			function() {
+					draw.drawCanvas();
+					draw.drawCG(calendarEvents);
+					draw.drawLegend();
+			}, function(response) {
+				draw.drawError("Failed to load calendar events file " + calEventsUrl + ": " + response.errorMessage());
+			}
+		);
+	}
+]]>
+</script>
+</svg>

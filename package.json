@@ -1,0 +1,5 @@
+{
+  "scripts": {
+    "test": "jasmine --config=src/test/support/jasmine.json"
+  }
+}

@@ -1,0 +1,77 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!--
+On my mac + Chrome browser:
+input - 29.58MB collapsed file (highCPUHost.collapsed) from localhost:
+
+ - setup - 22ms
+ - drawFG - 250-275ms
+
+no filter:
+ - loadCollapsed: 1350-1550ms
+RemoveThreadFrame filter:
+ - loadCollapsed: 1500-1650ms
+Java8 filter:
+ - loadCollapsed: 1750-2100ms
+
+-->
+<svg id="svg" version="1.1" width="1200" height="2200"
+	 onload="init(evt)"
+	 viewBox="0 0 1200 2200" xmlns="http://www.w3.org/2000/svg">
+<defs>
+	<linearGradient id="background" y1="0" y2="1" x1="0" x2="0" >
+		<stop stop-color="#eeeeee" offset="5%" />
+		<stop stop-color="#eeeeb0" offset="95%" />
+	</linearGradient>
+</defs>
+<style type="text/css">
+	rect.tooltip { opacity:0.8 }
+	text.tooltip { fill:rgb(255,255,255); font-size:12px }
+	#search, #ignorecase, #legendBtn { opacity:0.1; cursor:pointer; font-size:12px }
+	#search:hover, #search.show, #ignorecase:hover, #ignorecase.show, #legendBtn:hover, #legendBtn.show { opacity:1; }
+	#subtitle { text-anchor:middle; font-color:rgb(160,160,160); }
+	#title { text-anchor:middle; font-size:17px}
+	#unzoom { cursor:pointer; font-size:12px }
+	#frames > *:hover { stroke:black; stroke-width:0.5; cursor:pointer; }
+	.hide { display:none; }
+	.parent { opacity:0.5; }
+</style>
+<script href="js/FGrav.js"/>
+<script href="js/FGravResponse.js"/>
+<script href="js/FGravDraw.js"/>
+<script href="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"/>
+<script href="js/FGDraw.js"/>
+<script href="js/FGStackFrames.js"/>
+<script href="js/Collapsed.js"/>
+<script href="js/FG.js"/>
+<script href="js/color/FG_Color_Default.js"/>
+<script type="text/ecmascript">
+<![CDATA[
+	"use strict";
+	console.time("setup");
+	var fg = new FG().setup();
+	var draw = new FGDraw(fg);
+	var url = fg.getRequiredParameter("url");
+
+	function init(evt) {
+	   	fg.load(function() {
+	   		console.timeEnd("setup");
+			console.time("loadCollapsed");
+			var stackFrames = new FGStackFrames();
+			stackFrames.loadCollapsed(fg, url, function() {
+				console.timeEnd("loadCollapsed");
+            	draw.drawCanvas();
+				console.time("drawFG");
+                draw.drawFG(stackFrames);
+				console.timeEnd("drawFG");
+                draw.drawInfoElements();
+			}, function(response) {
+				draw.drawError("Failed to load collapsed file " + url + ": " + response.errorMessage());
+			});
+		}, function(response) {
+			draw.drawError("Failed to load: " + response.errorMessage());
+		});
+	}
+]]>
+</script>
+</svg>

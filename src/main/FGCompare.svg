@@ -1,0 +1,94 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!--
+/************************************************************************
+ Copyright 2020 eBay Inc.
+ Author/Developer: Amir Langer
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ https://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ **************************************************************************/
+-->
+<svg id="svg" version="1.1" width="1200" height="2200"
+     onload="init(evt)"
+     viewBox="0 0 1200 2200" xmlns="http://www.w3.org/2000/svg">
+<defs>
+	<linearGradient id="background" y1="0" y2="1" x1="0" x2="0" >
+		<stop stop-color="#eeeeee" offset="5%" />
+		<stop stop-color="#eeeeb0" offset="95%" />
+	</linearGradient>
+</defs>
+<style type="text/css">
+	tspan { font-weight: bold; }
+	rect.tooltip { opacity:0.85 }
+	text.tooltip { fill:rgb(255,255,255); font-size:12px }
+	#search, #ignorecase { opacity:0.1; cursor:pointer; font-size:12px }
+	#search:hover, #search.show, #ignorecase:hover, #ignorecase.show { opacity:1; }
+	#subtitle { text-anchor:middle; font-color:rgb(160,160,160); }
+	#title { text-anchor:middle; font-size:17px}
+	#unzoom { cursor:pointer; font-size:12px }
+	#rframes > *:hover { stroke:black; stroke-width:1.0; cursor:pointer; outline: -webkit-focus-ring-color auto 5px; }
+	#lframes > *:hover { stroke:black; stroke-width:1.0; cursor:pointer; outline: -webkit-focus-ring-color auto 5px; }
+	.hide { display:none; }
+	.parent { opacity:0.5; }
+	.highlight_g { stroke:black; stroke-width:1.0; cursor:pointer; outline: -webkit-focus-ring-color auto 5px; }
+</style>
+<script href="js/FGrav.js"/>
+<script href="js/FGravResponse.js"/>
+<script href="js/FGravDraw.js"/>
+<script href="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"/>
+<script href="js/FGDraw.js"/>
+<script href="js/FGStackFrames.js"/>
+<script href="js/Collapsed.js"/>
+<script href="js/FG.js"/>
+<script href="js/MultiFG.js"/>
+<script href="js/color/FG_Color_Default.js"/>
+<script type="text/ecmascript">
+<![CDATA[
+	"use strict";
+
+	var fg = new MultiFG().setup();
+	var draw = new FGDraw(fg);
+	var leftUrl = fg.getRequiredParameter("left");
+	var rightUrl = fg.getRequiredParameter("right");
+
+	function init(evt) {
+	    fg.load(function() {
+				var leftFG = new FG("l", 0);
+				fg.registerFG(leftFG);
+				var stackFramesLeft = new FGStackFrames();
+				stackFramesLeft.loadCollapsed(leftFG, leftUrl, function() {
+					var rightFG = new FG("r", leftFG.width + fg.margin);
+					fg.registerFG(rightFG);
+					var stackFramesRight = new FGStackFrames();
+					stackFramesRight.loadCollapsed(rightFG, rightUrl, function() {
+						fg.setDimensions();
+						draw.drawCanvas();
+						var drawLeft = new FGDraw(leftFG);
+						drawLeft.drawFG(stackFramesLeft);
+						drawLeft.drawInfoElements();
+						var drawRight = new FGDraw(rightFG);
+						drawRight.drawFG(stackFramesRight);
+						drawRight.drawInfoElements();
+					}, function(response) {
+						draw.drawError("Failed to load collapsed file " + rightUrl + ": " + response.errorMessage());
+					});
+				}, function(response) {
+					draw.drawError("Failed to load collapsed file " + leftUrl + ": " + response.errorMessage());
+				});
+		}, function(response) {
+			draw.drawError("Failed to load: " + response.errorMessage());
+		});
+	}
+]]>
+</script>
+</svg>
