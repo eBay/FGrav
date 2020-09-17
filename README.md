@@ -22,7 +22,7 @@ __Thanks:__
 __Visualizations:__
   * [FlameGraph](#flamegraph)
   * [FlameGraph Compare](#flamegraph-compare)
-  * [FlameGraph Diff](#flamegraph-diff)  <!--  * [FlameGraph Transition](#flamegraph-transition) -->
+  * [FlameGraph Diff](#flamegraph-diff)   <!--  * [FlameGraph Transition](#flamegraph-transition) -->
   * [Calendar View](#calendar-view)
   
 __Usage:__  
@@ -106,7 +106,6 @@ Showing Differential FlameGraph is done by requesting [FGDiff.svg](./src/main/FG
 ![FlameGraph Diff Example](img/FGDiff.png "FlameGraph Example")
 
 <!-- ## FlameGraph Transition -->
-
 <!-- TODO -->
 
 ## Calendar View 
