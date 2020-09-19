@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>FGrav</title>
+<style>
+    p {
+        font-family: monospace;
+    }
+</style>
+<script>
+function loadFg() {
+    var url = document.getElementById("fgUrl").value;
+    window.location.href = "/FG.svg?url=" + url;
+}
+
+function loadFd() {
+    var url = document.getElementById("fdUrl").value;
+    window.location.href = "/FGDiff.svg?url=" + url;
+}
+
+function loadFc() {
+    var leftUrl = document.getElementById("fcLeftUrl").value;
+    var rightUrl = document.getElementById("fcRightUrl").value;
+    window.location.href = "/FGCompare.svg?left=" + leftUrl + "&right=" + rightUrl;
+}
+
+</script>
+</head>
+<body>
+<div>
+<p>
+FlameGraph<br/>
+URL: <input type="text" id="fgUrl" name="fgUrl"/><br/><button onclick="loadFg();">Load</button>
+</p>
+</div>
+<div>
+<p>
+FlameGraph Diff<br/>
+URL: <input type="text" id="fdUrl" name="fdUrl"/><br/><button onclick="loadFd();">Load</button>
+</p>
+</div>
+<div>
+<p>
+FlameGraph Compare<br/>
+Left: <input type="text" id="fcLeftUrl" name="fcRightUrl"/><br/>
+Right: <input type="text" id="fcRightUrl" name="fcLeftUrl"/><br/>
+
+<button onclick="loadFc();">Load</button>
+</p>
+</div>
+</body>
+</html>
