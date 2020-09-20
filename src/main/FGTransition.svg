@@ -39,6 +39,7 @@
         .parent { opacity:0.5; }
         .func_g:hover { stroke:black; stroke-width:0.5; cursor:pointer; }
     </style>
+    <text id="alt" x="10" y="50" fill="black" font-size="50">FGTransition.svg is drawn dynamically. Please wait</text>
     <script href="js/FGrav.js"/>
     <script href="js/FGravResponse.js"/>
     <script href="js/FGravDraw.js"/>

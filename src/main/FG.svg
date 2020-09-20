@@ -39,6 +39,7 @@
 	.hide { display:none; }
 	.parent { opacity:0.5; }
 </style>
+<text id="alt" x="10" y="50" fill="black" font-size="50">FG.svg is drawn dynamically. Please wait</text>
 <script href="js/FGrav.js"/>
 <script href="js/FGravResponse.js"/>
 <script href="js/FGravDraw.js"/>

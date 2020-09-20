@@ -2,7 +2,7 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <!--
 On my mac + Chrome browser:
-input - 29.58MB collapsed file (highCPUHost.collapsed) from localhost:
+input - 29.58MB collapsed file (local highCPUHost.collapsed) from localhost:
 
  - setup - 22ms
  - drawFG - 250-275ms
@@ -36,6 +36,7 @@ Java8 filter:
 	.hide { display:none; }
 	.parent { opacity:0.5; }
 </style>
+<text id="alt" x="50" y="50" fill="black" font-size="50">FG.svg is drawn dynamically. Please wait. Use "url" parameter for input raw collapsed url</text>
 <script href="js/FGrav.js"/>
 <script href="js/FGravResponse.js"/>
 <script href="js/FGravDraw.js"/>

@@ -29,16 +29,17 @@ function FGrav(w, h, margin, fontSize, title, _w) {
     this.fontSize = fontSize;
     this.fontWidthRatio = 0.59;
 
-    waitUntilJQueryIsLoaded(_w);
-
     this.svg = _d.getElementsByTagName("svg")[0];
 
+    removeAltText(_d, this.svg);
 
-    function waitUntilJQueryIsLoaded(_w) {
-        if (!(_w.jQuery)) {
-            setTimeout(function() { waitUntilJQueryIsLoaded(_w) }, 10);
+    function removeAltText(_d, svg) {
+        var alt = _d.getElementById("alt");
+        if (alt) {
+            svg.removeChild(alt);
         }
     }
+
 
 }
 

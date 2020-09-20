@@ -42,6 +42,7 @@
 	.parent { opacity:0.5; }
 	.highlight_g { stroke:black; stroke-width:1.0; cursor:pointer; outline: -webkit-focus-ring-color auto 5px; }
 </style>
+<text id="alt" x="10" y="50" fill="black" font-size="50">FGCompare.svg is drawn dynamically. Please wait</text>
 <script href="js/FGrav.js"/>
 <script href="js/FGravResponse.js"/>
 <script href="js/FGravDraw.js"/>
