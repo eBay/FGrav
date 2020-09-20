@@ -245,11 +245,13 @@ Loading the filter JS file can be done by either:
 Deploy all src files and libs to an http server.
 
 You can use [deploy.sh](./deploy.sh) as an example which will create a directory called **web** and copy all files to it.
-You then need to run an http server whose root is the **web** directory.
+You can then run an http server via docker with [serve.sh](./serve.sh).
 
 Once the http server is up, request an SVG file from it on a browser.
 
 For example:
+
+`http://${host}:${port}/index.html`
 
 `http://${host}:${port}/FG.svg?url=${raw-file}`
 
