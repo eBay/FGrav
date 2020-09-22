@@ -7,22 +7,126 @@
         font-family: monospace;
     }
 </style>
-<script>
-function loadFg() {
-    var url = document.getElementById("fgUrl").value;
-    window.location.href = "/FG.svg?url=" + url;
-}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js">
+</script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        getOptions( "/collapsed/", itemEndsWith(".collapsed"), identity, prepend("/collapsed/"),
+            ["#fgUrl", "#fdUrl", "#fcLeftUrl", "#fcRightUrl"]);
+        getOptions( "/js/color/", jsFiles("FG_Color_"), optionKey("FG_Color_"), identity,
+            ["#fgColor", "#fdColor", "#fcColor"]);
+        getOptions( "/js/frame/", jsFiles("FG_Filter_"), optionKey("FG_Filter_"), identity,
+            ["#fgFilter", "#fdFilter", "#fcFilter"]);
+        $("#loadFg").click(function(){
+            load("/FG.svg", fgParams());
+        });
+        $("#loadFd").click(function(){
+            load("/FGDiff.svg", fdParams());
+        });
+        $("#loadFc").click(function(){
+            load("/FGCompare.svg", fcParams());
+        });
+    });
 
-function loadFd() {
-    var url = document.getElementById("fdUrl").value;
-    window.location.href = "/FGDiff.svg?url=" + url;
-}
 
-function loadFc() {
-    var leftUrl = document.getElementById("fcLeftUrl").value;
-    var rightUrl = document.getElementById("fcRightUrl").value;
-    window.location.href = "/FGCompare.svg?left=" + leftUrl + "&right=" + rightUrl;
-}
+    function load(name, params) {
+        var urlParams = [];
+        $.each(params, function( key, valueFunction) {
+            var value = valueFunction();
+            if (value) {
+                urlParams.push(key + "=" + value);
+            }
+        });
+        window.location.href = name + "?" + urlParams.join("&");
+    }
+
+    function fgParams() {
+        return {
+            url: urlVal("#fgUrl"),
+            color: colorVal("#fgColor"),
+            frameFilter: filterValues("#fgFilter")
+        };
+    }
+
+    function fdParams() {
+        return {
+            url: urlVal("#fdUrl"),
+            color: colorVal("#fdColor"),
+            frameFilter: filterValues("#fdsFilter")
+        };
+    }
+
+    function fcParams() {
+        return {
+            left: urlVal("#fcLeftUrl"),
+            right: urlVal("#fcRightUrl"),
+            color: colorVal("#fcColor"),
+            frameFilter: filterValues("#fcFilter")
+        };
+    }
+
+    function getOptions(dir, itemCondition, itemName, itemValue, selectBoxes) {
+        $.getJSON(dir, function( data ) {
+            var options = [];
+            $.each( data, function( key, val ) {
+                var item = val.name;
+                if (itemCondition(item)) {
+                    options.push(itemName(item));
+                }
+            });
+            $.each(selectBoxes, function (i, select) {
+                target = $(select);
+                $.each(options, function (i, value) {
+                    $('<option value="' + itemValue(value) + '">' + value + '</option>').appendTo(target);
+                });
+            });
+        });
+    }
+
+    function urlVal(selector) {
+        return function() {
+            return $(selector + " option:selected").val();
+        };
+    }
+
+    function colorVal(selector) {
+        return function() { return $(selector + " option:selected").val() };
+    }
+
+    function filterValues(selector) {
+        return function() {
+            return $(selector + " option:selected").map(function (i, el) {
+                return $(el).val();
+            }).toArray().join(","); }
+    }
+
+    function jsFiles(prefix) {
+        return function (item) {
+            return item.startsWith(prefix) && !item.endsWith("Spec.js");
+        }
+    }
+
+    function optionKey(prefix) {
+        return function (item) {
+            return item.substring(prefix.length, item.length - 3);
+        }
+    }
+
+    function identity(x) {
+        return x;
+    }
+
+    function itemEndsWith(suffix) {
+        return function (v) {
+            return v.endsWith(suffix);
+        }
+    }
+
+    function prepend(prefix) {
+        return function (v) {
+            return prefix + v;
+        }
+    }
 
 </script>
 </head>
@@ -30,22 +134,51 @@ function loadFc() {
 <div>
 <p>
 FlameGraph<br/>
-URL: <input type="text" id="fgUrl" name="fgUrl"/><br/><button onclick="loadFg();">Load</button>
+URL: <select class="form-control"  id="fgUrl">
+    <option value="">-- Select --</option>
+</select><br/>
+    <select class="form-control"  id="fgColor">
+        <option value="">-- Select --</option>
+    </select><br/>
+    <select class="form-control"  id="fgFilter" multiple>
+        <option value="">-- Select --</option>
+    </select><br/>
+    <button id="loadFg">Load</button>
 </p>
 </div>
 <div>
 <p>
 FlameGraph Diff<br/>
-URL: <input type="text" id="fdUrl" name="fdUrl"/><br/><button onclick="loadFd();">Load</button>
+URL: <select class="form-control"  id="fdUrl">
+    <option value="">-- Select --</option>
+</select><br/>
+    <select class="form-control"  id="fdColor">
+        <option value="">-- Select --</option>
+    </select><br/>
+    <select class="form-control"  id="fdFilter" multiple>
+        <option value="">-- Select --</option>
+    </select><br/>
+    <button id="loadFd">Load</button>
 </p>
 </div>
 <div>
 <p>
 FlameGraph Compare<br/>
-Left: <input type="text" id="fcLeftUrl" name="fcRightUrl"/><br/>
-Right: <input type="text" id="fcRightUrl" name="fcLeftUrl"/><br/>
+Left: <select class="form-control"  id="fcLeftUrl">
+    <option value="">-- Select --</option>
+</select><br/>
+Right: <select class="form-control"  id="fcRightUrl">
+    <option value="">-- Select --</option>
+</select><br/>
+    <select class="form-control"  id="fcColor">
+        <option value="">-- Select --</option>
+    </select><br/>
+    <select class="form-control"  id="fcFilter" multiple>
+        <option value="">-- Select --</option>
+    </select><br/>
 
-<button onclick="loadFc();">Load</button>
+
+<button id="loadFc">Load</button>
 </p>
 </div>
 </body>
