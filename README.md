@@ -253,6 +253,8 @@ You can use [FGrav playground page](http://localhost:9090/index.html) to constru
 
 FGrav playground page is the default root page. `http://${host}:${port}/`
 
+![Playground Example](img/playground.png "Playground Example")
+
 FGrav visualizations requests examples:
 
 `http://${host}:${port}/FG.svg?url=${raw-file}`
