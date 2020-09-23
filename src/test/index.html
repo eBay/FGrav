@@ -72,11 +72,18 @@
 <script type="text/javascript">
     $(document).ready(function() {
         getOptions( "/collapsed/", itemEndsWith(".collapsed"), identity, prepend("/collapsed/"),
-            ["#fgUrl", "#fdUrl", "#fcLeftUrl", "#fcRightUrl"]);
+            ["#fgUrl", "#fcLeftUrl", "#fcRightUrl"]);
+        getOptions( "/js/color/", jsFiles("FG_Color_", "FG_Color_Diff.js"), optionKey("FG_Color_"), identity,
+            ["#fgColor", "#fcColor"]);
         getOptions( "/js/color/", jsFiles("FG_Color_"), optionKey("FG_Color_"), identity,
-            ["#fgColor", "#fdColor", "#fcColor"]);
+            ["#fdColor"]);
         getOptions( "/js/frame/", jsFiles("FG_Filter_"), optionKey("FG_Filter_"), identity,
             ["#fgFilter", "#fdFilter", "#fcFilter"]);
+        $("#fdUrl").multipleSelect({data: {
+                "/collapsed/diff.collapsed": "diff.collapsed"
+        }});
+
+
         $("#loadFg").click(function(){
             load("/FG.svg", fgParams());
         });
@@ -158,12 +165,14 @@
 
     function filterValues(selector) {
         return function() {
-            return $(selector).multipleSelect('getSelects').join(","); }
+            var selects = $(selector).multipleSelect('getSelects');
+            return (!selects || selects.length === 0) ? undefined: selects.join(",");
+        }
     }
 
-    function jsFiles(prefix) {
+    function jsFiles(prefix, exclude) {
         return function (item) {
-            return item.startsWith(prefix) && !item.endsWith("Spec.js");
+            return item.startsWith(prefix) && !item.endsWith("Spec.js") && !item.endsWith("Default.js") && item !== exclude;
         }
     }
 
