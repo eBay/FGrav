@@ -9,6 +9,63 @@
     select {
         width: 100%;
     }
+    h1 {
+        padding: 20px;
+        font-size: 18px;
+    }
+    button {
+        background-color: darkred;
+        border-radius: 12px;
+        border: none;
+        color: white;
+        padding: 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+    }
+    .form {
+        border-radius: 25px;
+        border: 2px solid black;
+        padding: 30px;
+        padding-top: 40px;
+        width: 70%;
+        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+        transition: 0.3s;
+    }
+    .form:hover {
+        box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+    }
+
+    ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+    }
+
+    li a {
+        background-color: darkred;
+        border-radius: 12px;
+        border: none;
+        color: white;
+        padding: 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+    }
+
+    /* Change the link color to #111 (black) on hover */
+    li a:hover {
+        background-color: #111;
+    }
+
+    p {
+        padding-top: 100px;
+    }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.js"></script>
@@ -136,54 +193,58 @@
 </head>
 <body>
 <div>
-<p>
-FlameGraph<br/>
+    <h1>FGrav playground</h1>
+    <ul>
+        <li><a href="#FG">FlameGraph</a></li>
+        <li><a href="#FD">FlameGraph Diff</a></li>
+        <li><a href="#FC">FlameGraph Compare</a></li>
+    </ul>
+</div>
+<p></p>
+<div class="form" id="FG">
+<h1>FlameGraph</h1>
 URL: <select   id="fgUrl">
     <option value="">-- Select --</option>
 </select><br/>
-    <select   id="fgColor">
+Color: <select   id="fgColor">
         <option value="">-- Select --</option>
     </select><br/>
-    <select class="multiple-select"  id="fgFilter" multiple>
+FrameFilter: <select class="multiple-select"  id="fgFilter" multiple>
         <option value="">-- Select --</option>
     </select><br/>
     <button id="loadFg">Load</button>
-</p>
 </div>
-<div>
-<p>
-FlameGraph Diff<br/>
+<p></p>
+<div class="form" id="FD">
+<h1>FlameGraph Diff</h1>
 URL: <select   id="fdUrl">
     <option value="">-- Select --</option>
 </select><br/>
-    <select   id="fdColor">
+Color: <select   id="fdColor">
         <option value="">-- Select --</option>
     </select><br/>
-    <select class="multiple-select"  id="fdFilter" multiple>
+FrameFilter: <select class="multiple-select"  id="fdFilter" multiple>
         <option value="">-- Select --</option>
     </select><br/>
     <button id="loadFd">Load</button>
-</p>
 </div>
-<div>
-<p>
-FlameGraph Compare<br/>
+<p></p>
+<div class="form" id="FC">
+<h1>FlameGraph Compare</h1>
 Left: <select   id="fcLeftUrl">
     <option value="">-- Select --</option>
 </select><br/>
 Right: <select   id="fcRightUrl">
     <option value="">-- Select --</option>
 </select><br/>
-    <select   id="fcColor">
+Color: <select   id="fcColor">
         <option value="">-- Select --</option>
     </select><br/>
-    <select class="multiple-select" id="fcFilter" multiple>
+FrameFilter: <select class="multiple-select" id="fcFilter" multiple>
         <option value="">-- Select --</option>
     </select><br/>
-
-
 <button id="loadFc">Load</button>
-</p>
 </div>
+<p></p>
 </body>
 </html>
