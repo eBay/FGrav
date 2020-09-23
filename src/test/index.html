@@ -10,8 +10,19 @@
         width: 100%;
     }
     h1 {
-        padding: 20px;
-        font-size: 18px;
+        font-size: 24px;
+        color: black;
+        background: url('/heading.png') 0 0 repeat-x;
+        padding:20px;
+        height:40px;
+        border: 4px solid darkred;
+    }
+    h2 {
+        font-size: 20px;
+        background-color: darkred;
+        color: white;
+        padding:20px;
+        height:40px;
     }
     button {
         background-color: darkred;
@@ -25,9 +36,12 @@
         font-size: 16px;
         margin: 4px 2px;
     }
+    button:hover {
+        background-color: #111;
+    }
     .form {
         border-radius: 25px;
-        border: 2px solid black;
+        border: 3px solid black;
         padding: 30px;
         padding-top: 40px;
         width: 70%;
@@ -63,13 +77,8 @@
         margin: 4px 2px;
     }
 
-    /* Change the link color to #111 (black) on hover */
     li a:hover {
         background-color: #111;
-    }
-
-    p {
-        padding-top: 200px;
     }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
@@ -214,51 +223,65 @@
         <li><a href="#FC">FlameGraph Compare</a></li>
     </ul>
 </div>
-<p></p>
+<p style="padding: 100px"></p>
 <div class="form" id="FG">
-<h1>FlameGraph</h1>
+<h2>FlameGraph</h2>
+    <p>The <a href="https://github.com/brendangregg/FlameGraph" target="_blank">Classic FlameGraph</a> visualization generated from a raw collapsed file of code paths and number of samples.
+Color scheme and frame filters are configurable and color schemes also have an optional legend.
+</p>
 URL: <select   id="fgUrl">
     <option value="">-- Select --</option>
 </select><br/>
-Color: <select   id="fgColor">
+Color Scheme: <select   id="fgColor">
         <option value="">-- Select --</option>
     </select><br/>
-FrameFilter: <select class="multiple-select"  id="fgFilter" multiple>
+Frame Filters: <select class="multiple-select"  id="fgFilter" multiple>
         <option value="">-- Select --</option>
     </select><br/>
     <button id="loadFg">Load</button>
 </div>
-<p></p>
+<p style="padding: 100px"></p>
 <div class="form" id="FD">
-<h1>FlameGraph Diff</h1>
+<h2>FlameGraph Diff</h2>
+<p>
+    A similar visualization to other <a href="http://www.brendangregg.com/blog/2014-11-09/differential-flame-graphs.html" target="_blank">Flamegraph difference</a> visualizations.<br/>
+    Compare two sets of samples counting placed in the same raw collapsed file. Also has a special <b>Diff</b> color scheme of red for growth and blue for reductions.<br/>
+    Main difference in this FlameGraph Diff is that the difference is shown visually as we color only the portion of the frame cell that matches the difference (before growth or after reduction).<br/>
+    This has the advantage of both showing frames who disappeared in the second sampling and also giving a visual cue (in terms of length comparison) of exactly how big is the difference.<br/>
+</p>
 URL: <select   id="fdUrl">
     <option value="">-- Select --</option>
 </select><br/>
-Color: <select   id="fdColor">
+Color Scheme: <select   id="fdColor">
         <option value="">-- Select --</option>
     </select><br/>
-FrameFilter: <select class="multiple-select"  id="fdFilter" multiple>
+Frame Filters: <select class="multiple-select"  id="fdFilter" multiple>
         <option value="">-- Select --</option>
     </select><br/>
     <button id="loadFd">Load</button>
 </div>
-<p></p>
+<p style="padding: 100px"></p>
 <div class="form" id="FC">
-<h1>FlameGraph Compare</h1>
+<h2>FlameGraph Compare</h2>
+<p>
+    Compare two FlameGraphs visually.<br/>
+    Search, zoom and hover capabilities are done on both Flamegraphs.<br/>
+    This allows the ability to watch the two Flamegrpahs side by side and interactively compare them.
+</p>
 Left: <select   id="fcLeftUrl">
     <option value="">-- Select --</option>
 </select><br/>
 Right: <select   id="fcRightUrl">
     <option value="">-- Select --</option>
 </select><br/>
-Color: <select   id="fcColor">
+Color Scheme: <select   id="fcColor">
         <option value="">-- Select --</option>
     </select><br/>
-FrameFilter: <select class="multiple-select" id="fcFilter" multiple>
+Frame Filters: <select class="multiple-select" id="fcFilter" multiple>
         <option value="">-- Select --</option>
     </select><br/>
 <button id="loadFc">Load</button>
 </div>
-<p></p>
+<p style="padding: 100px"></p>
 </body>
 </html>
