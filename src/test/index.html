@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>FGrav</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link rel="stylesheet" href="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.css">
+<style>
+    select {
+        width: 100%;
+    }
+    h1 {
+        font-size: 24px;
+        color: black;
+        background: url('/heading.png') 0 0 repeat-x;
+        padding:20px;
+        height:40px;
+        border: 4px solid darkred;
+    }
+    h2 {
+        font-size: 20px;
+        background-color: darkred;
+        color: white;
+        padding:20px;
+        height:40px;
+    }
+    button {
+        background-color: darkred;
+        border-radius: 12px;
+        border: none;
+        color: white;
+        padding: 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+    }
+    button:hover {
+        background-color: #111;
+    }
+    .form {
+        border-radius: 25px;
+        border: 3px solid black;
+        padding: 30px;
+        padding-top: 40px;
+        width: 70%;
+        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+        transition: 0.3s;
+    }
+    .form:hover {
+        box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+    }
+
+    ul {
+        display:inline;
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+    }
+
+    li {
+        display:inline;
+    }
+
+    li a {
+        background-color: darkred;
+        border-radius: 12px;
+        border: none;
+        color: white;
+        padding: 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+    }
+
+    li a:hover {
+        background-color: #111;
+    }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        getOptions( "/collapsed/", itemEndsWith(".collapsed"), identity, prepend("/collapsed/"),
+            ["#fgUrl", "#fcLeftUrl", "#fcRightUrl"]);
+        getOptions( "/js/color/", jsFiles("FG_Color_", "FG_Color_Diff.js"), optionKey("FG_Color_"), identity,
+            ["#fgColor", "#fcColor"]);
+        getOptions( "/js/color/", jsFiles("FG_Color_"), optionKey("FG_Color_"), identity,
+            ["#fdColor"]);
+        getOptions( "/js/frame/", jsFiles("FG_Filter_"), optionKey("FG_Filter_"), identity,
+            ["#fgFilter", "#fdFilter", "#fcFilter"]);
+        $("#fdUrl").multipleSelect({data: {
+                "/collapsed/diff.collapsed": "diff.collapsed"
+        }});
+
+
+        $("#loadFg").click(function(){
+            load("/FG.svg", fgParams());
+        });
+        $("#loadFd").click(function(){
+            load("/FGDiff.svg", fdParams());
+        });
+        $("#loadFc").click(function(){
+            load("/FGCompare.svg", fcParams());
+        });
+    });
+
+
+    function load(name, params) {
+        var urlParams = [];
+        $.each(params, function( key, valueFunction) {
+            var value = valueFunction();
+            if (value) {
+                urlParams.push(key + "=" + value);
+            }
+        });
+        window.location.href = name + "?" + urlParams.join("&");
+    }
+
+    function fgParams() {
+        return {
+            url: urlVal("#fgUrl"),
+            color: colorVal("#fgColor"),
+            frameFilter: filterValues("#fgFilter")
+        };
+    }
+
+    function fdParams() {
+        return {
+            url: urlVal("#fdUrl"),
+            color: colorVal("#fdColor"),
+            frameFilter: filterValues("#fdFilter")
+        };
+    }
+
+    function fcParams() {
+        return {
+            left: urlVal("#fcLeftUrl"),
+            right: urlVal("#fcRightUrl"),
+            color: colorVal("#fcColor"),
+            frameFilter: filterValues("#fcFilter")
+        };
+    }
+
+    function getOptions(dir, itemCondition, itemName, itemValue, selectBoxes) {
+        $.getJSON(dir, function( data ) {
+            var options = [];
+            $.each( data, function( key, val ) {
+                var item = val.name;
+                if (itemCondition(item)) {
+                    var option = itemName(item);
+                    options.push({
+                        value: itemValue(option),
+                        text: option
+                    });
+                }
+            });
+            $.each(selectBoxes, function (i, select) {
+                target = $(select);
+                target.multipleSelect({data: options});
+            });
+        });
+    }
+
+    function urlVal(selector) {
+        return function() { return $(selector).multipleSelect('getSelects')[0] };
+    }
+
+    function colorVal(selector) {
+        return function() {
+            var color = $(selector).multipleSelect('getSelects')[0];
+            return (!color || color === 'Default') ? undefined : color;
+        };
+    }
+
+    function filterValues(selector) {
+        return function() {
+            var selects = $(selector).multipleSelect('getSelects');
+            return (!selects || selects.length === 0) ? undefined: selects.join(",");
+        }
+    }
+
+    function jsFiles(prefix, exclude) {
+        return function (item) {
+            return item.startsWith(prefix) && !item.endsWith("Spec.js") && !item.endsWith("Default.js") && item !== exclude;
+        }
+    }
+
+    function optionKey(prefix) {
+        return function (item) {
+            return item.substring(prefix.length, item.length - 3);
+        }
+    }
+
+    function identity(x) {
+        return x;
+    }
+
+    function itemEndsWith(suffix) {
+        return function (v) {
+            return v.endsWith(suffix);
+        }
+    }
+
+    function prepend(prefix) {
+        return function (v) {
+            return prefix + v;
+        }
+    }
+
+</script>
+</head>
+<body>
+<div>
+    <h1>FGrav playground</h1>
+    <ul>
+        <li><a href="#FG">FlameGraph</a></li>
+        <li><a href="#FD">FlameGraph Diff</a></li>
+        <li><a href="#FC">FlameGraph Compare</a></li>
+    </ul>
+</div>
+<p style="padding: 100px"></p>
+<div class="form" id="FG">
+<h2>FlameGraph</h2>
+    <p>The <a href="https://github.com/brendangregg/FlameGraph" target="_blank">Classic FlameGraph</a> visualization generated from a raw collapsed file of code paths and number of samples.
+Color scheme and frame filters are configurable and color schemes also have an optional legend.
+</p>
+URL: <select   id="fgUrl">
+    <option value="">-- Select --</option>
+</select><br/>
+Color Scheme: <select   id="fgColor">
+        <option value="">-- Select --</option>
+    </select><br/>
+Frame Filters: <select class="multiple-select"  id="fgFilter" multiple>
+        <option value="">-- Select --</option>
+    </select><br/>
+    <button id="loadFg">Load</button>
+</div>
+<p style="padding: 100px"></p>
+<div class="form" id="FD">
+<h2>FlameGraph Diff</h2>
+<p>
+    A similar visualization to other <a href="http://www.brendangregg.com/blog/2014-11-09/differential-flame-graphs.html" target="_blank">Flamegraph difference</a> visualizations.<br/>
+    Compare two sets of samples counting placed in the same raw collapsed file. Also has a special <b>Diff</b> color scheme of red for growth and blue for reductions.<br/>
+    Main difference in this FlameGraph Diff is that the difference is shown visually as we color only the portion of the frame cell that matches the difference (before growth or after reduction).<br/>
+    This has the advantage of both showing frames who disappeared in the second sampling and also giving a visual cue (in terms of length comparison) of exactly how big is the difference.<br/>
+</p>
+URL: <select   id="fdUrl">
+    <option value="">-- Select --</option>
+</select><br/>
+Color Scheme: <select   id="fdColor">
+        <option value="">-- Select --</option>
+    </select><br/>
+Frame Filters: <select class="multiple-select"  id="fdFilter" multiple>
+        <option value="">-- Select --</option>
+    </select><br/>
+    <button id="loadFd">Load</button>
+</div>
+<p style="padding: 100px"></p>
+<div class="form" id="FC">
+<h2>FlameGraph Compare</h2>
+<p>
+    Compare two FlameGraphs visually.<br/>
+    Search, zoom and hover capabilities are done on both Flamegraphs.<br/>
+    This allows the ability to watch the two Flamegrpahs side by side and interactively compare them.
+</p>
+Left: <select   id="fcLeftUrl">
+    <option value="">-- Select --</option>
+</select><br/>
+Right: <select   id="fcRightUrl">
+    <option value="">-- Select --</option>
+</select><br/>
+Color Scheme: <select   id="fcColor">
+        <option value="">-- Select --</option>
+    </select><br/>
+Frame Filters: <select class="multiple-select" id="fcFilter" multiple>
+        <option value="">-- Select --</option>
+    </select><br/>
+<button id="loadFc">Load</button>
+</div>
+<p style="padding: 100px"></p>
+</body>
+</html>
