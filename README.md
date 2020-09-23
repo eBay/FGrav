@@ -245,13 +245,15 @@ Loading the filter JS file can be done by either:
 Deploy all src files and libs to an http server.
 
 You can use [deploy.sh](./deploy.sh) as an example which will create a directory called **web** and copy all files to it.
-You can then run an http server via docker with [serve.sh](./serve.sh).
+You can then run an http server via docker with [serve.sh](./serve.sh). (**Note:** port is configured inside script to **9090**)
 
 Once the http server is up, request an SVG file from it on a browser.
 
-For example:
+You can use [FGrav playground page](http://localhost:9090/index.html) to construct requests.
 
-`http://${host}:${port}/index.html`
+FGrav playground page is the default root page. `http://${host}:${port}/`
+
+FGrav visualizations requests examples:
 
 `http://${host}:${port}/FG.svg?url=${raw-file}`
 
