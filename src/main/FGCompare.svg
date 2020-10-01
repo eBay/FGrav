@@ -52,7 +52,6 @@
 <script href="js/Collapsed.js"/>
 <script href="js/FG.js"/>
 <script href="js/MultiFG.js"/>
-<script href="js/color/FG_Color_Default.js"/>
 <script type="text/ecmascript">
 <![CDATA[
 	"use strict";

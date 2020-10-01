@@ -29,7 +29,8 @@ describe("FGrav", function() {
                     "}"
             });
             frameFilter.reset();
-            colorScheme.reset();
+            colorScheme.legend = {};
+            colorScheme.colorFor = undefined;
         });
 
         afterEach(function () {
