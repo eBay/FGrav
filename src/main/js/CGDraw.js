@@ -17,7 +17,7 @@
 function CGDraw(cg) {
     FGravDraw.call(this, cg);
     this.cg = cg;
-    this.colorScheme = new CG_Color_Default();
+    colorScheme = new CG_Color_Default();
 }
 
 CGDraw.prototype = Object.create(FGravDraw.prototype);
