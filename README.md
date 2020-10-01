@@ -176,7 +176,7 @@ If no color parameter is defined on the HTTP request then 'Default' color scheme
 
 #### Built-in color schemes
 
-1. [Default](./src/main/js/color/FG_Color_Default.js) - default. random color
+1. [Default](https://github.com/eBay/FGrav/blob/300713f6e06001a12c509810b310e46ce6aec31b/src/main/js/FGrav.js#L177) - default. random color
 1. [Diff](./src/main/js/color/FG_Color_Diff.js) - Color scheme for "growth" / "reduction" in frame
 1. [Java](./src/main/js/color/FG_Color_Java.js) - Java specific color scheme
  
