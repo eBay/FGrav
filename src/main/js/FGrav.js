@@ -63,16 +63,14 @@ FGrav.prototype.loadDynamicJs = function(urls, successCallback, errorCallback) {
     $.when.apply($, ajaxObjs)
         .then(function () {
             if (response.isSuccess()) {
-                $.each(jsSrc, function (i, src) {
-                    // TODO DOES NOT WORK. HAD TO RESORT TO EVAL!!!
-                    // var loadedScript = document.createElement('script');
-                    // loadedScript.type = "text/javascript";
-                    // loadedScript.innerHTML = data;
-                    // loadedScript.text = data;
-                    //
-                    // svg.children[1].parentNode.insertBefore(loadedScript, svg.children[1].nextSibling);
-                    eval(src);
-                });
+                // TODO DOES NOT WORK. HAD TO RESORT TO EVAL!!!
+                // var loadedScript = document.createElement('script');
+                // loadedScript.type = "text/javascript";
+                // loadedScript.innerHTML = data;
+                // loadedScript.text = data;
+                //
+                // svg.children[1].parentNode.insertBefore(loadedScript, svg.children[1].nextSibling);
+                eval(jsSrc.join("\n"));
                 successCallback(response);
             } else {
                 errorCallback(response);

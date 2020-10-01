@@ -11,15 +11,15 @@ describe("FGrav", function() {
 
         beforeEach(function () {
             jasmine.Ajax.install();
-            jasmine.Ajax.stubRequest("js/frame/FG_Filter_Default.js").andReturn({
-                responseText: "frameFilter.filters.push(dummyFilter);" +
-                    " function dummyFilter(name) {" +
+            jasmine.Ajax.stubRequest("js/frame/FG_Filter_Test.js").andReturn({
+                responseText: "frameFilter.filters.push(dummyTestFilter);" +
+                    " function dummyTestFilter(name) {" +
                     "    return name + name;" +
                     "}"
             });
             jasmine.Ajax.stubRequest("js/frame/FG_Filter_Other.js").andReturn({
-                responseText: "frameFilter.filters.push(dummyFilter);" +
-                    " function dummyFilter(name) {" +
+                responseText: "frameFilter.filters.push(dummyOtherFilter);" +
+                    " function dummyOtherFilter(name) {" +
                     "    return 'x';" +
                     "}"
             });
@@ -38,10 +38,10 @@ describe("FGrav", function() {
 
 
         it("should load dynamic js file", function (done) {
-            t.loadDynamicJs(["js/frame/FG_Filter_Default.js"], function () {
+            t.loadDynamicJs(["js/frame/FG_Filter_Test.js"], function () {
 
                 var request = jasmine.Ajax.requests.mostRecent();
-                expect(request.url).toBe("js/frame/FG_Filter_Default.js");
+                expect(request.url).toBe("js/frame/FG_Filter_Test.js");
                 expect(request.method).toBe('GET');
 
                 expect(frameFilter.filters[0]('foo')).toEqual("foofoo");
@@ -54,7 +54,7 @@ describe("FGrav", function() {
         });
 
         it("should load multiple dynamic js filters", function (done) {
-            t.loadDynamicJs(["js/frame/FG_Filter_Other.js","js/color/FG_Color_Test.js","js/frame/FG_Filter_Default.js"], function () {
+            t.loadDynamicJs(["js/frame/FG_Filter_Other.js","js/color/FG_Color_Test.js","js/frame/FG_Filter_Test.js"], function () {
 
                 expect(frameFilter.filters.length).toEqual(2);
                 expect(frameFilter.filters[0]('foo')).toEqual("x");
@@ -105,9 +105,12 @@ describe("FGrav", function() {
                     getElementsByTagName:
                         function(name) {
                             return ['svg']
+                        },
+                    getElementById: function(id) {
+                            return undefined;
                         }
+                    }
                 }
-            };
         });
 
         it("should return when jQuery is loaded and set document references", function () {
