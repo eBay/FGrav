@@ -18,12 +18,15 @@ function FGDraw(fg) {
     FGravDraw.call(this, fg);
     this.fg = fg;
     this.buttonsMargin = 24;
-    this.colorScheme = new FG_Color_Default();
+    this.setColorScheme(new FG_Color_Default());
 }
 
 FGDraw.prototype = Object.create(FGravDraw.prototype);
 FGDraw.prototype.constructor = FGDraw;
 
+FGDraw.prototype.setColorScheme = function(colorSchemeImpl) {
+    colorScheme = colorSchemeImpl;
+};
 
 FGDraw.prototype.drawCanvas = function(_d) {
     _d = (typeof _d !== 'undefined') ? _d : document;
