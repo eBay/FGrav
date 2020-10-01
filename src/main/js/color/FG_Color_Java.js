@@ -32,7 +32,7 @@ function javaColorFor(f) {
     if (name.match(/_\[i\]$/)) {
         return colorValueFor("aqua", name);
     }
-    if (name.match(/^L?(java|javax|jdk|net|org|com|io|sun)/)) {
+    if (name.match(/^L?(java|javax|jdk|net|org|com|io|sun|rx|ch)/)) {
         return colorValueFor("green", name);
     }
     if (name.match(/_\[k\]$/)) {
