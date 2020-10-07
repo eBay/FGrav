@@ -47,29 +47,49 @@ describe("FG", function() {
     });
 
     describe("when loading", function() {
-       it("should generate urls from names", function () {
+       it("should generate DynamicallyLoading objects from names", function () {
             fg.colorSchemeName = "ColorScheme";
             fg.frameFilterNames = "FrameFilter";
 
-            var urls = fg.urlsToLoad();
+            var objs = fg.objectsToLoad();
 
-            expect(urls.length).toBe(2);
-            expect(urls[0]).toEqual("js/color/FG_Color_ColorScheme.js");
-            expect(urls[1]).toEqual("js/frame/FG_Filter_FrameFilter.js");
+            expect(objs.length).toBe(2);
+            expect(objs[0].getUrl()).toEqual("js/color/FG_Color_ColorScheme.js");
+            expect(objs[0].appendInstallScript("")).toEqual("\ncolorScheme = new FG_Color_ColorScheme();");
+            expect(objs[1].getUrl()).toEqual("js/frame/FG_Filter_FrameFilter.js");
+            expect(objs[1].appendInstallScript("")).toEqual("");
 
         });
 
-        it("should generate multiple urls", function () {
+        it("should generate DynamicallyLoading objects from urls", function () {
+            fg.colorSchemeName = "/js/MyCustomColorScheme.js";
+            fg.frameFilterNames = "/js/fgrav/custom/MyFrameFilter.js";
+
+            var objs = fg.objectsToLoad();
+
+            expect(objs.length).toBe(2);
+            expect(objs[0].getUrl()).toEqual("js/MyCustomColorScheme.js");
+            expect(objs[0].appendInstallScript("")).toEqual("\ncolorScheme = new MyCustomColorScheme();");
+            expect(objs[1].getUrl()).toEqual("js/fgrav/custom/MyFrameFilter.js");
+            expect(objs[1].appendInstallScript("")).toEqual("");
+
+        });
+
+        it("should generate multiple DynamicallyLoading objects", function () {
             fg.colorSchemeName = "ColorScheme";
             fg.frameFilterNames = "FrameFilter1,FrameFilter2,/js/MyCustomFilter.js";
 
-            var urls = fg.urlsToLoad();
+            var objs = fg.objectsToLoad();
 
-            expect(urls.length).toBe(4);
-            expect(urls[0]).toEqual("js/color/FG_Color_ColorScheme.js");
-            expect(urls[1]).toEqual("js/frame/FG_Filter_FrameFilter1.js");
-            expect(urls[2]).toEqual("js/frame/FG_Filter_FrameFilter2.js");
-            expect(urls[3]).toEqual("js/MyCustomFilter.js");
+            expect(objs.length).toBe(4);
+            expect(objs[0].getUrl()).toEqual("js/color/FG_Color_ColorScheme.js");
+            expect(objs[0].appendInstallScript("")).toEqual("\ncolorScheme = new FG_Color_ColorScheme();");
+            expect(objs[1].getUrl()).toEqual("js/frame/FG_Filter_FrameFilter1.js");
+            expect(objs[1].appendInstallScript("")).toEqual("");
+            expect(objs[2].getUrl()).toEqual("js/frame/FG_Filter_FrameFilter2.js");
+            expect(objs[2].appendInstallScript("")).toEqual("");
+            expect(objs[3].getUrl()).toEqual("js/MyCustomFilter.js");
+            expect(objs[3].appendInstallScript("")).toEqual("");
 
         });
     });

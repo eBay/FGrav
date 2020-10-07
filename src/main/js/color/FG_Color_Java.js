@@ -14,17 +14,20 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  **************************************************************************/
-colorScheme.colorFor = javaColorFor;
+function FG_Color_Java() {
+    FG_Color.call(this);
+    this.legend = {
+        lawngreen: 'Java',
+        yellow: 'JVM (C++)',
+        aqua: 'Inlined',
+        orange: 'Kernel',
+        red: 'User'
+    };
+}
 
-colorScheme.legend = {
-    lawngreen: 'Java',
-    yellow: 'JVM (C++)',
-    aqua: 'Inlined',
-    orange: 'Kernel',
-    red: 'User'
-};
-
-function javaColorFor(f) {
+FG_Color_Java.prototype = Object.create(FG_Color.prototype);
+FG_Color_Java.prototype.constructor = FG_Color_Java;
+FG_Color_Java.prototype.colorFor = function(f, r) {
     var name = f.name;
     if (name.match(/_\[j\]$/)) {
         return colorValueFor("green", name);

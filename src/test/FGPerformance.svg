@@ -37,6 +37,7 @@ Java8 filter:
 	.parent { opacity:0.5; }
 </style>
 <text id="alt" x="50" y="50" fill="black" font-size="50">FG.svg is drawn dynamically. Please wait. Use "url" parameter for input raw collapsed url</text>
+<script href="js/color/FG_Color.js"/>
 <script href="js/FGrav.js"/>
 <script href="js/FGravResponse.js"/>
 <script href="js/FGravDraw.js"/>

@@ -90,23 +90,32 @@ FG.prototype.setup = function(_w) {
 };
 
 FG.prototype.load = function (successCallback, errorCallback) {
-    var urls = this.urlsToLoad();
-    this.loadDynamicJs(urls, successCallback, errorCallback);
+    this.loadDynamicJs(this.objectsToLoad(), successCallback, errorCallback);
 };
 
-FG.prototype.urlsToLoad = function() {
-    var urls = [];
+FG.prototype.objectsToLoad = function() {
+    var toLoad = [];
     if (typeof this.colorSchemeName !== 'undefined') {
-        urls.push((this.colorSchemeName[0] === '/') ? this.colorSchemeName.substring(1) : "js/color/FG_Color_" + this.colorSchemeName + ".js");
+        var url;
+        var objName;
+        if (this.colorSchemeName[0] === '/') {
+            url = this.colorSchemeName.substring(1);
+            var nameIndex = this.colorSchemeName.lastIndexOf('/') + 1;
+            objName = this.colorSchemeName.substring(nameIndex, this.colorSchemeName.indexOf('.', nameIndex));
+        } else {
+            url = "js/color/FG_Color_" + this.colorSchemeName + ".js";
+            objName = "FG_Color_" + this.colorSchemeName;
+        }
+        toLoad.push(new DynamicallyLoading(url, "colorScheme = new " + objName + "();"));
     }
     if (typeof this.frameFilterNames !== 'undefined') {
         $.each(this.frameFilterNames.split(",").map(function (n) {
             return (n[0] === '/') ? n.substring(1) : "js/frame/FG_Filter_" + n + ".js"
         }), function () {
-            urls.push(this);
+            toLoad.push(new DynamicallyLoading(this));
         });
     }
-    return urls;
+    return toLoad;
 };
 
 // accessed from eval (yes, I know, see below)

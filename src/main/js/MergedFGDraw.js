@@ -96,11 +96,14 @@ function percentage(samples, total) {
 }
 
 function FG_Color_Diff() {
+    FG_Color.call(this);
     this.legend = {
         red: 'Growth',
         blue: 'Reduction'
     };
 }
+FG_Color_Diff.prototype = Object.create(FG_Color.prototype);
+FG_Color_Diff.prototype.constructor = FG_Color_Diff;
 
 FG_Color_Diff.prototype.colorFor = function(frame, totalSamples) {
     var p0 = percentage(frame.individualSamples[0], totalSamples[0]);

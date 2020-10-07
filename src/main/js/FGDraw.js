@@ -174,8 +174,11 @@ FGDraw.prototype.frameText = function(draw, text, widthToFit, fontSize) {
 };
 
 function FG_Color_Default() {
-    this.legend = {};
+    FG_Color.call(this);
 }
+
+FG_Color_Default.prototype = Object.create(FG_Color.prototype);
+FG_Color_Default.prototype.constructor = FG_Color_Default;
 
 FG_Color_Default.prototype.colorFor = function(f, r) {
     r = (typeof r !== 'undefined') ? r : Math.random();
