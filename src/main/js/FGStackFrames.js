@@ -38,7 +38,7 @@ FGStackFrames.prototype.loadCollapsed = function(fg, collapsedUrl, successCallba
             });
             codePaths = codePaths.sort();
             collapsed.parseCollapsed(codePaths);
-            stackFrames.calculateWidth(fg, collapsed.totalSamples, collapsed.minSample, collapsed.paths.length);
+            fg.calculateWidth(collapsed.totalSamples, collapsed.minSample, collapsed.paths.length);
             stackFrames.totalSamples = collapsed.totalSamples;
             var row = [];
             var ptr = 0;
@@ -72,7 +72,7 @@ FGStackFrames.prototype.loadCollapsed = function(fg, collapsedUrl, successCallba
                 rows.push(row);
             }
             collapsed.calculateOffsets(fg.width, fg.margin, fg.minDisplaySample);
-            stackFrames.calculateHeight(fg, collapsed.maxLevel);
+            fg.calculateHeight(collapsed.maxLevel);
             stackFrames.stackFrameRows = rows;
             // stackFrames.stackFrameByPath = framesMap;
 
@@ -149,38 +149,4 @@ FGStackFrames.prototype.allFrame = function(fg) {
             return this.name + ", samples: " + this.samples + ", i:" + this.lastStackIndex + ", x:" + this.x() + ", y:" + this.y() + ", w: " + this.w();
         }
     };
-};
-
-FGStackFrames.prototype.calculateWidth = function(fg, totalSamples, minSample, numberOfPaths) {
-    if (!fg.freezeDimensions) {
-        if (((fg.width - (2 * fg.margin) - numberOfPaths) / totalSamples) < minSample) {
-            fg.fontSize = Math.min(fg.fontSize, 8);
-            fg.margin = 8;
-        }
-        if (!fg.forcedWidth) {
-            fg.width = Math.min(fg.width, (fg.margin * 2) + (totalSamples * fg.sampleCoefficient));
-        }
-    }
-    fg.minDisplaySample = fg.minFlameWidth / ((fg.width - (2 * fg.margin) - fg.shiftWidth) / totalSamples);
-};
-
-
-FGStackFrames.prototype.calculateHeight = function (fg, maxLevel) {
-    if (!fg.freezeDimensions) {
-        var neededFrameHeight = Math.floor(fg.height / maxLevel);
-        if (neededFrameHeight < fg.frameHeight) {
-            neededFrameHeight = Math.max(fg.frameHeight - 4, Math.floor(neededFrameHeight));
-            setHeightParameters(fg, neededFrameHeight, 8, 8);
-        }
-        if (!fg.forcedHeight) {
-            var additional = (colorScheme.legend) ? Object.keys(colorScheme.legend).length : 0;
-            fg.height = Math.min(fg.height, ((maxLevel + additional + 1) * (fg.frameHeight + 2)) + (fg.margin * 4));
-        }
-    }
-
-    function setHeightParameters(fg, h, f, p) {
-        fg.frameHeight = h;
-        fg.fontSize = f;
-        fg.textPadding = p;
-    }
 };

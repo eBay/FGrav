@@ -18,6 +18,7 @@ describe("FG", function() {
                 return this.attr.get(k);
             }
         };
+        colorScheme.legend = {};
 
         textNode = {
             attributes: {
@@ -44,6 +45,10 @@ describe("FG", function() {
                 return (selector === "text") ? [ textNode ] : [];
             }
         };
+    });
+
+    afterEach(function () {
+        colorScheme.legend = {};
     });
 
     describe("when loading", function() {
@@ -243,6 +248,58 @@ describe("FG", function() {
             expect(a.classList.class).toEqual([ "hide" ]);
         });
 
+    });
+
+
+    describe("width and height calculations post stack frames", function () {
+
+        it("should keep default height dimensions when freezeDimensions is true", function () {
+            fg.freezeDimensions = true;
+
+            fg.calculateHeight(156);
+
+            expect(fg.height).toEqual(2200);
+            expect(fg.frameHeight).toEqual(15);
+            expect(fg.fontSize).toEqual(12);
+            expect(fg.textPadding).toEqual(10.5);
+        });
+
+        it("should keep default width dimensions when freezeDimensions is true", function () {
+            fg.freezeDimensions = true;
+
+            fg.calculateWidth(3301, 1, 4);
+
+            expect(fg.width).toEqual(1200);
+            expect(fg.margin).toEqual(24);
+            expect(fg.fontSize).toEqual(12);
+        });
+
+        it("should change dimensions based on stack frames", function () {
+
+            colorScheme.legend = { red: 'a', yellow: 'b'};
+            fg.calculateWidth(60, 10, 3);
+            fg.calculateHeight(3);
+
+            expect(fg.width).toEqual((2 * 24) + (60 * 14)); // 60 = total samples, 24 = margin
+            expect(fg.height).toEqual((3 + 2 + 1) * (15 + 2) + (24 * 4)); // 3 = maxLevel, 2 = legend size
+        });
+
+        it("should modify margin and font when width is tight", function () {
+            fg.calculateWidth(3301, 1, 4);
+
+            expect(fg.width).toEqual(1200);
+            expect(fg.margin).toEqual(8);
+            expect(fg.fontSize).toEqual(8);
+        });
+
+        it("should modify frame height font and text padding when height is tight", function () {
+            fg.calculateHeight(156);
+
+            expect(fg.height).toEqual(2200);
+            expect(fg.frameHeight).toEqual(14);
+            expect(fg.fontSize).toEqual(8);
+            expect(fg.textPadding).toEqual(8);
+        });
     });
 
     function domElement() {
