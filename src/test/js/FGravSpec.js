@@ -40,6 +40,8 @@ describe("FGrav", function() {
         });
 
         afterEach(function () {
+            colorScheme.legend = {};
+            colorScheme.colorFor = undefined;
             jasmine.Ajax.uninstall();
         });
 

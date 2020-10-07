@@ -10,6 +10,11 @@ describe("FGravDraw", function() {
         colorScheme.colorFor = undefined;
     });
 
+    afterEach(function () {
+        colorScheme.legend = {};
+        colorScheme.colorFor = undefined;
+    });
+
     describe("when colorValueFor invoked", function () {
 
         beforeEach(function () {

@@ -18,11 +18,13 @@ function FG(id, shiftWidth, defaultTitle, _loc) {
     defaultTitle = (typeof defaultTitle !== 'undefined') ? defaultTitle : "Flame Graph";
     FGrav.call(this, 1200, 2200, 24, 12, defaultTitle, _loc);
     this.id = id;
+    this.minWidth = 450;
+    this.minHeight = 150;
     this.shiftWidth = (typeof shiftWidth !== 'undefined') ? shiftWidth : 0;
     this.shiftHeight = 0;
     this.sampleCoefficient = 14;
     this.frameHeight = 15;
-    this.minwidth = 0.1; // 0.1 pixels
+    this.minFlameWidth = 0.1; // 0.1 pixels - increasing this value will ignore tiny flames and will improve performance as we won't create them.
     this.minDisplaySample = 1;
     this.textPadding = 10.5;
     this.freezeDimensions = false;
@@ -134,7 +136,36 @@ FG.prototype.namePerFG = function(name) {
     return name;
 };
 
-// keep all logic here, not in event handler
+FG.prototype.calculateWidth = function(totalSamples, minSample, numberOfPaths) {
+    if (!this.freezeDimensions) {
+        if (((this.width - (2 * this.margin) - numberOfPaths) / totalSamples) < minSample) {
+            this.fontSize = Math.min(this.fontSize, 8);
+            this.margin = 8;
+        }
+        if (!this.forcedWidth) {
+            this.width = Math.max(this.minWidth, Math.min(this.width, (this.margin * 2) + (totalSamples * this.sampleCoefficient)));
+        }
+    }
+    this.minDisplaySample = this.minFlameWidth / ((this.width - (2 * this.margin) - this.shiftWidth) / totalSamples);
+};
+
+
+FG.prototype.calculateHeight = function (maxLevel) {
+    if (!this.freezeDimensions) {
+        var neededFrameHeight = Math.floor(this.height / maxLevel);
+        if (neededFrameHeight < this.frameHeight) {
+            this.frameHeight = Math.max(this.frameHeight - 4, neededFrameHeight);
+            this.fontSize = 8;
+            this.textPadding = 8;
+        }
+        if (!this.forcedHeight) {
+            var additional = (colorScheme.legend) ? Object.keys(colorScheme.legend).length : 0;
+            this.height = Math.max(this.minHeight, Math.min(this.height, ((maxLevel + additional + 1) * (this.frameHeight + 2)) + (this.margin * 4)));
+        }
+    }
+};
+
+// code below mostly borrowed function names and some impl from original FlameGraph reference
 
 FG.prototype.g_details = function(g) {
     var attr = find_child(g, "text").attributes;
