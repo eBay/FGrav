@@ -284,6 +284,15 @@ describe("FG", function() {
             expect(fg.height).toEqual((3 + 2 + 1) * (15 + 2) + (24 * 4)); // 3 = maxLevel, 2 = legend size
         });
 
+        it("should change dimensions but have minimum constants take effect", function () {
+
+            fg.calculateWidth(10, 10, 3);
+            fg.calculateHeight(2);
+
+            expect(fg.width).toEqual(fg.minWidth);
+            expect(fg.height).toEqual(fg.minHeight);
+        });
+
         it("should modify margin and font when width is tight", function () {
             fg.calculateWidth(3301, 1, 4);
 
