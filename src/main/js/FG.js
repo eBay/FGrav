@@ -22,7 +22,7 @@ function FG(id, shiftWidth, defaultTitle, _loc) {
     this.shiftHeight = 0;
     this.sampleCoefficient = 14;
     this.frameHeight = 15;
-    this.minwidth = 0.1; // 0.1 pixels
+    this.minFlameWidth = 0.1; // 0.1 pixels - increasing this value will ignore tiny flames and will improve performance as we won't create them.
     this.minDisplaySample = 1;
     this.textPadding = 10.5;
     this.freezeDimensions = false;

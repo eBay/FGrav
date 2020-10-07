@@ -161,7 +161,7 @@ FGStackFrames.prototype.calculateWidth = function(fg, totalSamples, minSample, n
             fg.width = Math.min(fg.width, (fg.margin * 2) + (totalSamples * fg.sampleCoefficient));
         }
     }
-    fg.minDisplaySample = fg.minwidth / ((fg.width - (2 * fg.margin) - fg.shiftWidth) / totalSamples);
+    fg.minDisplaySample = fg.minFlameWidth / ((fg.width - (2 * fg.margin) - fg.shiftWidth) / totalSamples);
 };
 
 
