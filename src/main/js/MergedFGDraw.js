@@ -34,6 +34,7 @@ function MergedFGDraw(fg, collapsed, visualDiff) {
         details = details + "])";
         return detailsText(escText(details), details);
     };
+    this.setColorScheme(new FG_Color_Diff());
 }
 
 MergedFGDraw.prototype = Object.create(FGDraw.prototype);
@@ -93,3 +94,41 @@ MergedFGDraw.prototype.drawFrame = function (f) {
 function percentage(samples, total) {
     return Math.floor(samples * 10000 / total) / 100;
 }
+
+function FG_Color_Diff() {
+    FG_Color.call(this);
+    this.legend = {
+        red: 'Growth',
+        blue: 'Reduction'
+    };
+}
+FG_Color_Diff.prototype = Object.create(FG_Color.prototype);
+FG_Color_Diff.prototype.constructor = FG_Color_Diff;
+
+FG_Color_Diff.prototype.colorFor = function(frame, totalSamples) {
+    var p0 = percentage(frame.individualSamples[0], totalSamples[0]);
+    var p1 = percentage(frame.individualSamples[1], totalSamples[1]);
+
+    var diff =  p0 - p1;
+    if (diff === 0) {
+        return "white";
+    }
+    diff = (diff < 0) ? diff / p1 : diff / p0;
+    var variance = Math.floor(diff * diff * 255);
+    var r;
+    var b;
+    var g = 255 - variance;
+    if (diff < 0) {
+        r = 255;
+        b = 255 - variance;
+    } else {
+        b = 255;
+        r = 255 - variance;
+    }
+
+    return "rgb(" + r + "," + g + "," + b + ")";
+
+    function percentage(samples, total) {
+        return Math.floor(samples * 10000 / total) / 100;
+    }
+};

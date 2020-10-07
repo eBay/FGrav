@@ -6,14 +6,8 @@ describe("FGravDraw", function() {
 
     beforeEach(function () {
         t = new FGravDraw(new FGrav(1, 2, 3, 4, "TITLE"));
-        colorScheme.reset();
-    });
-
-    it("should throw error if color requested before color scheme was loaded", function () {
-        expect(function () {
-            colorScheme.colorFor()
-        }).toThrowError("Did not load any color scheme");
-
+        colorScheme.legend = {};
+        colorScheme.colorFor = undefined;
     });
 
     describe("when colorValueFor invoked", function () {

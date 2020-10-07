@@ -20,20 +20,9 @@ function FGravDraw(fgrav) {
     this.svg = fgrav.svg;
 }
 
-// accessed from eval (yes, I know, see below)
-// and global to the window
-var colorScheme = {
-    colorFor: function() {
-        throw Error("Did not load any color scheme");
-    },
-    reset: function() {
-        this.colorFor = function() {
-            throw Error("Did not load any color scheme");
-        }
-        this.legend = {};
-    },
-    legend: {}
-};
+// accessed from eval (yes, I know, see FGrav.js loadDynamicJs())
+// and therefore global to allow dynamic loading
+var colorScheme = {};
 
 function escText(text) {
     text = text.replace(/&/g, "&amp;");

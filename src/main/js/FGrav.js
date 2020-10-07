@@ -43,16 +43,16 @@ function FGrav(w, h, margin, fontSize, title, _w) {
 
 }
 
-FGrav.prototype.loadDynamicJs = function(urls, successCallback, errorCallback) {
+FGrav.prototype.loadDynamicJs = function(toLoad, successCallback, errorCallback) {
     var response = new FGravResponse();
     var ajaxObjs = [];
     var jsSrc = [];
-    $.each(urls, function (i, url) {
+    $.each(toLoad, function (i, l) {
         var ajax = $.ajax({ type: "GET",
-            url: url,
+            url: l.getUrl(),
             dataType: 'text',
             success: function(data) {
-                jsSrc[i] = data;
+                jsSrc[i] = l.appendInstallScript(data);
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 response.addError(errorThrown, textStatus);
@@ -63,16 +63,14 @@ FGrav.prototype.loadDynamicJs = function(urls, successCallback, errorCallback) {
     $.when.apply($, ajaxObjs)
         .then(function () {
             if (response.isSuccess()) {
-                $.each(jsSrc, function (i, src) {
-                    // TODO DOES NOT WORK. HAD TO RESORT TO EVAL!!!
-                    // var loadedScript = document.createElement('script');
-                    // loadedScript.type = "text/javascript";
-                    // loadedScript.innerHTML = data;
-                    // loadedScript.text = data;
-                    //
-                    // svg.children[1].parentNode.insertBefore(loadedScript, svg.children[1].nextSibling);
-                    eval(src);
-                });
+                // TODO DOES NOT WORK. HAD TO RESORT TO EVAL!!!
+                // var loadedScript = document.createElement('script');
+                // loadedScript.type = "text/javascript";
+                // loadedScript.innerHTML = data;
+                // loadedScript.text = data;
+                //
+                // svg.children[1].parentNode.insertBefore(loadedScript, svg.children[1].nextSibling);
+                eval(jsSrc.join("\n"));
                 successCallback(response);
             } else {
                 errorCallback(response);
@@ -98,4 +96,17 @@ FGrav.prototype.getRequiredParameter = function(parameterName, _loc) {
         return p;
     }
     throw "You must provide an input parameter \'" + parameterName + "\'";
+};
+
+function DynamicallyLoading(url, installScript) {
+    this.loadUrl = url;
+    this.installScript = installScript;
+}
+
+DynamicallyLoading.prototype.getUrl = function () {
+    return this.loadUrl;
+};
+
+DynamicallyLoading.prototype.appendInstallScript = function (jsSrc) {
+    return (typeof this.installScript !== 'undefined') ? jsSrc + "\n" + this.installScript : jsSrc;
 };

@@ -14,26 +14,11 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  **************************************************************************/
-colorScheme.colorFor = cgDefaultColorFor;
-
-
-colorScheme.legend = {
-    red: 'CPU',
-    blue: 'MEMORY'
-};
-
-
-function cgDefaultColorFor(name, value) {
-    if (!name) {
-        return "rgb(192, 192, 192)"
-    }
-    var color = "yellow";
-    if (name === "CPU") {
-        color = "red";
-    }
-    else if (name === "MEMORY") {
-        color = "blue";
-    }
-    return colorValueFor(color, undefined, value);
+function FG_Color() {
+    this.legend = {};
+    this.overlays = [];
 }
 
+FG_Color.prototype.colorFor = function(f, r) {
+    throw Error("Did not load any color scheme");
+};

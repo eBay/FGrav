@@ -48,7 +48,7 @@ Showing FlameGraph is done by requesting [FG.svg](./src/main/FG.svg).
 
 | Parameter  | Description                                       | Required  |
 | ---------- |:-------------------------------------------------:| ---------:|
-| url        | url of the collapsed file to visualize            | yes |
+| url        | url of the collapsed stack file to visualize      | yes |
 | color      | set specific [color scheme](#color-scheme) to use | no |
 | frameFilter| set specific [frame filter](#frame-filter) to use | no |
 | width      | set width for this visualization in pixels        | no |
@@ -64,14 +64,14 @@ A view of Two FlameGraphs, left and right where the hovering, search and zoom ar
 
 Showing FlameGraph Comparison is done by requesting [FGCompare.svg](./src/main/FGCompare.svg).
 
-| Parameter  | Description                                       | Required  |
-| ---------- |:-------------------------------------------------:| ---------:|
-| left       | url of the left side collapsed file to visualize  | yes |
-| right      | url of the right side collapsed file to visualize | yes |
-| color      | set specific [color scheme](#color-scheme) to use | no |
-| frameFilter| set specific [frame filter](#frame-filter) to use | no |
-| width      | set width for this visualization in pixels        | no |
-| height     | set height for this visualization in pixels       | no |
+| Parameter  | Description                                             | Required  |
+| ---------- |:-------------------------------------------------------:| ---------:|
+| left       | url of the left side collapsed stack file to visualize  | yes |
+| right      | url of the right side collapsed stack file to visualize | yes |
+| color      | set specific [color scheme](#color-scheme) to use       | no |
+| frameFilter| set specific [frame filter](#frame-filter) to use       | no |
+| width      | set width for this visualization in pixels              | no |
+| height     | set height for this visualization in pixels             | no |
 
 ![FlameGraph Compare Example](img/FGCompare.png "FlameGraph Compare Example")
 
@@ -79,7 +79,7 @@ Showing FlameGraph Comparison is done by requesting [FGCompare.svg](./src/main/F
 
 A Differential FlameGraph similar but not identical to the one suggested by [Brendan Gregg](http://www.brendangregg.com/blog/2014-11-09/differential-flame-graphs.html).
 
-Like the original differential FlameGraph, this FlameGraph is also generated from a collapsed file that contains two sample count values for every code path.
+Like the original differential FlameGraph, this FlameGraph is also generated from a collapsed stack file that contains two sample count values for every code path.
 
 See [test_diff.collapsed](./src/test/resources/collapsed/diff.collapsed) for example.
 
@@ -95,13 +95,13 @@ This allows us to:
 
 Showing Differential FlameGraph is done by requesting [FGDiff.svg](./src/main/FGDiff.svg).
 
-| Parameter  | Description                                        | Required  |
-| ---------- |:--------------------------------------------------:| ---------:|
-| url        | url of the differential collapsed file to visualize| yes |
-| color      | set specific [color scheme](#color-scheme) to use  | no |
-| frameFilter| set specific [frame filter](#frame-filter) to use  | no |
-| width      | set width for this visualization in pixels         | no |
-| height     | set height for this visualization in pixels        | no |
+| Parameter  | Description                                              | Required  |
+| ---------- |:--------------------------------------------------------:| ---------:|
+| url        | url of the differential collapsed stack file to visualize| yes |
+| color      | set specific [color scheme](#color-scheme) to use        | no |
+| frameFilter| set specific [frame filter](#frame-filter) to use        | no |
+| width      | set width for this visualization in pixels               | no |
+| height     | set height for this visualization in pixels              | no |
 
 ![FlameGraph Diff Example](img/FGDiff.png "FlameGraph Example")
 
@@ -176,8 +176,8 @@ If no color parameter is defined on the HTTP request then 'Default' color scheme
 
 #### Built-in color schemes
 
-1. [Default](./src/main/js/color/FG_Color_Default.js) - default. random color
-1. [Diff](./src/main/js/color/FG_Color_Diff.js) - Color scheme for "growth" / "reduction" in frame
+1. [Default](https://github.com/eBay/FGrav/blob/300713f6e06001a12c509810b310e46ce6aec31b/src/main/js/FGrav.js#L177) - default. random color
+1. [Diff](https://github.com/eBay/FGrav/blob/57db304a8fddd05768ebf3ee2e31961d61d93ad7/src/main/js/MergedFGDraw.js#L105) - Color scheme for "growth" / "reduction" in frame
 1. [Java](./src/main/js/color/FG_Color_Java.js) - Java specific color scheme
  
 #### Custom color schemes
@@ -217,7 +217,7 @@ The legend is hidden by default but can be toggled by clicking on the **legend**
 
 ### Frame Filter
 
-Dynamic Frame filter is a function called when parsing the collapsed file to separate code paths.
+Dynamic Frame filter is a function called when parsing the collapsed stack file to separate code paths.
 
 It can be used to filter entire paths  or manipulate the code path / stack trace before calculating the FlameGraph structure.
 

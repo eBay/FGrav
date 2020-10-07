@@ -17,6 +17,7 @@
 function CGDraw(cg) {
     FGravDraw.call(this, cg);
     this.cg = cg;
+    colorScheme = new CG_Color_Default();
 }
 
 CGDraw.prototype = Object.create(FGravDraw.prototype);
@@ -216,5 +217,26 @@ CGDraw.prototype.drawCG = function(calendarEvents, _d) {
             };
         }
     }
+};
+
+function CG_Color_Default() {
+    this.legend = {
+        red: 'CPU',
+        blue: 'MEMORY'
+    };
+}
+
+CG_Color_Default.prototype.colorFor = function(name, value) {
+    if (!name) {
+        return "rgb(192, 192, 192)"
+    }
+    var color = "yellow";
+    if (name === "CPU") {
+        color = "red";
+    }
+    else if (name === "MEMORY") {
+        color = "blue";
+    }
+    return colorValueFor(color, undefined, value);
 };
 

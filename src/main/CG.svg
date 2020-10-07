@@ -62,7 +62,6 @@
 <script href="js/CGDraw.js"/>
 <script href="js/CGEvents.js"/>
 <script href="js/CG.js"/>
-<script href="js/color/CG_Color.js"/>
 <script type="text/ecmascript">
 <![CDATA[
 	"use strict";

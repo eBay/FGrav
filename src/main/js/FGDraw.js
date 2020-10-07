@@ -18,12 +18,15 @@ function FGDraw(fg) {
     FGravDraw.call(this, fg);
     this.fg = fg;
     this.buttonsMargin = 24;
-
+    this.setColorScheme(new FG_Color_Default());
 }
 
 FGDraw.prototype = Object.create(FGravDraw.prototype);
 FGDraw.prototype.constructor = FGDraw;
 
+FGDraw.prototype.setColorScheme = function(colorSchemeImpl) {
+    colorScheme = colorSchemeImpl;
+};
 
 FGDraw.prototype.drawCanvas = function(_d) {
     _d = (typeof _d !== 'undefined') ? _d : document;
@@ -168,4 +171,17 @@ FGDraw.prototype.frameText = function(draw, text, widthToFit, fontSize) {
         return "";
     }
     return draw.textToFit(text, widthToFit, fontSize);
+};
+
+function FG_Color_Default() {
+    FG_Color.call(this);
+}
+
+FG_Color_Default.prototype = Object.create(FG_Color.prototype);
+FG_Color_Default.prototype.constructor = FG_Color_Default;
+
+FG_Color_Default.prototype.colorFor = function(f, r) {
+    r = (typeof r !== 'undefined') ? r : Math.random();
+    var colors = [ "red", "orange", "yellow" ];
+    return colorValueFor(colors[Math.floor(3 * r)], f.name);
 };

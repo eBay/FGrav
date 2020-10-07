@@ -87,7 +87,7 @@
     $(document).ready(function() {
         getOptions( "/collapsed/", itemEndsWith(".collapsed"), identity, prepend("/collapsed/"),
             ["#fgUrl", "#fcLeftUrl", "#fcRightUrl"]);
-        getOptions( "/js/color/", jsFiles("FG_Color_", "FG_Color_Diff.js"), optionKey("FG_Color_"), identity,
+        getOptions( "/js/color/", jsFiles("FG_Color_"), optionKey("FG_Color_"), identity,
             ["#fgColor", "#fcColor"]);
         getOptions( "/js/color/", jsFiles("FG_Color_"), optionKey("FG_Color_"), identity,
             ["#fdColor"]);
@@ -184,9 +184,9 @@
         }
     }
 
-    function jsFiles(prefix, exclude) {
+    function jsFiles(prefix) {
         return function (item) {
-            return item.startsWith(prefix) && !item.endsWith("Spec.js") && !item.endsWith("Default.js") && item !== exclude;
+            return item.startsWith(prefix) && !item.endsWith("Spec.js");
         }
     }
 
@@ -221,6 +221,7 @@
         <li><a href="#FG">FlameGraph</a></li>
         <li><a href="#FD">FlameGraph Diff</a></li>
         <li><a href="#FC">FlameGraph Compare</a></li>
+        <li><a href="/CG.svg?url=/events/test.json">Calendar View</a></li>
     </ul>
 </div>
 <p style="padding: 100px"></p>

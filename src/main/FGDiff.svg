@@ -44,13 +44,13 @@
 <script href="js/FGravResponse.js"/>
 <script href="js/FGravDraw.js"/>
 <script href="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"/>
+<script href="js/color/FG_Color.js"/>
 <script href="js/FGDraw.js"/>
 <script href="js/MergedFGDraw.js"/>
 <script href="js/FGStackFrames.js"/>
 <script href="js/Collapsed.js"/>
 <script href="js/MergedCollapsed.js"/>
 <script href="js/FG.js"/>
-<script href="js/color/FG_Color_Diff.js"/>
 <script type="text/ecmascript">
 <![CDATA[
 	"use strict";
