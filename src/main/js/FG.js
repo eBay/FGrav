@@ -112,9 +112,20 @@ FG.prototype.objectsToLoad = function() {
     }
     if (typeof this.frameFilterNames !== 'undefined') {
         $.each(this.frameFilterNames.split(",").map(function (n) {
-            return (n[0] === '/') ? n.substring(1) : "js/frame/FG_Filter_" + n + ".js"
+            var url;
+            var objName;
+            if (n[0] === '/') {
+                url = n.substring(1);
+                var nameIndex = n.lastIndexOf('/') + 1;
+                objName = n.substring(nameIndex, n.indexOf('.', nameIndex));
+            } else {
+                url = "js/frame/FG_Filter_" + n + ".js";
+                objName = "FG_Filter_" + n;
+
+            }
+            return new DynamicallyLoading(url, "frameFilter.filters.push(new "+ objName +"());");
         }), function () {
-            toLoad.push(new DynamicallyLoading(this));
+            toLoad.push(this);
         });
     }
     return toLoad;

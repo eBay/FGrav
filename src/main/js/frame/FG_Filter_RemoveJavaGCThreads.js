@@ -14,13 +14,14 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  **************************************************************************/
-frameFilter.filters.push(filterJavaGCThreads);
 
-function filterJavaGCThreads(frame) {
-    if (frame.includes('GangWorker::loop()')) {
+function FG_Filter_RemoveJavaGCThreads() {}
+
+FG_Filter_RemoveJavaGCThreads.prototype.filter = function(trace) {
+    if (trace.includes('GangWorker::loop()')) {
         return null;
     }
     else {
-        return frame;
+        return trace;
     }
-}
+};

@@ -29,7 +29,6 @@ module.exports = function(config) {
       'src/main/js/MergedCollapsed.js',
       'src/main/js/MergedFGDraw.js',
       'src/main/js/MultiFG.js',
-      'src/main/js/frame/FG_Filter_Default.js',
       'src/main/js/frame/FG_Filter_Java8.js',
       'src/main/js/frame/FG_Filter_RemoveJavaGCThreads.js',
       'src/main/js/frame/FG_Filter_RemoveThreadFrame.js',

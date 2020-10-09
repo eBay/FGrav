@@ -248,7 +248,7 @@ Just like the built-in filters, users can write their own filters in a JS file a
 Loading the filter JS file can be done by either:
 
 1. Use the pattern used for built-in functions (i.e. `js/frame/FG_Filter_${my_filter}.js`) then dynamically request the `FG*.svg` file with parameter `frameFilter=${my_filter}` (where `${my_filter}` is the name for your frame filter).
-1. Name your JS file to any name you want and request the `FG*.svg` file with parameter `frameFilter=/${my_filter}` (where `${my_filter}` is the name for your file) Note `/` at start of parameter value.
+1. Name your JS file to any name you want and request the `FG*.svg` file with parameter `frameFilter=/${my_filter_path}` (where `${my_filter_path}` is the path to your JS file with an object with the same name and a function `filter`) **Note `/` at start of parameter value**.
 
 ## Getting Started
 
