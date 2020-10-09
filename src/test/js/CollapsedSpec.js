@@ -6,7 +6,6 @@ describe("Collapsed", function() {
 
     beforeEach(function () {
         collapsed = new Collapsed();
-        frameFilter.reset();
     });
 
     describe("when parseCollapsed invoked ", function () {
