@@ -7,6 +7,8 @@ Because the FGrav visualizations are done dynamically within the browser, it off
 
 As shown in this project, FGrav also provides a basis to compare related data visually by easily extending or embedding the JS flamegraph implementation - See [FlameGraph comparison](#flamegraph-compare) and a [FlameGraph diff](#flamegraph-diff) views.  
 
+[![Build Status](https://travis-ci.org/eBay/FGrav.svg?branch=master)](https://travis-ci.org/eBay/FGrav)
+
 __Created By:__ [Amir Langer](https://github.com/langera/)
 
 __License:__ [Apache 2.0](LICENSE.txt)
