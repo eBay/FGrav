@@ -1,5 +1,16 @@
 {
+  "name": "fgrav",
+  "description": "Dynamic Flame Graph Visualizations",
+  "version": "0.0.1",
   "scripts": {
-    "test": "jasmine --config=src/test/support/jasmine.json"
+    "test": "karma start karma.conf.js --single-run",
+    "jasmine": "jasmine --config=src/test/support/jasmine.json"
+  },
+  "devDependencies": {
+    "jasmine-ajax": "^4.0.0",
+    "karma": "^5.2.3",
+    "karma-chrome-launcher": "^3.1.0",
+    "karma-cli": "^2.0.0",
+    "karma-jasmine": "^4.0.1"
   }
 }

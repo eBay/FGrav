@@ -6,7 +6,6 @@ describe("MergedCollapsed", function() {
 
     beforeEach(function () {
         collapsed = new MergedCollapsed(2);
-        frameFilter.reset();
     });
 
     describe("when parseCollapsed invoked ", function () {
