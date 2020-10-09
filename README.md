@@ -4,7 +4,7 @@
 
 Flamegraph visualizations and related tools implemented in Javascript. 
 
-This vanilla Javascript library is designed to **dynamically** create **[Flamegraph](https://github.com/brendangregg/FlameGraph)** and Flamegraph related visualizations in the browser from the **raw** [collapsed](./src/test/resources/collapsed/java.collapsed) file.
+This vanilla Javascript library is designed to **dynamically** create **[Flamegraph](https://github.com/brendangregg/FlameGraph)** and Flamegraph related visualizations in the browser from the **raw** [collapsed stack](./src/test/resources/collapsed/java.collapsed) file.
 
 Because the FGrav visualizations are done dynamically within the browser, it offers a lot more customization options and allows a user to create many interactive features unavailable with a conventional SVG file. 
 
