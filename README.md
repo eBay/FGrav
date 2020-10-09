@@ -145,15 +145,15 @@ We use the [core jasmine](https://github.com/jasmine/jasmine) library and its [j
 To run the Jasmine tests we use [karma](https://karma-runner.github.io/0.12/index.html) as our test runner with [HeadlessChrome](https://developers.google.com/web/updates/2017/06/headless-karma-mocha-chai#:~:text=Headless%20Chrome%20is%20a%20way,without%20the%20full%20browser%20UI.&text=Headless%20Chrome%20gives%20you%20a,a%20full%20version%20of%20Chrome.) as the browser.
 All config is found in:
 1. [package.json](package.json)
-2. [karma.conf.js](karma.conf.js)
+1. [karma.conf.js](karma.conf.js)
 
 
 To run tests from a fresh clone using npm package manager run: 
 
 1. `npm install`
-2. `npm i --save-dev karma karma-chrome-launcher karma-cli karma-jasmine jasmine-ajax`
-3. `$(npm bin)/karma init`  // follow instructions
-4. `npm test`
+1. `npm i --save-dev karma karma-chrome-launcher karma-cli karma-jasmine jasmine-ajax`
+1. `$(npm bin)/karma init`  // follow instructions
+1. `npm test`
 
 
 
@@ -163,19 +163,15 @@ To run tests from a fresh clone using npm package manager run:
 
 Unlike a static SVG which was created with a pre-determined color scheme, FGrav FlameGraphs SVG visualization is built to work in the browser and therefore we can control and modify the color scheme, and easily see the same data with a different scheme, which allows different "angles" on the data.
 
-color scheme is implemented as a function
+color scheme is implemented as an object with function
  
 `function colorFor(frame, totalSamples)`
 
 from a frame object and optional number of samples to a string that represent a color e.g.
 
-`red`
+`red`  or `"rgb(" + r + "," + g + "," + b + ")"`
 
-or
-
-`"rgb(" + r + "," + g + "," + b + ")"`
-
-utility function in FGravDraw.js
+A utility function in FGravDraw.js
 
 `function colorValueFor(palette, name, value)`
 
@@ -241,9 +237,8 @@ All FGrav SVG files accept a parameter `frameFilter` as a comma separated list o
 
 #### Built-in Frame Filters
 
-1. [Default](./src/main/js/frame/FG_Filter_Default.js) - default. No-op.
-1. [Java8](./src/main/js/frame/FG_Filter_Default.js) - Attempts to solve issue happening in Java 8+ when using `-XX:+UnlockDiagnosticVMOptions -XX:+ShowHiddenFrames` in Java. Without it you will not see lambdas as part of the stack trace, with those flags lambdas will show up as frames but it also assigns arbitrary numbers to lambdas which turn many occurrences of the same lambda code to show up in the stack trace as different frames. This frame filter will remove that arbitrary number causing the FlameGraph to show all those lambdas as the same frame. This is incredibly important in comparisons visualizations and aggregations.
-1. [RemoveJavaGCThreads](./src/main/js/frame/FG_Filter_Default.js) - Removes all code paths related to running of Java GC processes.
+1. [Java8](./src/main/js/frame/FG_Filter_Java8.js) - Attempts to solve issue happening in Java 8+ when using `-XX:+UnlockDiagnosticVMOptions -XX:+ShowHiddenFrames` in Java. Without it you will not see lambdas as part of the stack trace, with those flags lambdas will show up as frames but it also assigns arbitrary numbers to lambdas which turn many occurrences of the same lambda code to show up in the stack trace as different frames. This frame filter will remove that arbitrary number causing the FlameGraph to show all those lambdas as the same frame. This is incredibly important in comparisons visualizations and aggregations.
+1. [RemoveJavaGCThreads](./src/main/js/frame/FG_Filter_RemoveJavaGCThreads.js) - Removes all code paths related to running of Java GC processes.
 1. [RemoveThreadFrame](./src/main/js/frame/FG_Filter_RemoveThreadFrame.js) - Removes the thread frame (first frame of any code path) which will consolidate all common paths from different threads into the same flame.
 
 #### Custom Frame Filters
@@ -253,7 +248,7 @@ Just like the built-in filters, users can write their own filters in a JS file a
 Loading the filter JS file can be done by either:
 
 1. Use the pattern used for built-in functions (i.e. `js/frame/FG_Filter_${my_filter}.js`) then dynamically request the `FG*.svg` file with parameter `frameFilter=${my_filter}` (where `${my_filter}` is the name for your frame filter).
-2. Name your JS file to any name you want and request the `FG*.svg` file with parameter `frameFilter=/${my_filter}` (where `${my_filter}` is the name for your file) Note `/` at start of parameter value.
+1. Name your JS file to any name you want and request the `FG*.svg` file with parameter `frameFilter=/${my_filter_path}` (where `${my_filter_path}` is the path to your JS file with an object with the same name and a function `filter`) **Note `/` at start of parameter value**.
 
 ## Getting Started
 

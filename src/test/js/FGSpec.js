@@ -62,7 +62,7 @@ describe("FG", function() {
             expect(objs[0].getUrl()).toEqual("js/color/FG_Color_ColorScheme.js");
             expect(objs[0].appendInstallScript("")).toEqual("\ncolorScheme = new FG_Color_ColorScheme();");
             expect(objs[1].getUrl()).toEqual("js/frame/FG_Filter_FrameFilter.js");
-            expect(objs[1].appendInstallScript("")).toEqual("");
+            expect(objs[1].appendInstallScript("")).toEqual("\nframeFilter.filters.push(new FG_Filter_FrameFilter());");
 
         });
 
@@ -76,7 +76,7 @@ describe("FG", function() {
             expect(objs[0].getUrl()).toEqual("js/MyCustomColorScheme.js");
             expect(objs[0].appendInstallScript("")).toEqual("\ncolorScheme = new MyCustomColorScheme();");
             expect(objs[1].getUrl()).toEqual("js/fgrav/custom/MyFrameFilter.js");
-            expect(objs[1].appendInstallScript("")).toEqual("");
+            expect(objs[1].appendInstallScript("")).toEqual("\nframeFilter.filters.push(new MyFrameFilter());");
 
         });
 
@@ -90,11 +90,11 @@ describe("FG", function() {
             expect(objs[0].getUrl()).toEqual("js/color/FG_Color_ColorScheme.js");
             expect(objs[0].appendInstallScript("")).toEqual("\ncolorScheme = new FG_Color_ColorScheme();");
             expect(objs[1].getUrl()).toEqual("js/frame/FG_Filter_FrameFilter1.js");
-            expect(objs[1].appendInstallScript("")).toEqual("");
+            expect(objs[1].appendInstallScript("")).toEqual("\nframeFilter.filters.push(new FG_Filter_FrameFilter1());");
             expect(objs[2].getUrl()).toEqual("js/frame/FG_Filter_FrameFilter2.js");
-            expect(objs[2].appendInstallScript("")).toEqual("");
+            expect(objs[2].appendInstallScript("")).toEqual("\nframeFilter.filters.push(new FG_Filter_FrameFilter2());");
             expect(objs[3].getUrl()).toEqual("js/MyCustomFilter.js");
-            expect(objs[3].appendInstallScript("")).toEqual("");
+            expect(objs[3].appendInstallScript("")).toEqual("\nframeFilter.filters.push(new MyCustomFilter());");
 
         });
     });

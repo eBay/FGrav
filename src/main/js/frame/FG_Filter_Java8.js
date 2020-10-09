@@ -19,13 +19,12 @@
 // com.ebay.Foo$$Lambda$16/0x000000080009f040.accept(<Unknown>:1000008)
 // Number assigned when creating the lambda still stays (is it always right?)
 // com.ebay.Foo.lambda$main$0
-
 // sun/reflect/GeneratedMethodAccessor116.invoke
 // sun/reflect/GeneratedMethodAccessor119.invoke
 
-frameFilter.filters.push(filterJava8);
+function FG_Filter_Java8() {}
 
-function filterJava8(frame) {
-    return frame.replace(/\$\$Lambda\$(\d+)\/(\w+)\./g, "$$$Lambda$$1/_.").
+FG_Filter_Java8.prototype.filter = function(trace) {
+    return trace.replace(/\$\$Lambda\$(\d+)\/(\w+)\./g, "$$$Lambda$$1/_.").
                 replace(/sun\/reflect\/GeneratedMethodAccessor(\d+)\./g, "sun/reflect/GeneratedMethodAccessor_.");
-}
+};

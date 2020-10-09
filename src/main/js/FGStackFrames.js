@@ -34,7 +34,7 @@ FGStackFrames.prototype.loadCollapsed = function(fg, collapsedUrl, successCallba
             // var framesMap = {};
             var codePaths = data.split("\n");
             $.each(frameFilter.filters, function () {
-                codePaths = codePaths.map(this).filter(ignoreNull);
+                codePaths = codePaths.map(this.filter).filter(ignoreNull);
             });
             codePaths = codePaths.sort();
             collapsed.parseCollapsed(codePaths);
