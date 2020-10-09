@@ -1,4 +1,7 @@
 # FGrav
+
+[![Build Status](https://travis-ci.org/eBay/FGrav.svg?branch=master)](https://travis-ci.org/eBay/FGrav)
+
 Flamegraph visualizations and related tools implemented in Javascript. 
 
 This vanilla Javascript library is designed to **dynamically** create **[Flamegraph](https://github.com/brendangregg/FlameGraph)** and Flamegraph related visualizations in the browser from the **raw** [collapsed](./src/test/resources/collapsed/java.collapsed) file.
@@ -6,8 +9,6 @@ This vanilla Javascript library is designed to **dynamically** create **[Flamegr
 Because the FGrav visualizations are done dynamically within the browser, it offers a lot more customization options and allows a user to create many interactive features unavailable with a conventional SVG file. 
 
 As shown in this project, FGrav also provides a basis to compare related data visually by easily extending or embedding the JS flamegraph implementation - See [FlameGraph comparison](#flamegraph-compare) and a [FlameGraph diff](#flamegraph-diff) views.  
-
-[![Build Status](https://travis-ci.org/eBay/FGrav.svg?branch=master)](https://travis-ci.org/eBay/FGrav)
 
 __Created By:__ [Amir Langer](https://github.com/langera/)
 
