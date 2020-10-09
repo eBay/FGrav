@@ -20,6 +20,7 @@ __Thanks:__
   * Dependencies: 
     * [JQuery](https://jquery.com/)
     * (Test code only) [Jasmine](https://jasmine.github.io/)
+    * (Test code only) [Jasmine-Ajax](https://github.com/jasmine/jasmine-ajax)
 
 __Visualizations:__
   * [FlameGraph](#flamegraph)
@@ -132,17 +133,28 @@ This view can be used to show previously captured FlameGraphs for a specific pro
 
 ## Test
 
+[![Build Status](https://travis-ci.org/eBay/FGrav.svg?branch=master)](https://travis-ci.org/eBay/FGrav)
+
+github repo is tested using TravisCI.
+
 All logic is tested using [Jasmine](https://jasmine.github.io/).
+
 We use the [core jasmine](https://github.com/jasmine/jasmine) library and its [jasmine-ajax](https://github.com/jasmine/jasmine-ajax) extension.
 
-To run tests: 
+To run the Jasmine tests we use [karma](https://karma-runner.github.io/0.12/index.html) as our test runner with [HeadlessChrome](https://developers.google.com/web/updates/2017/06/headless-karma-mocha-chai#:~:text=Headless%20Chrome%20is%20a%20way,without%20the%20full%20browser%20UI.&text=Headless%20Chrome%20gives%20you%20a,a%20full%20version%20of%20Chrome.) as the browser.
+All config is found in:
+1. [package.json](package.json)
+2. [karma.conf.js](karma.conf.js)
 
-1. Install jasmine and jasmine-ajax js files locally under the lib directory. see [here](lib/README.md) for details. 
-2. Load your local copy of [SpecRunner.html](./src/test/resources/SpecRunner.html) in your browser of choice.
 
-For example:
+To run tests from a fresh clone using npm package manager run: 
 
-![Test run](img/test.png "Test run")
+1. `npm install`
+2. `npm i --save-dev karma karma-chrome-launcher karma-cli karma-jasmine jasmine-ajax`
+3. `$(npm bin)/karma init`  // follow instructions
+4. `npm test`
+
+
 
 ## Features
 
