@@ -14,8 +14,8 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  **************************************************************************/
-function CG(_loc) {
-    FGrav.call(this, 724, 150, 24, 12, "Activity", _loc);
+function CG(_w) {
+    FGrav.call(this, 724, 150, 24, 12, "Activity", _w);
 }
 
 CG.prototype = Object.create(FGrav.prototype);
@@ -44,7 +44,8 @@ CG.prototype.c = function() {			// clear
     this.details.nodeValue = ' ';
 };
 
-CG.prototype.fg = function(url) {
-    window.open(url);
+CG.prototype.fg = function(url, _w) {
+    _w = (typeof _w !== 'undefined') ? _w : window;
+    _w.open(url);
 };
 

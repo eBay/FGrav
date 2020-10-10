@@ -46,6 +46,7 @@ module.exports = function(config) {
       'src/test/js/FGDrawSpec.js',
       'src/test/js/MergedFGDrawSpec.js',
       'src/test/js/FGSpec.js',
+      'src/test/js/MultiFGSpec.js',
       'src/test/js/color/FG_Color_JavaSpec.js',
       'src/test/js/frame/FG_Filter_Java8Spec.js',
       'src/test/js/frame/FG_Filter_RemoveJavaGCThreadsSpec.js',
@@ -53,6 +54,7 @@ module.exports = function(config) {
       'src/test/js/FGravSpec.js',
       'src/test/js/FGravDrawSpec.js',
       'src/test/js/FGStackFramesSpec.js',
+      'src/test/js/CGSpec.js',
       'src/test/js/CGEventsSpec.js'
     ],
 
@@ -65,13 +67,23 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
+          // source files, that you wanna generate coverage for
+          // do not include tests or libraries
+          // (these files will be instrumented by Istanbul)
+        'src/main/**/*.js': ['coverage']
+    },
+
+      // optionally, configure the reporter
+    coverageReporter: {
+        type : 'html',
+        dir : 'coverage/'
     },
 
 
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['progress'],
+    reporters: ['progress', 'coverage'],
 
 
     // web server port

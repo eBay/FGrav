@@ -6,7 +6,6 @@ describe("FGStackFrames", function() {
 
     beforeEach(function () {
         stackFrames = new FGStackFrames();
-        frameFilter.reset();
     });
 
 
@@ -33,14 +32,21 @@ describe("FGStackFrames", function() {
 
         afterEach(function() {
             jasmine.Ajax.uninstall();
+            frameFilter.reset();
         });
 
         it("should load collapsed file", function () {
-            stackFrames.loadCollapsed(new FG(), "test.collapsed");
+            var fg = new FG();
+            fg.margin = 12;
+            fg.frameHeight = 7;
+            stackFrames.loadCollapsed(fg, "test.collapsed");
 
             var request = jasmine.Ajax.requests.mostRecent();
             expect(request.url).toBe("test.collapsed");
             expect(request.method).toBe('GET');
+
+            var expectedOneSampleWidth = parseFloat(((fg.width - 24) / 6).toFixed());
+            var expectedLastLevelHeight = fg.height - 12 - (7 * (3 + 2));
 
             expect(stackFrames.stackFrameRows.length).toEqual(3);
             expect(stackFrames.stackFrameRows[0].map(extractName)).toEqual(['a']);
@@ -49,16 +55,47 @@ describe("FGStackFrames", function() {
             expect(stackFrames.stackFrameRows[1].map(extractSamples)).toEqual([3, 3]);
             expect(stackFrames.stackFrameRows[2].map(extractName)).toEqual(['c', 'd', 'd']);
             expect(stackFrames.stackFrameRows[2].map(extractSamples)).toEqual([1, 2, 3]);
+            expect(stackFrames.stackFrameRows[2].map(function (v) { return v.x(); })).toEqual([12, 12 + expectedOneSampleWidth, 12 + expectedOneSampleWidth * 3]);
+            expect(stackFrames.stackFrameRows[2].map(function (v) { return v.y(); })).toEqual([expectedLastLevelHeight, expectedLastLevelHeight, expectedLastLevelHeight]);
+            expect(stackFrames.stackFrameRows[2].map(function (v) { return v.w(); })).toEqual([expectedOneSampleWidth, expectedOneSampleWidth * 2, expectedOneSampleWidth * 3]);
         });
 
         it("should generate all frame with total samples as its samples count", function () {
             var fg = new FG();
+            fg.margin = 12;
+            fg.frameHeight = 7;
+
             stackFrames.loadCollapsed(fg, "test.collapsed");
             var all = stackFrames.allFrame(fg);
 
             expect(all.name).toEqual("all");
             expect(all.samples).toEqual(6);
+            expect(all.w()).toEqual(fg.width - 24);
+            expect(all.x()).toEqual(12);
+            expect(all.y()).toEqual(fg.height - 12 - 14);
 
+        });
+
+        it("should filter frames according to provided filters", function () {
+            frameFilter.filters.push({
+                filter: function (path) {
+                    return (path.includes("x")) ? null : path;
+                }
+            });
+
+            stackFrames.loadCollapsed(new FG(), "test.collapsed");
+
+            var request = jasmine.Ajax.requests.mostRecent();
+            expect(request.url).toBe("test.collapsed");
+            expect(request.method).toBe('GET');
+
+            expect(stackFrames.stackFrameRows.length).toEqual(3);
+            expect(stackFrames.stackFrameRows[0].map(extractName)).toEqual(['a']);
+            expect(stackFrames.stackFrameRows[0].map(extractSamples)).toEqual([3]);
+            expect(stackFrames.stackFrameRows[1].map(extractName)).toEqual(['b']);
+            expect(stackFrames.stackFrameRows[1].map(extractSamples)).toEqual([3]);
+            expect(stackFrames.stackFrameRows[2].map(extractName)).toEqual(['c', 'd']);
+            expect(stackFrames.stackFrameRows[2].map(extractSamples)).toEqual([1, 2]);
         });
     });
 
@@ -93,10 +130,12 @@ describe("FGStackFrames", function() {
                     "a;b;c;d;e;f;g;h;i;j;k;l;m;n;o;p;q;r;s;t;u;v;w;x;y;z 100\n"
             });
             colorScheme.legend = {};
+            frameFilter.reset();
         });
 
         afterEach(function() {
             colorScheme.legend = {};
+            frameFilter.reset();
             jasmine.Ajax.uninstall();
         });
 

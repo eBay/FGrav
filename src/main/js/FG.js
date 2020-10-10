@@ -14,9 +14,9 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  **************************************************************************/
-function FG(id, shiftWidth, defaultTitle, _loc) {
+function FG(id, shiftWidth, defaultTitle, _w) {
     defaultTitle = (typeof defaultTitle !== 'undefined') ? defaultTitle : "Flame Graph";
-    FGrav.call(this, 1200, 2200, 24, 12, defaultTitle, _loc);
+    FGrav.call(this, 1200, 2200, 24, 12, defaultTitle, _w);
     this.id = id;
     this.minWidth = 450;
     this.minHeight = 150;

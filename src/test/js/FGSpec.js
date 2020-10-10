@@ -1,12 +1,25 @@
 describe("FG", function() {
 
-    var loc;
     var fg;
+    var w;
     var g;
     var textNode;
 
     beforeEach(function () {
-        fg = new FG(undefined, 2, "TITLE", loc);
+        w = {
+            events: [],
+            addEventListener: function (name, eventListener) {
+                this.events.push(name);
+            },
+            location: {},
+            document: {
+                getElementsByTagName: function () {
+                    return [ {} ];
+                },
+                getElementById: function (id) {}
+            }
+        };
+        fg = new FG(undefined, 2, "TITLE", w);
         fg.details = {};
         fg.tooltip = {
 
@@ -43,13 +56,80 @@ describe("FG", function() {
         g = {
             querySelectorAll: function (selector) {
                 return (selector === "text") ? [ textNode ] : [];
-            }
+            },
+            parentElement: { id: "frames", parentElement: undefined }
         };
     });
 
     afterEach(function () {
         colorScheme.legend = {};
     });
+
+    describe('buttons', function () {
+
+        beforeEach(function () {
+            fg.legendEl = domElement();
+            fg.ignorecaseBtn = domElement();
+
+            fg.svg = { // disable search
+                querySelectorAll: function (selector) {
+                    return [];
+                }
+            }
+        });
+
+        it('should toggle legend on', function () {
+            fg.legend = false;
+            fg.legendEl.classList.add("hide");
+
+            fg.toggle_legend();
+
+            expect(fg.legendEl.classList.class.length).toEqual(0);
+            expect(fg.legend).toBe(true);
+        });
+
+
+        it('should toggle legend off', function () {
+            fg.legend = true;
+
+            fg.toggle_legend();
+
+            expect(fg.legendEl.classList.class[0]).toEqual("hide");
+            expect(fg.legend).toBe(false);
+        });
+
+        it('should toggle ignoreCase on', function () {
+            fg.ignorecase = false;
+
+            fg.toggle_ignorecase();
+
+            expect(fg.ignorecaseBtn.classList.class[0]).toEqual("show");
+            expect(fg.ignorecase).toBe(true);
+        });
+
+        it('should toggle ignoreCase off', function () {
+            fg.ignorecase = true;
+            fg.ignorecaseBtn.classList.add("show");
+
+            fg.toggle_ignorecase();
+
+            expect(fg.ignorecaseBtn.classList.class.length).toEqual(0);
+            expect(fg.ignorecase).toBe(false);
+        });
+    });
+
+    it('should add window listener', function () {
+
+        fg.setup(w);
+
+        expect(w.events.length).toBe(5);
+        expect(w.events[0]).toBe("click");
+        expect(w.events[1]).toBe("mouseover");
+        expect(w.events[2]).toBe("mouseout");
+        expect(w.events[3]).toBe("keydown");
+        expect(w.events[4]).toBe("keydown");
+    });
+
 
     describe("when loading", function() {
        it("should generate DynamicallyLoading objects from names", function () {
@@ -143,6 +223,11 @@ describe("FG", function() {
            fg.clearDetails(g);
             expect(fg.details.nodeValue).toEqual(" ");
             expect(fg.tooltip.getAttribute("visibility")).toEqual("hidden");
+        });
+
+        it("should find group below frames container element", function () {
+            var group = fg.find_group({ parentElement: g});
+            expect(group).toEqual(g);
         });
     });
 
@@ -333,7 +418,8 @@ describe("FG", function() {
                 remove: function (c) {
                     this.class = this.class.filter(function(e) { return e !== c });
                 }
-            }
+            },
+            firstChild: {}
         };
     }
 
