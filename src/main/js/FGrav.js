@@ -53,6 +53,7 @@ FGrav.prototype.loadDynamicJs = function(toLoad, successCallback, errorCallback)
             dataType: 'text',
             success: function(data) {
                 jsSrc[i] = l.appendInstallScript(data);
+                console.log("load " + l.getUrl());
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 response.addError(errorThrown, textStatus);

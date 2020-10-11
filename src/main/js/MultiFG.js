@@ -162,7 +162,7 @@ MultiFG.prototype.unzoom = function() {
         fg.unzoom(multiFG);
     });
 };
-FG.prototype.search_prompt = function() {
+MultiFG.prototype.search_prompt = function() {
     if (!this.searching) {
         var term = prompt("Enter a search term (regexp " +
             "allowed, eg: ^ext4_)"
