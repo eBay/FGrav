@@ -19,8 +19,8 @@
  * Represents multiple FGs that can be operated on at the same time.
  */
 
-function MultiFG(_loc) {
-    FG.call(this, "multi", 0, "Flame Graph Diff", _loc);
+function MultiFG(_w, _prompt) {
+    FG.call(this, "multi", 0, "Flame Graph Diff", _w, _prompt);
     this.fgs = {};
 }
 MultiFG.prototype = Object.create(FG.prototype);
@@ -164,10 +164,7 @@ MultiFG.prototype.unzoom = function() {
 };
 MultiFG.prototype.search_prompt = function() {
     if (!this.searching) {
-        var term = prompt("Enter a search term (regexp " +
-            "allowed, eg: ^ext4_)"
-            + (this.ignorecase ? ", ignoring case" : "")
-            + "\nPress Ctrl-i to toggle case sensitivity", "");
+        var term = this.searchTermPromptFunction.call(this.ignorecase);
         if (term != null) {
             this.currentSearchTerm = term;
             var multiFG = this;
