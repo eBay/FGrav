@@ -173,7 +173,7 @@ MultiFG.prototype.search_prompt = function() {
             });
         }
     } else {
-        this.searching = 0;
+        this.searching = false;
         this.currentSearchTerm = null;
         this.searchbtn.classList.remove("show");
         this.searchbtn.firstChild.nodeValue = "Search";
