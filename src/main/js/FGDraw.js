@@ -25,7 +25,7 @@ FGDraw.prototype = Object.create(FGravDraw.prototype);
 FGDraw.prototype.constructor = FGDraw;
 
 FGDraw.prototype.setDefaultColorScheme = function(colorSchemeImpl) {
-    if (!colorScheme) {
+    if (!colorScheme || colorScheme.constructor.name === "FG_Color_Default") {
         colorScheme = colorSchemeImpl;
     }
 };

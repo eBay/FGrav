@@ -6,13 +6,15 @@ describe("FGravDraw", function() {
 
     beforeEach(function () {
         t = new FGravDraw(new FGrav(1, 2, 3, 4, "TITLE"));
-        colorScheme.legend = {};
-        colorScheme.colorFor = undefined;
+        colorScheme = {
+            legend: {}
+        };
     });
 
     afterEach(function () {
-        colorScheme.legend = {};
-        colorScheme.colorFor = undefined;
+        colorScheme = {
+            legend: {}
+        };
     });
 
     describe("when colorValueFor invoked", function () {

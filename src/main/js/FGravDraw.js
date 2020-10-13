@@ -22,7 +22,7 @@ function FGravDraw(fgrav) {
 
 // accessed from eval (yes, I know, see FGrav.js loadDynamicJs())
 // and therefore global to allow dynamic loading
-var colorScheme = {};
+var colorScheme;
 
 function escText(text) {
     text = text.replace(/&/g, "&amp;");
