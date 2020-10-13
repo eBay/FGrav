@@ -14,7 +14,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  **************************************************************************/
-function FG(id, shiftWidth, defaultTitle, _w) {
+function FG(id, shiftWidth, defaultTitle, _w, _prompt) {
     defaultTitle = (typeof defaultTitle !== 'undefined') ? defaultTitle : "Flame Graph";
     FGrav.call(this, 1200, 2200, 24, 12, defaultTitle, _w);
     this.id = id;
@@ -28,12 +28,19 @@ function FG(id, shiftWidth, defaultTitle, _w) {
     this.minDisplaySample = 1;
     this.textPadding = 10.5;
     this.freezeDimensions = false;
-    this.searching = 0;
+    this.searching = false;
     this.ignorecase = 0;
     this.legend = 0;
     this.currentSearchTerm = null;
     this.frameFilterNames = this.getParameter("frameFilter", undefined);
     this.colorSchemeName = this.getParameter("color", undefined);
+    this.searchTermPromptFunction = (typeof _prompt !== "undefined") ? _prompt :
+        function(ic) {
+          return prompt("Enter a search term (regexp " +
+            "allowed, eg: ^ext4_)"
+            + (ic ? ", ignoring case" : "")
+            + "\nPress Ctrl-i to toggle case sensitivity", "");
+    }
 }
 
 FG.prototype = Object.create(FGrav.prototype);
@@ -434,19 +441,17 @@ FG.prototype.reset_search = function() {
         orig_load(el[i], "fill")
     }
 };
+
 FG.prototype.search_prompt = function() {
     if (!this.searching) {
-        var term = prompt("Enter a search term (regexp " +
-                "allowed, eg: ^ext4_)"
-			    + (this.ignorecase ? ", ignoring case" : "")
-			    + "\nPress Ctrl-i to toggle case sensitivity", "");
+        var term = this.searchTermPromptFunction.call(this.ignorecase);
         if (term != null) {
             this.currentSearchTerm = term;
             this.search();
         }
     } else {
         this.reset_search();
-        this.searching = 0;
+        this.searching = false;
         this.currentSearchTerm = null;
         this.searchbtn.classList.remove("show");
         this.searchbtn.firstChild.nodeValue = "Search";
@@ -494,7 +499,7 @@ FG.prototype.search = function(topFG) {
                     matches[x] = w;
                 }
             }
-            topFG.searching = 1;
+            topFG.searching = true;
         }
     }
 

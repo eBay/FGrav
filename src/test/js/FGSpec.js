@@ -1,12 +1,14 @@
 describe("FG", function() {
 
     var fg;
-    var w;
+    var myWindow;
+    var myPrompt;
+    var searchTerm;
     var g;
     var textNode;
 
     beforeEach(function () {
-        w = {
+        myWindow = {
             events: [],
             addEventListener: function (name, eventListener) {
                 this.events.push(name);
@@ -19,7 +21,10 @@ describe("FG", function() {
                 getElementById: function (id) {}
             }
         };
-        fg = new FG(undefined, 2, "TITLE", w);
+        myPrompt = function () {
+            return searchTerm;
+        };
+        fg = new FG(undefined, 2, "TITLE", myWindow, myPrompt);
         fg.details = {};
         fg.tooltip = {
 
@@ -65,11 +70,13 @@ describe("FG", function() {
         colorScheme.legend = {};
     });
 
-    describe('buttons', function () {
+    describe('interactivity', function () {
 
         beforeEach(function () {
             fg.legendEl = domElement();
             fg.ignorecaseBtn = domElement();
+            fg.searchbtn = domElement();
+            fg.matchedtxt = domElement();
 
             fg.svg = { // disable search
                 querySelectorAll: function (selector) {
@@ -116,18 +123,58 @@ describe("FG", function() {
             expect(fg.ignorecaseBtn.classList.class.length).toEqual(0);
             expect(fg.ignorecase).toBe(false);
         });
+
+        it('should toggle search off', function () {
+            fg.searching = true;
+            fg.currentSearchTerm = 'search-me';
+            fg.searchbtn.classList.add("show");
+
+            fg.search_prompt();
+
+            expect(fg.searchbtn.classList.class.length).toEqual(0);
+            expect(fg.searching).toBe(false);
+            expect(fg.currentSearchTerm).toBe(null);
+            expect(fg.matchedtxt.classList.class[0]).toBe("hide");
+            expect(fg.matchedtxt.firstChild.nodeValue).toBe("");
+        });
+
+        it('should return nothing and allow more searches if nothing was found ', function () {
+            fg.searching = false;
+            searchTerm = "search-this";
+            fg.svg = frames([]);
+
+            fg.search_prompt();
+
+            expect(fg.searchbtn.classList.class.length).toEqual(0);
+            expect(fg.searching).toBe(false);
+        });
+
+        it('should toggle search on', function () {
+            fg.searching = false;
+            searchTerm = "search-this";
+            var frameToFind = frame(searchTerm, "red");
+            fg.svg = frames([frameToFind]);
+
+            fg.search_prompt();
+
+            expect(fg.searchbtn.classList.class[0]).toEqual("show");
+            expect(fg.searching).toBe(true);
+            expect(fg.currentSearchTerm).toBe("search-this");
+            expect(fg.matchedtxt.classList.class.length).toBe(0);
+            expect(frameToFind.rect.attributes.fill.value).toBe("rgb(230,0,230)"); // highlighted in purple
+        });
     });
 
     it('should add window listener', function () {
 
-        fg.setup(w);
+        fg.setup(myWindow);
 
-        expect(w.events.length).toBe(5);
-        expect(w.events[0]).toBe("click");
-        expect(w.events[1]).toBe("mouseover");
-        expect(w.events[2]).toBe("mouseout");
-        expect(w.events[3]).toBe("keydown");
-        expect(w.events[4]).toBe("keydown");
+        expect(myWindow.events.length).toBe(5);
+        expect(myWindow.events[0]).toBe("click");
+        expect(myWindow.events[1]).toBe("mouseover");
+        expect(myWindow.events[2]).toBe("mouseout");
+        expect(myWindow.events[3]).toBe("keydown");
+        expect(myWindow.events[4]).toBe("keydown");
     });
 
 
@@ -268,15 +315,8 @@ describe("FG", function() {
             a = domGroupElement();
             b = domGroupElement();
             c = domGroupElement();
-            children = [];
 
-            fg.svg = {
-                getElementById: function (id) {
-                    return {
-                        children: children
-                    }
-                }
-            };
+            fg.svg = frames([]);
 
             fg.unzoombtn = domElement();
         });
@@ -288,6 +328,7 @@ describe("FG", function() {
 
         it("unzoom should remove parent and hide class", function() {
             children = [a, b, c];
+            fg.svg = frames(children);
             children.forEach(function (el) {
                 el.classList.add('hide');
                 el.classList.add('parent');
@@ -310,6 +351,7 @@ describe("FG", function() {
         it("zoom should add parent class to parent of pressed node", function() {
             var g = domGroupElement();
             children = [g, a];
+            fg.svg = frames(children);
             children.forEach(function (el, i) {
                 el.rect.setAttributes("width", "17", "x", "19", "y", "23" + i);
                 el.text.setAttributes("name", "name"+i, "x", "19", "y", "23"+i);
@@ -323,6 +365,7 @@ describe("FG", function() {
         it("zoom should add hide class to non related node", function() {
             var g = domGroupElement();
             children = [g, a];
+            fg.svg = frames(children);
             children.forEach(function (el, i) {
                 el.rect.setAttributes("width", "17", "x", "19"+(i*10), "y", "23");
                 el.text.setAttributes("name", "name"+i, "x", "19"+(i*10), "y", "23");
@@ -396,6 +439,25 @@ describe("FG", function() {
         });
     });
 
+    function frame(frameText, color) {
+        var el = domGroupElement();
+        el.text.setAttribute("name", frameText);
+        el.rect.setAttribute("width", "17");
+        el.rect.setAttribute("x", "19");
+        el.rect.setAttribute("fill", color);
+        return el;
+    }
+
+    function frames(framesArray) {
+        return {
+            getElementById: function (id) {
+                return {
+                    children: framesArray
+                }
+            }
+        };
+    }
+
     function domElement() {
         return {
             attributes: {},
@@ -419,7 +481,11 @@ describe("FG", function() {
                     this.class = this.class.filter(function(e) { return e !== c });
                 }
             },
-            firstChild: {}
+            firstChild: {},
+            querySelectorAll: function (selector) {},
+            getSubStringLength: function (start, end) {
+                return 17;
+            }
         };
     }
 
@@ -437,6 +503,7 @@ describe("FG", function() {
 
             return [];
         };
+        el.childNodes = [ el.rect, el.text ];
         return el;
     }
 
