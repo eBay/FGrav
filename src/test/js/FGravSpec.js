@@ -35,13 +35,15 @@ describe("FGrav", function() {
                     "}"
             });
             frameFilter.reset();
-            colorScheme.legend = {};
-            colorScheme.colorFor = undefined;
+            colorScheme = {
+                legend: {}
+            };
         });
 
         afterEach(function () {
-            colorScheme.legend = {};
-            colorScheme.colorFor = undefined;
+            colorScheme = {
+                legend: {}
+            };
             jasmine.Ajax.uninstall();
         });
 

@@ -36,7 +36,9 @@ describe("FG", function() {
                 return this.attr.get(k);
             }
         };
-        colorScheme.legend = {};
+        colorScheme = {
+            legend: {}
+        };
 
         textNode = {
             attributes: {
@@ -67,7 +69,9 @@ describe("FG", function() {
     });
 
     afterEach(function () {
-        colorScheme.legend = {};
+        colorScheme = {
+            legend: {}
+        };
     });
 
     describe('interactivity', function () {
