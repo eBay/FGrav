@@ -20,7 +20,7 @@
  */
 
 function MultiFG(_w, _prompt) {
-    FG.call(this, "multi", 0, "Flame Graph Diff", _w, _prompt);
+    FG.call(this, "multi", 0, "Flame Graph Diff", 650, _w, _prompt);
     this.fgs = {};
 }
 MultiFG.prototype = Object.create(FG.prototype);

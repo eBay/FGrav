@@ -14,11 +14,11 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  **************************************************************************/
-function FG(id, shiftWidth, defaultTitle, _w, _prompt) {
+function FG(id, shiftWidth, defaultTitle, minWidth, _w, _prompt) {
     defaultTitle = (typeof defaultTitle !== 'undefined') ? defaultTitle : "Flame Graph";
     FGrav.call(this, 1200, 2200, 24, 12, defaultTitle, _w);
     this.id = id;
-    this.minWidth = 450;
+    this.minWidth = (typeof minWidth !== "undefined") ? minWidth : 600;
     this.minHeight = 150;
     this.shiftWidth = (typeof shiftWidth !== 'undefined') ? shiftWidth : 0;
     this.shiftHeight = 0;
@@ -417,8 +417,10 @@ FG.prototype.toggle_legend = function() {
     if (this.legendEl) {
         this.legend = !this.legend;
         if (this.legend) {
+            this.legendBtn.classList.add("show");
             this.legendEl.classList.remove("hide");
         } else {
+            this.legendBtn.classList.remove("show");
             this.legendEl.classList.add("hide");
         }
     }

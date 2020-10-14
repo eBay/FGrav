@@ -55,7 +55,7 @@
 <![CDATA[
 	"use strict";
 
-	var fg = new FG(undefined, undefined, "Differential Flame Graph").setup();
+	var fg = new FG(undefined, undefined, "Differential Flame Graph", 700).setup();
 	var collapsed = new MergedCollapsed(2);
 	var draw = new MergedFGDraw(fg, collapsed, true);
 	var url = fg.getRequiredParameter("url");

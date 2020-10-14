@@ -33,12 +33,16 @@ FGDraw.prototype.setDefaultColorScheme = function(colorSchemeImpl) {
 FGDraw.prototype.drawCanvas = function(_d) {
     _d = (typeof _d !== 'undefined') ? _d : document;
 
+    this.svg.setAttribute("width", this.fg.width);
+    this.svg.setAttribute("height", this.fg.height);
+    this.svg.setAttribute("viewBox", "0 0 " + this.fg.width + " " + this.fg.height);
     var background = this.rect(0.0, 0, this.fg.width, this.fg.height, "url(#background)");
     var title = this.text(this.fg.title, "title", this.fg.width / 2, this.buttonsMargin, Math.round(this.fg.fontSize * 1.4), "middle");
 
     var unzoom = this.text("Reset Zoom", "unzoom", this.buttonsMargin, this.buttonsMargin);
     unzoom.classList.add("hide");
     var legend = this.text("Legend", "legendBtn", this.buttonsMargin + 90, this.buttonsMargin);
+    // var overlay = this.text("Overlay", "overlayBtn", this.buttonsMargin + 90 + 60, this.buttonsMargin);
 
     var ignorecase = this.text("IC", "ignorecase", this.fg.width - this.buttonsMargin - 12, this.buttonsMargin);
     var search = this.text("Search", "search", this.fg.width - this.buttonsMargin - 12 - 90, this.buttonsMargin);
@@ -46,18 +50,17 @@ FGDraw.prototype.drawCanvas = function(_d) {
     this.svg.appendChild(background);
     this.svg.appendChild(title);
     this.svg.appendChild(unzoom);
+    // this.svg.appendChild(overlay);
     this.svg.appendChild(search);
     this.svg.appendChild(ignorecase);
-
-    this.svg.setAttribute("width", this.fg.width);
-    this.svg.setAttribute("height", this.fg.height);
-    this.svg.setAttribute("viewBox", "0 0 " + this.fg.width + " " + this.fg.height);
 
     this.drawLegend(legend, _d);
 
     this.fg.searchbtn = _d.getElementById("search");
     this.fg.ignorecaseBtn = _d.getElementById("ignorecase");
     this.fg.unzoombtn = _d.getElementById("unzoom");
+    this.fg.legendBtn = _d.getElementById("legendBtn");
+    // this.fg.overlayBtn = _d.getElementById("overlayBtn");
 
     _d.styleSheets[0].insertRule("text { font-family:Verdana; font-size:"+ this.fg.fontSize +"px; fill:rgb(0,0,0); }", 0);
 };
