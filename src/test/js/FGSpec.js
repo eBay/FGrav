@@ -24,7 +24,7 @@ describe("FG", function() {
         myPrompt = function () {
             return searchTerm;
         };
-        fg = new FG(undefined, 2, "TITLE", myWindow, myPrompt);
+        fg = new FG(undefined, 2, "TITLE", 600, myWindow, myPrompt);
         fg.details = {};
         fg.tooltip = {
 
@@ -78,9 +78,12 @@ describe("FG", function() {
 
         beforeEach(function () {
             fg.legendEl = domElement();
+            fg.overlayEl = domElement();
             fg.ignorecaseBtn = domElement();
             fg.searchbtn = domElement();
             fg.matchedtxt = domElement();
+            fg.legendBtn = domElement();
+            fg.overlayBtn = domElement();
 
             fg.svg = { // disable search
                 querySelectorAll: function (selector) {
@@ -95,6 +98,7 @@ describe("FG", function() {
 
             fg.toggle_legend();
 
+            expect(fg.legendBtn.classList.class[0]).toEqual("show");
             expect(fg.legendEl.classList.class.length).toEqual(0);
             expect(fg.legend).toBe(true);
         });
@@ -102,12 +106,39 @@ describe("FG", function() {
 
         it('should toggle legend off', function () {
             fg.legend = true;
+            fg.legendBtn.classList.add("show");
 
             fg.toggle_legend();
 
             expect(fg.legendEl.classList.class[0]).toEqual("hide");
+            expect(fg.legendBtn.classList.class.length).toEqual(0);
             expect(fg.legend).toBe(false);
         });
+
+        it('should toggle overlay on', function () {
+            fg.overlay = false;
+            fg.overlayEl.classList.add("hide");
+
+            fg.toggle_overlay();
+
+            expect(fg.overlayBtn.classList.class[0]).toEqual("show");
+            expect(fg.overlayEl.classList.class.length).toEqual(0);
+            expect(fg.overlay).toBe(true);
+        });
+
+
+        it('should toggle overlay off', function () {
+            fg.overlay = true;
+            fg.overlayBtn.classList.add("show");
+
+            fg.toggle_overlay();
+
+            expect(fg.overlayEl.classList.class[0]).toEqual("hide");
+            expect(fg.overlayBtn.classList.class.length).toEqual(0);
+            expect(fg.overlay).toBe(false);
+        });
+
+
 
         it('should toggle ignoreCase on', function () {
             fg.ignorecase = false;
@@ -183,6 +214,28 @@ describe("FG", function() {
 
 
     describe("when loading", function() {
+
+       it("should generate DynamicallyLoading object for external url", function () {
+
+            var obj = fg.generateDynamicallyLoadingObject("/js/MyObject.js", undefined, function (name) {
+                return name;
+            });
+
+           expect(obj.getUrl()).toEqual("/js/MyObject.js");
+           expect(obj.appendInstallScript("")).toEqual("\nMyObject");
+
+       });
+
+        it("should generate DynamicallyLoading object for internal url", function () {
+
+            var obj = fg.generateDynamicallyLoadingObject("MyObject",
+                "js/convention/",
+                function (n) { return n;});
+
+            expect(obj.getUrl()).toEqual("js/convention/MyObject.js");
+            expect(obj.appendInstallScript("")).toEqual("\nMyObject");
+        });
+
        it("should generate DynamicallyLoading objects from names", function () {
             fg.colorSchemeName = "ColorScheme";
             fg.frameFilterNames = "FrameFilter";
@@ -204,9 +257,9 @@ describe("FG", function() {
             var objs = fg.objectsToLoad();
 
             expect(objs.length).toBe(2);
-            expect(objs[0].getUrl()).toEqual("js/MyCustomColorScheme.js");
+            expect(objs[0].getUrl()).toEqual("/js/MyCustomColorScheme.js");
             expect(objs[0].appendInstallScript("")).toEqual("\ncolorScheme = new MyCustomColorScheme();");
-            expect(objs[1].getUrl()).toEqual("js/fgrav/custom/MyFrameFilter.js");
+            expect(objs[1].getUrl()).toEqual("/js/fgrav/custom/MyFrameFilter.js");
             expect(objs[1].appendInstallScript("")).toEqual("\nframeFilter.filters.push(new MyFrameFilter());");
 
         });
@@ -224,9 +277,56 @@ describe("FG", function() {
             expect(objs[1].appendInstallScript("")).toEqual("\nframeFilter.filters.push(new FG_Filter_FrameFilter1());");
             expect(objs[2].getUrl()).toEqual("js/frame/FG_Filter_FrameFilter2.js");
             expect(objs[2].appendInstallScript("")).toEqual("\nframeFilter.filters.push(new FG_Filter_FrameFilter2());");
-            expect(objs[3].getUrl()).toEqual("js/MyCustomFilter.js");
+            expect(objs[3].getUrl()).toEqual("/js/MyCustomFilter.js");
             expect(objs[3].appendInstallScript("")).toEqual("\nframeFilter.filters.push(new MyCustomFilter());");
 
+        });
+    });
+
+
+    describe("when loading overlay ", function () {
+
+        beforeEach(function () {
+            jasmine.Ajax.install();
+            jasmine.Ajax.stubRequest("js/color/overlay/FG_Overlay_Test.js").andReturn({
+                responseText: "" +
+                    "function FG_Overlay_Test() {}\n" +
+                    "FG_Overlay_Test.prototype.colorFor = function(f, r) {" +
+                    "    return (f.name === 'overlay') ? 'rgb(122,122,122)' : colorScheme.colorFor(f, r);" +
+                    "}"
+            });
+            frameFilter.reset();
+            colorScheme = {
+                legend: {},
+                colorFor: function () {
+                    return 'rgb(0,0,0)';
+                }
+            };
+        });
+
+        afterEach(function () {
+            colorScheme = {
+                legend: {}
+            };
+            jasmine.Ajax.uninstall();
+        });
+
+
+        it("should load dynamic overlay js file", function (done) {
+            fg.loadOverlay("Test", function () {
+
+                var request = jasmine.Ajax.requests.mostRecent();
+                expect(request.url).toBe("js/color/overlay/FG_Overlay_Test.js");
+                expect(request.method).toBe('GET');
+
+                expect(colorScheme.currentOverlay.colorFor({ name: 'overlay'})).toEqual("rgb(122,122,122)");
+                expect(colorScheme.currentOverlay.colorFor({ name: 'do not overlay. original color'})).toEqual("rgb(0,0,0)");
+
+                done();
+            }, function () {
+                fail("ajax should succeed");
+                done();
+            });
         });
     });
 

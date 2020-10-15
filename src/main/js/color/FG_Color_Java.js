@@ -23,6 +23,9 @@ function FG_Color_Java() {
         orange: 'Kernel',
         red: 'User'
     };
+    this.overlays = {
+        'Blocking' : 'Java_Blocking'
+    };
 }
 
 FG_Color_Java.prototype = Object.create(FG_Color.prototype);

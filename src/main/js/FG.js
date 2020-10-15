@@ -31,6 +31,7 @@ function FG(id, shiftWidth, defaultTitle, minWidth, _w, _prompt) {
     this.searching = false;
     this.ignorecase = 0;
     this.legend = 0;
+    this.overlay = 0;
     this.currentSearchTerm = null;
     this.frameFilterNames = this.getParameter("frameFilter", undefined);
     this.colorSchemeName = this.getParameter("color", undefined);
@@ -62,6 +63,7 @@ FG.prototype.setup = function(_w) {
         else if (e.target.id === "unzoom") fg.unzoom();
         else if (e.target.id === "search") fg.search_prompt();
         else if (e.target.id === "legendBtn") fg.toggle_legend();
+        else if (e.target.id === "overlayBtn") fg.toggle_overlay();
         else if (e.target.id === "ignorecase") fg.toggle_ignorecase();
     }, false);
 
@@ -104,38 +106,49 @@ FG.prototype.load = function (successCallback, errorCallback) {
 
 FG.prototype.objectsToLoad = function() {
     var toLoad = [];
+    var fg = this;
     if (typeof this.colorSchemeName !== 'undefined') {
         var url;
-        var objName;
-        if (this.colorSchemeName[0] === '/') {
-            url = this.colorSchemeName.substring(1);
-            var nameIndex = this.colorSchemeName.lastIndexOf('/') + 1;
-            objName = this.colorSchemeName.substring(nameIndex, this.colorSchemeName.indexOf('.', nameIndex));
-        } else {
-            url = "js/color/FG_Color_" + this.colorSchemeName + ".js";
-            objName = "FG_Color_" + this.colorSchemeName;
-        }
-        toLoad.push(new DynamicallyLoading(url, "colorScheme = new " + objName + "();"));
+        var obj = fg.generateDynamicallyLoadingObject(this.colorSchemeName, "js/color/FG_Color_", function (objName) {
+            return "colorScheme = new " + objName + "();"
+        });
+        toLoad.push(obj);
     }
     if (typeof this.frameFilterNames !== 'undefined') {
         $.each(this.frameFilterNames.split(",").map(function (n) {
             var url;
-            var objName;
-            if (n[0] === '/') {
-                url = n.substring(1);
-                var nameIndex = n.lastIndexOf('/') + 1;
-                objName = n.substring(nameIndex, n.indexOf('.', nameIndex));
-            } else {
-                url = "js/frame/FG_Filter_" + n + ".js";
-                objName = "FG_Filter_" + n;
-
-            }
-            return new DynamicallyLoading(url, "frameFilter.filters.push(new "+ objName +"());");
+            return fg.generateDynamicallyLoadingObject(n, "js/frame/FG_Filter_", function (objName) {
+                return "frameFilter.filters.push(new "+ objName +"());";
+            });
         }), function () {
             toLoad.push(this);
         });
     }
     return toLoad;
+};
+
+FG.prototype.generateDynamicallyLoadingObject = function(name, conventionPrefix, generateInstallScript) {
+    var url;
+    var objName;
+    if (name[0] === '/') {
+        url = name;
+        var nameIndex = name.lastIndexOf('/') + 1;
+        objName = name.substring(nameIndex, name.indexOf('.', nameIndex));
+    } else {
+        url = conventionPrefix + name + ".js";
+        objName = conventionPrefix.substring(conventionPrefix.lastIndexOf("/") + 1) + name;
+    }
+    return new DynamicallyLoading(url, generateInstallScript(objName));
+};
+
+FG.prototype.loadOverlay = function(overlayName, successCallback) {
+    this.toggle_overlay();
+    this.loadDynamicJs([ this.generateDynamicallyLoadingObject(overlayName, "js/color/overlay/FG_Overlay_", function (name) {
+        return "colorScheme.currentOverlay = new "+ name + "();";
+    })], successCallback
+      , function(response) {
+          log.console("Failed to load " + overlayName + ": " + response.errorMessage());
+    });
 };
 
 // accessed from eval (yes, I know, see below)
@@ -422,6 +435,20 @@ FG.prototype.toggle_legend = function() {
         } else {
             this.legendBtn.classList.remove("show");
             this.legendEl.classList.add("hide");
+        }
+    }
+};
+
+// overlay
+FG.prototype.toggle_overlay = function() {
+    if (this.overlayEl) {
+        this.overlay = !this.overlay;
+        if (this.overlay) {
+            this.overlayBtn.classList.add("show");
+            this.overlayEl.classList.remove("hide");
+        } else {
+            this.overlayBtn.classList.remove("show");
+            this.overlayEl.classList.add("hide");
         }
     }
 };

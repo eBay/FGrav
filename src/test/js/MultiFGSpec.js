@@ -10,8 +10,8 @@ describe("MultiFG", function () {
 
         beforeEach(function () {
             multiFg = new MultiFG();
-            fg1 = new FG('1', 2, "TITLE1", undefined);
-            fg2 = new FG('2', 2, "TITLE2", undefined);
+            fg1 = new FG('1', 2, "TITLE1");
+            fg2 = new FG('2', 2, "TITLE2");
             multiFg.registerFG(fg1);
             multiFg.registerFG(fg2);
         });

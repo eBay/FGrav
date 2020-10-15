@@ -16,7 +16,8 @@
  **************************************************************************/
 function FG_Color() {
     this.legend = {};
-    this.overlays = [];
+    this.overlays = {};
+    this.currentOverlay = undefined;
 }
 
 FG_Color.prototype.colorFor = function(f, r) {

@@ -42,7 +42,7 @@ FGDraw.prototype.drawCanvas = function(_d) {
     var unzoom = this.text("Reset Zoom", "unzoom", this.buttonsMargin, this.buttonsMargin);
     unzoom.classList.add("hide");
     var legend = this.text("Legend", "legendBtn", this.buttonsMargin + 90, this.buttonsMargin);
-    // var overlay = this.text("Overlay", "overlayBtn", this.buttonsMargin + 90 + 60, this.buttonsMargin);
+    var overlay = this.text("Overlay", "overlayBtn", this.buttonsMargin + 90 + 60, this.buttonsMargin);
 
     var ignorecase = this.text("IC", "ignorecase", this.fg.width - this.buttonsMargin - 12, this.buttonsMargin);
     var search = this.text("Search", "search", this.fg.width - this.buttonsMargin - 12 - 90, this.buttonsMargin);
@@ -50,17 +50,18 @@ FGDraw.prototype.drawCanvas = function(_d) {
     this.svg.appendChild(background);
     this.svg.appendChild(title);
     this.svg.appendChild(unzoom);
-    // this.svg.appendChild(overlay);
+    this.svg.appendChild(overlay);
     this.svg.appendChild(search);
     this.svg.appendChild(ignorecase);
 
     this.drawLegend(legend, _d);
+    this.drawOverlayDropDown(overlay, _d);
 
     this.fg.searchbtn = _d.getElementById("search");
     this.fg.ignorecaseBtn = _d.getElementById("ignorecase");
     this.fg.unzoombtn = _d.getElementById("unzoom");
     this.fg.legendBtn = _d.getElementById("legendBtn");
-    // this.fg.overlayBtn = _d.getElementById("overlayBtn");
+    this.fg.overlayBtn = _d.getElementById("overlayBtn");
 
     _d.styleSheets[0].insertRule("text { font-family:Verdana; font-size:"+ this.fg.fontSize +"px; fill:rgb(0,0,0); }", 0);
 };
@@ -88,6 +89,41 @@ FGDraw.prototype.drawLegend = function(legendBtn, _d) {
         this.svg.appendChild(legendBtn);
         this.fg.legendEl = g;
     }
+};
+
+FGDraw.prototype.drawOverlayDropDown = function(overlayBtn, _d) {
+    var overlayKeys = Object.keys(colorScheme.overlays);
+    if (overlayKeys.length > 0) {
+        _d = (typeof _d !== 'undefined') ? _d : document;
+        var g = _d.createElementNS("http://www.w3.org/2000/svg", "g");
+        g.setAttribute("id", "overlay");
+        g.classList.add("hide");
+        var draw = this;
+        var size = draw.fg.frameHeight - 1;
+        var x = overlayBtn.getAttribute("x");
+        var xText = parseInt(x) + 4;
+        $.each(overlayKeys, function (i) {
+            var url = colorScheme.overlays[this];
+            var y = (i + 1) * (size + 1) + draw.buttonsMargin;
+            var overlayEntry = draw.rect(x, y, 90, 20, "rgb(90,90,90)");
+            overlayEntry.setAttribute("rx", "2");
+            overlayEntry.setAttribute("ry", "2");
+            overlayEntry.setAttribute("class", "overlay");
+            var overlayEntryText = draw.text(this, "", xText, y + draw.fg.textPadding + 4);
+            overlayEntryText.setAttribute("class", "overlay");
+            overlayEntryText.setAttribute("onclick", "fg.loadOverlay(\"" + url + "\", draw.drawOverlay);");
+            g.appendChild(overlayEntry);
+            g.appendChild(overlayEntryText);
+
+        });
+        this.svg.appendChild(g);
+        this.svg.appendChild(overlayBtn);
+        this.fg.overlayEl = g;
+    }
+};
+
+FGDraw.prototype.drawOverlay = function () {
+    console.log(Object.getOwnPropertyNames(colorScheme.currentOverlay));
 };
 
 FGDraw.prototype.drawInfoElements = function(_d) {
