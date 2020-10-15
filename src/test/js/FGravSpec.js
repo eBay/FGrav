@@ -12,14 +12,14 @@ describe("FGrav", function() {
         beforeEach(function () {
             jasmine.Ajax.install();
             jasmine.Ajax.stubRequest("js/frame/FG_Filter_Test.js").andReturn({
-                responseText: "frameFilter.filters.push(dummyTestFilter);" +
-                    " function dummyTestFilter(name) {" +
+                responseText: "function FG_Filter_Test() {}\n" +
+                    " FG_Filter_Test.prototype.filter = function(name) {" +
                     "    return name + name;" +
                     "}"
             });
             jasmine.Ajax.stubRequest("js/frame/FG_Filter_Other.js").andReturn({
-                responseText: "frameFilter.filters.push(dummyOtherFilter);" +
-                    " function dummyOtherFilter(name) {" +
+                responseText: "function FG_Filter_Other() {}\n" +
+                    " FG_Filter_Other.prototype.filter = function(name) {" +
                     "    return 'x';" +
                     "}"
             });
@@ -49,13 +49,13 @@ describe("FGrav", function() {
 
 
         it("should load dynamic js file", function (done) {
-            t.loadDynamicJs([new DynamicallyLoading("js/frame/FG_Filter_Test.js")], function () {
+            t.loadDynamicJs([new DynamicallyLoading("js/frame/FG_Filter_Test.js", "frameFilter.filters.push(new FG_Filter_Test());")], function () {
 
                 var request = jasmine.Ajax.requests.mostRecent();
                 expect(request.url).toBe("js/frame/FG_Filter_Test.js");
                 expect(request.method).toBe('GET');
 
-                expect(frameFilter.filters[0]('foo')).toEqual("foofoo");
+                expect(frameFilter.filters[0].filter('foo')).toEqual("foofoo");
 
                 done();
             }, function () {
@@ -82,13 +82,13 @@ describe("FGrav", function() {
 
         it("should load multiple dynamic js filters", function (done) {
             t.loadDynamicJs([
-                new DynamicallyLoading("js/frame/FG_Filter_Other.js"),
+                new DynamicallyLoading("js/frame/FG_Filter_Other.js", "frameFilter.filters.push(new FG_Filter_Other());"),
                 new DynamicallyLoading("js/color/FG_Color_Test.js", "colorScheme = new FG_Color_Test();"),
-                new DynamicallyLoading("js/frame/FG_Filter_Test.js")], function () {
+                new DynamicallyLoading("js/frame/FG_Filter_Test.js", "frameFilter.filters.push(new FG_Filter_Test());")], function () {
 
                 expect(frameFilter.filters.length).toEqual(2);
-                expect(frameFilter.filters[0]('foo')).toEqual("x");
-                expect(frameFilter.filters[1]('foo')).toEqual("foofoo");
+                expect(frameFilter.filters[0].filter('foo')).toEqual("x");
+                expect(frameFilter.filters[1].filter('foo')).toEqual("foofoo");
                 expect(colorScheme.colorFor()).toEqual("rgb(122,122,122)");
 
                 done();
