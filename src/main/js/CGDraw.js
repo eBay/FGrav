@@ -14,8 +14,8 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  **************************************************************************/
-function CGDraw(cg) {
-    FGravDraw.call(this, cg);
+function CGDraw(cg, _d) {
+    FGravDraw.call(this, cg, _d);
     this.cg = cg;
     colorScheme = new CG_Color_Default();
 }
@@ -23,8 +23,7 @@ function CGDraw(cg) {
 CGDraw.prototype = Object.create(FGravDraw.prototype);
 CGDraw.prototype.constructor = CGDraw;
 
-CGDraw.prototype.drawCanvas = function(_d) {
-    _d = (typeof _d !== 'undefined') ? _d : document;
+CGDraw.prototype.drawCanvas = function() {
     this.svg.appendChild(this.rect(0.0, 0, this.cg.width, this.cg.height, "url(#background)"));
     this.svg.appendChild(this.text(this.cg.title, "title", 724 / 2, this.cg.margin, 17, "middle"));
     this.svg.appendChild(this.text(" ", "details", this.cg.margin, 150 - 4, 12));
@@ -33,14 +32,13 @@ CGDraw.prototype.drawCanvas = function(_d) {
         self.svg.appendChild(self.text(day, day, self.cg.margin - 20, self.cg.margin + 7 +( 13 * (i + 1)), 9, "left"));
     });
 
-    this.cg.details = _d.getElementById("details").firstChild;
+    this.cg.details = this.d.getElementById("details").firstChild;
 };
 
-CGDraw.prototype.drawLegend = function(_d) {
+CGDraw.prototype.drawLegend = function() {
     var legendKeys = Object.keys(colorScheme.legend);
     if (legendKeys.length > 0) {
-        _d = (typeof _d !== 'undefined') ? _d : document;
-        var g = _d.createElementNS("http://www.w3.org/2000/svg", "g");
+        var g = this.d.createElementNS("http://www.w3.org/2000/svg", "g");
         g.setAttribute("id", "legend");
         g.classList.add("hide");
         var draw = this;
@@ -60,21 +58,20 @@ CGDraw.prototype.drawLegend = function(_d) {
     }
 };
 
-CGDraw.prototype.drawCG = function(calendarEvents, _d) {
+CGDraw.prototype.drawCG = function(calendarEvents) {
     var i, j, k;
-    _d = (typeof _d !== 'undefined') ? _d : document;
     var date = new Date();
     var lastCol = date.getDay() - 1;
     lastCol = (lastCol < 0) ? 6 : lastCol;
     var draw = this;
     for (k = lastCol; k >= 0; k--) {
-        this.svg.appendChild(boxFor(_d, draw, calendarEvents, date, 51, k));
+        this.svg.appendChild(boxFor(draw, calendarEvents, date, 51, k));
         monthLabel(draw, date, 51 * 13 + this.cg.margin);
         date.setTime(date.getTime() - (1000 * 60 * 60 * 24));
     }
     for (i = 50; i >= 0; i--) {
         for (j = 6; j >= 0; j--) {
-            this.svg.appendChild(boxFor(_d, draw, calendarEvents, date, i, j));
+            this.svg.appendChild(boxFor(draw, calendarEvents, date, i, j));
             monthLabel(draw, date, i * 13 + this.cg.margin);
             date.setTime(date.getTime() - (1000 * 60 * 60 * 24));
         }
@@ -88,7 +85,7 @@ CGDraw.prototype.drawCG = function(calendarEvents, _d) {
         }
     };
 
-    function boxFor(_d, draw, calendarEvents, date, i, j) {
+    function boxFor(draw, calendarEvents, date, i, j) {
         var color = "";
         var title = formatDate(date);
         var samples = 0;
@@ -113,11 +110,11 @@ CGDraw.prototype.drawCG = function(calendarEvents, _d) {
                 var colors = events.map(function (ev) {
                     return colorScheme.colorFor(ev.type, ev.samples / calendarEvents.maxSamples)
                 });
-                return box(_d, draw, title, i * 13 + draw.cg.margin, j * 13 + draw.cg.margin + 10, colors, url);
+                return box(draw, title, i * 13 + draw.cg.margin, j * 13 + draw.cg.margin + 10, colors, url);
 
             }
         }
-        return box(_d, draw, title, i * 13 + draw.cg.margin, j * 13 + draw.cg.margin + 10, colorScheme.colorFor(color, samples / calendarEvents.maxSamples), url);
+        return box(draw, title, i * 13 + draw.cg.margin, j * 13 + draw.cg.margin + 10, colorScheme.colorFor(color, samples / calendarEvents.maxSamples), url);
 
         function valuesOf(a, prop) {
             var unique = [];
@@ -141,9 +138,8 @@ CGDraw.prototype.drawCG = function(calendarEvents, _d) {
             return [year, month, day].join('-');
         }
 
-        function box(_d, draw, title, x, y, color, url) {
-            _d = (typeof _d !== 'undefined') ? _d : document;
-            var element = _d.createElementNS("http://www.w3.org/2000/svg", "g");
+        function box(draw, title, x, y, color, url) {
+            var element = draw.d.createElementNS("http://www.w3.org/2000/svg", "g");
             element.setAttribute("class", "func_g");
             element.setAttribute("onmouseover", "cg.s(this)");
             element.setAttribute("onmouseout", "cg.c()");
@@ -151,7 +147,7 @@ CGDraw.prototype.drawCG = function(calendarEvents, _d) {
                 element.setAttribute("onclick", "cg.fg('" + url + "')");
             }
 
-            var boxTitle = _d.createElementNS("http://www.w3.org/2000/svg", "title");
+            var boxTitle = draw.d.createElementNS("http://www.w3.org/2000/svg", "title");
             boxTitle.innerHTML = escText(title);
             element.appendChild(boxTitle);
 

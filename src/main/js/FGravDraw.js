@@ -15,9 +15,11 @@
  limitations under the License.
  **************************************************************************/
 
-function FGravDraw(fgrav) {
+function FGravDraw(fgrav, _d) {
     this.fgrav = fgrav;
     this.svg = fgrav.svg;
+    this.d = (typeof _d !== 'undefined') ? _d : document;
+
 }
 
 // accessed from eval (yes, I know, see FGrav.js loadDynamicJs())

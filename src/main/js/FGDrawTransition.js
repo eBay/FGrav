@@ -22,8 +22,8 @@ function FGDrawTransition(fg) {
 FGDrawTransition.prototype = Object.create(FGDraw.prototype);
 FGDrawTransition.prototype.constructor = FGDrawTransition;
 
-FGDrawTransition.prototype.drawCanvas = function(_d) {
-    FGDraw.prototype.drawCanvas(_d);
+FGDrawTransition.prototype.drawCanvas = function() {
+    FGDraw.prototype.drawCanvas();
 
     var transition = this.text("Transition", "transition", this.fg.width - (this.fg.margin * 7), this.fg.margin);
     transition.setAttribute("onmouseover", "transitionover()");
@@ -33,7 +33,7 @@ FGDrawTransition.prototype.drawCanvas = function(_d) {
 
     this.svg.appendChild(transition);
 
-    this.fg.transitionbtn = _d.getElementById("transition");
+    this.fg.transitionbtn = this.d.getElementById("transition");
 
 }
 

@@ -14,8 +14,8 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  **************************************************************************/
-function FGDraw(fg) {
-    FGravDraw.call(this, fg);
+function FGDraw(fg, _d) {
+    FGravDraw.call(this, fg, _d);
     this.fg = fg;
     this.buttonsMargin = 24;
     this.setDefaultColorScheme(new FG_Color_Default());
@@ -30,9 +30,7 @@ FGDraw.prototype.setDefaultColorScheme = function(colorSchemeImpl) {
     }
 };
 
-FGDraw.prototype.drawCanvas = function(_d) {
-    _d = (typeof _d !== 'undefined') ? _d : document;
-
+FGDraw.prototype.drawCanvas = function() {
     this.svg.setAttribute("width", this.fg.width);
     this.svg.setAttribute("height", this.fg.height);
     this.svg.setAttribute("viewBox", "0 0 " + this.fg.width + " " + this.fg.height);
@@ -54,23 +52,22 @@ FGDraw.prototype.drawCanvas = function(_d) {
     this.svg.appendChild(search);
     this.svg.appendChild(ignorecase);
 
-    this.drawLegend(legend, _d);
-    this.drawOverlayDropDown(overlay, _d);
+    this.drawLegend(legend);
+    this.drawOverlayDropDown(overlay);
 
-    this.fg.searchbtn = _d.getElementById("search");
-    this.fg.ignorecaseBtn = _d.getElementById("ignorecase");
-    this.fg.unzoombtn = _d.getElementById("unzoom");
-    this.fg.legendBtn = _d.getElementById("legendBtn");
-    this.fg.overlayBtn = _d.getElementById("overlayBtn");
+    this.fg.searchbtn = this.d.getElementById("search");
+    this.fg.ignorecaseBtn = this.d.getElementById("ignorecase");
+    this.fg.unzoombtn = this.d.getElementById("unzoom");
+    this.fg.legendBtn = this.d.getElementById("legendBtn");
+    this.fg.overlayBtn = this.d.getElementById("overlayBtn");
 
-    _d.styleSheets[0].insertRule("text { font-family:Verdana; font-size:"+ this.fg.fontSize +"px; fill:rgb(0,0,0); }", 0);
+    this.d.styleSheets[0].insertRule("text { font-family:Verdana; font-size:"+ this.fg.fontSize +"px; fill:rgb(0,0,0); }", 0);
 };
 
-FGDraw.prototype.drawLegend = function(legendBtn, _d) {
+FGDraw.prototype.drawLegend = function(legendBtn) {
     var legendKeys = Object.keys(colorScheme.legend);
     if (legendKeys.length > 0) {
-        _d = (typeof _d !== 'undefined') ? _d : document;
-        var g = _d.createElementNS("http://www.w3.org/2000/svg", "g");
+        var g = this.d.createElementNS("http://www.w3.org/2000/svg", "g");
         g.setAttribute("id", "legend");
         g.classList.add("hide");
         var draw = this;
@@ -91,11 +88,10 @@ FGDraw.prototype.drawLegend = function(legendBtn, _d) {
     }
 };
 
-FGDraw.prototype.drawOverlayDropDown = function(overlayBtn, _d) {
+FGDraw.prototype.drawOverlayDropDown = function(overlayBtn) {
     var overlayKeys = Object.keys(colorScheme.overlays);
     if (overlayKeys.length > 0) {
-        _d = (typeof _d !== 'undefined') ? _d : document;
-        var g = _d.createElementNS("http://www.w3.org/2000/svg", "g");
+        var g = this.d.createElementNS("http://www.w3.org/2000/svg", "g");
         g.setAttribute("id", "overlay");
         g.classList.add("hide");
         var draw = this;
@@ -126,24 +122,23 @@ FGDraw.prototype.drawOverlay = function () {
     console.log(Object.getOwnPropertyNames(colorScheme.currentOverlay));
 };
 
-FGDraw.prototype.drawInfoElements = function(_d) {
-    _d = (typeof _d !== 'undefined') ? _d : document;
+FGDraw.prototype.drawInfoElements = function() {
     var details = this.text(" ", this.fg.namePerFG("details"),
             this.fg.margin + this.fg.shiftWidth, this.fg.height - 4 + this.fg.shiftHeight);
     var matched = this.text(" ", this.fg.namePerFG("matched"),
             this.fg.width - (this.fg.margin * 6) + this.fg.shiftWidth, this.fg.height - 4 + this.fg.shiftHeight);
-    var tooltip = tooltip(this, _d);
+    var tooltip = tooltip(this);
     this.svg.appendChild(details);
     this.svg.appendChild(matched);
     this.svg.appendChild(tooltip);
 
-    this.fg.details = _d.getElementById(this.fg.namePerFG("details")).firstChild;
-    this.fg.matchedtxt = _d.getElementById(this.fg.namePerFG("matched"));
-    this.fg.tooltip = _d.getElementById(this.fg.namePerFG("tooltip"));
+    this.fg.details = this.d.getElementById(this.fg.namePerFG("details")).firstChild;
+    this.fg.matchedtxt = this.d.getElementById(this.fg.namePerFG("matched"));
+    this.fg.tooltip = this.d.getElementById(this.fg.namePerFG("tooltip"));
 
 
-    function tooltip(draw, _d) {
-        var element = _d.createElementNS("http://www.w3.org/2000/svg", "g");
+    function tooltip(draw) {
+        var element = draw.d.createElementNS("http://www.w3.org/2000/svg", "g");
         element.setAttribute("id", draw.fg.namePerFG("tooltip"));
         element.setAttribute("visibility", "hidden");
         var rectGrey = draw.rect(0, 0, 80, 20, "rgb(90,90,90)");
@@ -160,10 +155,9 @@ FGDraw.prototype.drawInfoElements = function(_d) {
     }
 };
 
-FGDraw.prototype.drawFG = function(stackFrames, _d) {
-    _d = (typeof _d !== 'undefined') ? _d : document;
+FGDraw.prototype.drawFG = function(stackFrames) {
     this.fg.totalSamples = stackFrames.totalSamples;
-    var g = _d.createElementNS("http://www.w3.org/2000/svg", "g");
+    var g = this.d.createElementNS("http://www.w3.org/2000/svg", "g");
     g.setAttribute("id", this.fg.namePerFG("frames"));
     var draw = this;
     g.appendChild(draw.drawFrame(stackFrames.allFrame(draw.fg)));
