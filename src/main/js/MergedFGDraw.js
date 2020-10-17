@@ -84,7 +84,9 @@ MergedFGDraw.prototype.drawFrame = function (f) {
     return element;
 
     function drawRect(x, y, w, color) {
-        var frameRect = draw.rect(x, y, w, draw.fg.frameHeight - 1, color);
+        var frameRect = draw.rect(x, y, w, draw.fg.frameHeight - 1, function (el) {
+            el.setAttribute("fill", color);
+        });
         frameRect.setAttribute("rx", "2");
         frameRect.setAttribute("ry", "2");
         return frameRect;

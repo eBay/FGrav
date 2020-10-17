@@ -24,7 +24,9 @@ CGDraw.prototype = Object.create(FGravDraw.prototype);
 CGDraw.prototype.constructor = CGDraw;
 
 CGDraw.prototype.drawCanvas = function() {
-    this.svg.appendChild(this.rect(0.0, 0, this.cg.width, this.cg.height, "url(#background)"));
+    this.svg.appendChild(this.rect(0.0, 0, this.cg.width, this.cg.height, function (el) {
+        el.setAttribute("fill", "url(#background)");
+    }));
     this.svg.appendChild(this.text(this.cg.title, "title", 724 / 2, this.cg.margin, 17, "middle"));
     this.svg.appendChild(this.text(" ", "details", this.cg.margin, 150 - 4, 12));
     var self = this;
@@ -45,8 +47,11 @@ CGDraw.prototype.drawLegend = function() {
         var size = 6;
         var margin = 6;
         $.each(legendKeys, function (i) {
-            var text = colorScheme.legend[this];
-            var legendEntry = draw.rect(margin, i * (size + 1) + margin, size, size, this);
+            var color = this;
+            var text = colorScheme.legend[color];
+            var legendEntry = draw.rect(margin, i * (size + 1) + margin, size, size, function (el) {
+                el.setAttribute("fill", color);
+            });
             legendEntry.setAttribute("rx", "2");
             legendEntry.setAttribute("ry", "2");
             var legendEntryText = draw.text(text, "", margin + size * 2, (i + 1) * size + margin, 7, "left");
@@ -151,7 +156,9 @@ CGDraw.prototype.drawCG = function(calendarEvents) {
             boxTitle.innerHTML = escText(title);
             element.appendChild(boxTitle);
 
-            var boxRect = draw.rect(x, y, 12, 12, Array.isArray(color) ? colorScheme.colorFor(undefined, 0) : color);
+            var boxRect = draw.rect(x, y, 12, 12, function (el) {
+                el.setAttribute("fill", Array.isArray(color) ? colorScheme.colorFor(undefined, 0) : color);
+            });
             boxRect.setAttribute("rx", "2");
             boxRect.setAttribute("ry", "2");
             element.appendChild(boxRect);
@@ -172,7 +179,9 @@ CGDraw.prototype.drawCG = function(calendarEvents) {
                         pos = squares(3);
                 }
                 $.each(color, function (i, itemColor) {
-                    var boxRect = draw.rect(x + pos.x, y + pos.y, pos.w, pos.h, itemColor);
+                    var boxRect = draw.rect(x + pos.x, y + pos.y, pos.w, pos.h, function (el) {
+                        el.setAttribute("fill", itemColor);
+                    });
                     boxRect.setAttribute("rx", "2");
                     boxRect.setAttribute("ry", "2");
                     element.appendChild(boxRect);

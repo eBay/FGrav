@@ -34,7 +34,9 @@ FGDraw.prototype.drawCanvas = function() {
     this.svg.setAttribute("width", this.fg.width);
     this.svg.setAttribute("height", this.fg.height);
     this.svg.setAttribute("viewBox", "0 0 " + this.fg.width + " " + this.fg.height);
-    var background = this.rect(0.0, 0, this.fg.width, this.fg.height, "url(#background)");
+    var background = this.rect(0.0, 0, this.fg.width, this.fg.height, function (el) {
+        el.setAttribute("fill",  "url(#background)");
+    });
     var title = this.text(this.fg.title, "title", this.fg.width / 2, this.buttonsMargin, Math.round(this.fg.fontSize * 1.4), "middle");
 
     var unzoom = this.text("Reset Zoom", "unzoom", this.buttonsMargin, this.buttonsMargin);
@@ -73,8 +75,11 @@ FGDraw.prototype.drawLegend = function(legendBtn) {
         var draw = this;
         var size = draw.fg.frameHeight - 1;
         $.each(legendKeys, function (i) {
-            var text = colorScheme.legend[this];
-            var legendEntry = draw.rect(draw.buttonsMargin, (i + 1) * (size + 1) + draw.buttonsMargin, size, size, this);
+            var color = this;
+            var text = colorScheme.legend[color];
+            var legendEntry = draw.rect(draw.buttonsMargin, (i + 1) * (size + 1) + draw.buttonsMargin, size, size, function (el) {
+                el.setAttribute("fill", color);
+            });
             legendEntry.setAttribute("rx", "2");
             legendEntry.setAttribute("ry", "2");
             var legendEntryText = draw.text(text, "", draw.buttonsMargin + size * 2, (i + 1) * (size + 1) + draw.buttonsMargin + draw.fg.textPadding);
@@ -101,7 +106,9 @@ FGDraw.prototype.drawOverlayDropDown = function(overlayBtn) {
         $.each(overlayKeys, function (i) {
             var url = colorScheme.overlays[this];
             var y = (i + 1) * (size + 1) + draw.buttonsMargin;
-            var overlayEntry = draw.rect(x, y, 90, 20, "rgb(90,90,90)");
+            var overlayEntry = draw.rect(x, y, 90, 20, function (el) {
+                el.setAttribute("fill", "rgb(90,90,90)");
+            });
             overlayEntry.setAttribute("rx", "2");
             overlayEntry.setAttribute("ry", "2");
             overlayEntry.setAttribute("class", "overlay");
@@ -141,7 +148,9 @@ FGDraw.prototype.drawInfoElements = function() {
         var element = draw.d.createElementNS("http://www.w3.org/2000/svg", "g");
         element.setAttribute("id", draw.fg.namePerFG("tooltip"));
         element.setAttribute("visibility", "hidden");
-        var rectGrey = draw.rect(0, 0, 80, 20, "rgb(90,90,90)");
+        var rectGrey = draw.rect(0, 0, 80, 20, function (el) {
+            el.setAttribute("fill", "rgb(90,90,90)");
+        });
         rectGrey.setAttribute("rx", "2");
         rectGrey.setAttribute("ry", "2");
         rectGrey.setAttribute("class", "tooltip");
@@ -183,7 +192,9 @@ FGDraw.prototype.drawFrame = function (f) {
             element.setAttribute("id", draw.fg.namePerFG(id));
         }
 
-        var frameRect = draw.rect(x, y, w, draw.fg.frameHeight - 1, color);
+        var frameRect = draw.rect(x, y, w, draw.fg.frameHeight - 1, function (el) {
+            el.setAttribute("fill", color);
+        });
         frameRect.setAttribute("rx", "2");
         frameRect.setAttribute("ry", "2");
 

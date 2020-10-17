@@ -87,19 +87,18 @@ function colorValueFor(palette, name, value) {
     }
 }
 
-FGravDraw.prototype.rect = function(x, y, width, height, fill) {
-    var element = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+FGravDraw.prototype.rect = function(x, y, width, height, styleFunction) {
+    var element = this.d.createElementNS("http://www.w3.org/2000/svg", "rect");
     element.setAttribute("x", x);
     element.setAttribute("y", y);
     element.setAttribute("width", width);
     element.setAttribute("height", height);
-    element.setAttribute("fill", fill);
-
+    styleFunction(element);
     return element;
 };
 
 FGravDraw.prototype.animateWidth = function(from, to, start, duration) {
-    var element = document.createElementNS("http://www.w3.org/2000/svg", "animate");
+    var element = this.d.createElementNS("http://www.w3.org/2000/svg", "animate");
     element.setAttribute("attributeType", "XML");
     element.setAttribute("attributeName", "width");
     element.setAttribute("from", from);
@@ -115,7 +114,7 @@ FGravDraw.prototype.animatePosition = function(x, newX, y, newY) {
     y = (y) ? y : 0;
     newY = (newY) ? newY : 0;
     var to = "" + (newX - x) + " " + (newY - y);
-    var element = document.createElementNS("http://www.w3.org/2000/svg", "animateTransform");
+    var element = this.d.createElementNS("http://www.w3.org/2000/svg", "animateTransform");
     element.setAttribute("type", "translate");
     element.setAttribute("attributeName", "transform");
     element.setAttribute("from", "0 0");
@@ -135,7 +134,7 @@ FGravDraw.prototype.text = function(text, id, x, y, fontSize, anchor, fill) {
 };
 
 FGravDraw.prototype.textBox = function(id, x, y, fontSize, anchor, fill) {
-    var element = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    var element = this.d.createElementNS("http://www.w3.org/2000/svg", "text");
     element.setAttribute("x", x);
     element.setAttribute("y", y);
     if (id) element.setAttribute("id", id);
@@ -161,7 +160,9 @@ FGravDraw.prototype.textToFit = function(text, widthToFit, fontSize) {
 };
 
 FGravDraw.prototype.drawError = function(errorMsg) {
-    var background = this.rect(0.0, 0, 500, 150, "url(#background)");
+    var background = this.rect(0.0, 0, 500, 150, function (el) {
+        el.setAttribute("fill", "url(#background)");
+    });
     var err = this.text(errorMsg, "error", 250, 75, 17, "middle");
 
     this.svg.appendChild(background);
