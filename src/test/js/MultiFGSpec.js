@@ -91,8 +91,8 @@ describe("MultiFG", function () {
                 return searchTerm;
             };
             multiFg = new MultiFG(myWindow, myPrompt);
-            fg1 = mockFG("1");
-            fg2 = mockFG("2");
+            fg1 = stubFG("1");
+            fg2 = stubFG("2");
             multiFg.registerFG(fg1);
             multiFg.registerFG(fg2);
             multiFg.ignorecaseBtn = domElement();
@@ -167,67 +167,33 @@ describe("MultiFG", function () {
             expect(multiFg.searchbtn.classList.class.length).toEqual(0);
             expect(multiFg.searching).toBe(false);
         });
-
-        function mockFG(id) {
-            return {
-                id: id,
-                actions: [],
-                zoom: function () {
-                    this.actions.push("zoom");
-                },
-                unzoom: function () {
-                    this.actions.push("unzoom");
-                },
-                search: function () {
-                    this.actions.push("search");
-                },
-                reset_search: function() {
-                    this.actions.push("reset_search");
-                },
-                svg: {
-                    getElementById: function(id) {
-                      return {
-                          id: id
-                      };
-                    }
-                },
-                matchedtxt: domElement()
-            }
-        }
-
-        function domElement() {
-            return {
-                attributes: {},
-                getAttribute: function (k) {
-                    return this.attributes[k];
-                },
-                setAttribute: function (k, v) {
-                    this.attributes[k] = {value: v};
-                },
-                setAttributes: function (k1, v1, k2, v2, k3, v3) {
-                    this.setAttribute(k1, v1);
-                    this.setAttribute(k2, v2);
-                    this.setAttribute(k3, v3);
-                },
-                classList: {
-                    class: [],
-                    add: function (c) {
-                        this.class.push(c);
-                    },
-                    remove: function (c) {
-                        this.class = this.class.filter(function (e) {
-                            return e !== c
-                        });
-                    }
-                },
-                firstChild: {},
-                querySelectorAll: function (selector) {
-                },
-                getSubStringLength: function (start, end) {
-                    return 17;
-                }
-            };
-        }
     });
+
+    function stubFG(id) {
+        return {
+            id: id,
+            actions: [],
+            zoom: function () {
+                this.actions.push("zoom");
+            },
+            unzoom: function () {
+                this.actions.push("unzoom");
+            },
+            search: function () {
+                this.actions.push("search");
+            },
+            reset_search: function() {
+                this.actions.push("reset_search");
+            },
+            svg: {
+                getElementById: function(id) {
+                    return {
+                        id: id
+                    };
+                }
+            },
+            matchedtxt: domElement()
+        }
+    }
 
 });

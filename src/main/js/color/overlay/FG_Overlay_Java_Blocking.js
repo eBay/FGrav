@@ -17,14 +17,17 @@
 function FG_Overlay_Java_Blocking() {
 }
 
-FG_Overlay_Java_Blocking.prototype.colorFor = function(f, r) {
-    var name = f.name;
-    if (blockingJavaCallsPrefixes.find(function (prefix) {
-        return name.startsWith(prefix);
-    })) {
-        return "white";
-    }
-    return null; // fallback to original color
+FG_Overlay_Java_Blocking.prototype.applyStyle = function(colorScheme, frame, random) {
+
+    return function (el) {
+        var name = frame.name;
+        if (blockingJavaCallsPrefixes.find(function (prefix) {
+            return name.startsWith(prefix);
+        })) {
+            el.setAttribute("style", "stroke-width:3;stroke:rgb(0,0,0)");
+        }
+        el.setAttribute("fill", colorScheme.colorFor(frame, random));
+    };
 };
 
 var blockingJavaCallsPrefixes = [

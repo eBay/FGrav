@@ -32,12 +32,12 @@ describe("FGravDraw", function() {
                 el.setAttribute("style", "fill:rgb(0,0,255);stroke-width:3;stroke:rgb(0,0,0)");
             });
 
-            expect(r.getAttribute("x")).toEqual(17);
-            expect(r.getAttribute("y")).toEqual(19);
-            expect(r.getAttribute("width")).toEqual(23);
-            expect(r.getAttribute("height")).toEqual(29);
-            expect(r.getAttribute("fill")).toEqual("red");
-            expect(r.getAttribute("style")).toEqual("fill:rgb(0,0,255);stroke-width:3;stroke:rgb(0,0,0)");
+            expect(r.getAttributeValue("x")).toEqual(17);
+            expect(r.getAttributeValue("y")).toEqual(19);
+            expect(r.getAttributeValue("width")).toEqual(23);
+            expect(r.getAttributeValue("height")).toEqual(29);
+            expect(r.getAttributeValue("fill")).toEqual("red");
+            expect(r.getAttributeValue("style")).toEqual("fill:rgb(0,0,255);stroke-width:3;stroke:rgb(0,0,0)");
         });
 
     });
@@ -76,32 +76,4 @@ describe("FGravDraw", function() {
             expect(t.textToFit("text", 8, 8)).toEqual("");
         });
     });
-
-
-    function domElement() {
-        return {
-            attributes: {},
-            getAttribute: function(k) {
-                return this.attributes[k];
-            },
-            setAttribute: function(k, v) {
-                this.attributes[k] = v;
-            },
-            setAttributes: function(k1, v1, k2, v2, k3, v3) {
-                this.setAttribute(k1, v1);
-                this.setAttribute(k2, v2);
-                this.setAttribute(k3, v3);
-            },
-            classList: {
-                class: [],
-                add: function (c) {
-                    this.class.push(c);
-                },
-                remove: function (c) {
-                    this.class = this.class.filter(function(e) { return e !== c });
-                }
-            },
-        };
-    }
-
 });

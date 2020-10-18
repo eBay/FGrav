@@ -25,6 +25,7 @@ module.exports = function(config) {
       'src/main/js/color/FG_Color.js',
       'src/main/js/color/FG_Color_Java.js',
       'src/main/js/color/FG_Color_Js.js',
+      'src/main/js/color/overlay/FG_Overlay_Java_Blocking.js',
       'src/main/js/FGDraw.js',
       'src/main/js/FGStackFrames.js',
       'src/main/js/MergedCollapsed.js',
@@ -39,6 +40,7 @@ module.exports = function(config) {
 
 
       'node_modules/jasmine-ajax/lib/mock-ajax.js',
+      'src/test/js/TestStubs.js',
 
       // Spec
       'src/test/js/FGravResponseSpec.js',
@@ -48,8 +50,10 @@ module.exports = function(config) {
       'src/test/js/MergedFGDrawSpec.js',
       'src/test/js/FGSpec.js',
       'src/test/js/MultiFGSpec.js',
+      'src/test/js/color/FG_ColorSpec.js',
       'src/test/js/color/FG_Color_JavaSpec.js',
       'src/test/js/color/FG_Color_JsSpec.js',
+      'src/test/js/color/overlay/FG_Overlay_Java_BlockingSpec.js',
       'src/test/js/frame/FG_Filter_Java8Spec.js',
       'src/test/js/frame/FG_Filter_RemoveJavaGCThreadsSpec.js',
       'src/test/js/frame/FG_Filter_RemoveThreadFrameSpec.js',

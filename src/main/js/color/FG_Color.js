@@ -20,6 +20,13 @@ function FG_Color() {
     this.currentOverlay = undefined;
 }
 
-FG_Color.prototype.colorFor = function(f, r) {
+FG_Color.prototype.colorFor = function(frame, random) {
     throw Error("Did not load any color scheme");
+};
+
+FG_Color.prototype.applyStyle = function (frame, random) {
+    var c = this;
+    return (c.currentOverlay) ? c.currentOverlay.applyStyle(c, frame, random) : function (el) {
+        el.setAttribute("fill", c.colorFor(frame, random));
+    };
 };
