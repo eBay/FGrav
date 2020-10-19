@@ -183,18 +183,16 @@ FGDraw.prototype.drawFG = function(stackFrames) {
 
 FGDraw.prototype.drawFrame = function (f) {
     return frame(this, f.name, f.stack, f.samples, f.x() + this.fg.shiftWidth, f.y() + this.fg.shiftHeight,
-        f.w(), colorScheme.colorFor(f));
+        f.w(), colorScheme.applyStyle(f), this.d);
 
 
-    function frame(draw, name, id, samples, x, y, w, color) {
-        var element = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    function frame(draw, name, id, samples, x, y, w, styleFunction, d) {
+        var element = d.createElementNS("http://www.w3.org/2000/svg", "g");
         if (draw.fg.id) {
             element.setAttribute("id", draw.fg.namePerFG(id));
         }
 
-        var frameRect = draw.rect(x, y, w, draw.fg.frameHeight - 1, function (el) {
-            el.setAttribute("fill", color);
-        });
+        var frameRect = draw.rect(x, y, w, draw.fg.frameHeight - 1, styleFunction);
         frameRect.setAttribute("rx", "2");
         frameRect.setAttribute("ry", "2");
 

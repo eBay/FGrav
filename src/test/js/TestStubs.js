@@ -1,5 +1,22 @@
 
 
+function frameObject(name, stack, samples, x, y, w) {
+    return {
+        name: name,
+        stack: stack,
+        samples: samples,
+        x: function () {
+            return x;
+        },
+        y: function () {
+            return y;
+        },
+        w: function() {
+            return w;
+        }
+    }
+}
+
 function frame(frameText, color) {
     var el = domGroupElement();
     el.text.setAttribute("name", frameText);
@@ -22,6 +39,7 @@ function frames(framesArray) {
 function domElement() {
     return {
         attributes: {},
+        children: [],
         getAttributeValue: function(k) {
             return this.attributes[k].value;
         },
@@ -49,6 +67,9 @@ function domElement() {
         querySelectorAll: function (selector) {},
         getSubStringLength: function (start, end) {
             return 17;
+        },
+        appendChild: function (child) {
+            this.children.push(child);
         }
     };
 }

@@ -29,4 +29,57 @@ describe("MergedFGDraw", function () {
             expect(new FG_Color_Diff().colorFor({individualSamples: [50, 50]}, [100, 100])).toEqual('white');
         });
     });
+
+    describe("frame", function () {
+
+
+        var draw;
+        var fg;
+        var collapsed;
+
+        beforeEach(function () {
+            var d = {
+                createElementNS: function () {
+                    return domElement();
+                }
+            };
+            fg = new FG("id", 13, "title", "179");
+            fg.svg = domElement();
+            collapsed = {
+                totalIndividualSamples: 219
+            };
+            draw = new MergedFGDraw(fg, collapsed, true, d);
+
+            colorScheme = {
+                applyStyle: function(f, r) {
+                    return function (el) {
+                        el.setAttribute("fill", "my-black");
+                    }
+                },
+                legend: {}
+            };
+        });
+
+        afterEach(function () {
+            colorScheme = {
+                legend: {}
+            };
+        });
+
+        it("should draw frame with a diff rectangle", function () {
+
+            var f = frameObject("a","a:b:c", 17, 19, 23, 29);
+            f.individualSamples = [1, 2];
+            collapsed.totalIndividualSamples = [10, 10];
+
+            var el = draw.drawFrame(f);
+
+            expect(el.children[0].getAttributeValue("x")).toEqual(19 + 13); // = (x + shift width defined in FG constructor)
+            expect(el.children[0].getAttributeValue("y")).toEqual(23);
+            expect(el.children[0].getAttributeValue("width")).toEqual(29);
+            expect(el.children[0].getAttributeValue("fill")).toEqual("white");    // rect
+            expect(el.children[1].getAttributeValue("fill")).toEqual("my-black"); // rect
+            expect(el.children[2].getAttributeValue("name")).toEqual("a");        // text
+        });
+    });
 });
