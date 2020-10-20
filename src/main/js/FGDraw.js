@@ -114,7 +114,7 @@ FGDraw.prototype.drawOverlayDropDown = function(overlayBtn) {
             overlayEntry.setAttribute("class", "overlay");
             var overlayEntryText = draw.text(this, "", xText, y + draw.fg.textPadding + 4);
             overlayEntryText.setAttribute("class", "overlay");
-            overlayEntryText.setAttribute("onclick", "fg.loadOverlay(\"" + url + "\", draw.drawOverlay);");
+            overlayEntryText.setAttribute("onclick", "fg.loadOverlay(\"" + url + "\", function() { draw.drawOverlay(draw.svg) } );");
             g.appendChild(overlayEntry);
             g.appendChild(overlayEntryText);
 
@@ -125,8 +125,12 @@ FGDraw.prototype.drawOverlayDropDown = function(overlayBtn) {
     }
 };
 
-FGDraw.prototype.drawOverlay = function () {
-    console.log(Object.getOwnPropertyNames(colorScheme.currentOverlay));
+FGDraw.prototype.drawOverlay = function (svg) {
+    var framesGroup = svg.getElementById(this.fg.namePerFG("frames"));
+    var frames = framesGroup.getElementsByTagName("g");
+    $.each(frames, function () {
+       // TODO  colorScheme.currentOverlay.applyStyle(colorScheme, this);
+    })
 };
 
 FGDraw.prototype.drawInfoElements = function() {
