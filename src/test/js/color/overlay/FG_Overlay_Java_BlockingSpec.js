@@ -8,7 +8,7 @@ describe("FG_Overlay_Java_Blocking", function () {
         overlay = new FG_Overlay_Java_Blocking();
         scheme = new FG_Color();
 
-        scheme.colorFor = function (f, r) {
+        scheme.colorFor = function (frame, samples) {
             return "black";
         };
 

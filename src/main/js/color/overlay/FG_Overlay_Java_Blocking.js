@@ -17,7 +17,7 @@
 function FG_Overlay_Java_Blocking() {
 }
 
-FG_Overlay_Java_Blocking.prototype.applyStyle = function(colorScheme, frame, random) {
+FG_Overlay_Java_Blocking.prototype.applyStyle = function(colorScheme, frame, samples) {
 
     return function (el) {
         var name = frame.name;
@@ -26,7 +26,7 @@ FG_Overlay_Java_Blocking.prototype.applyStyle = function(colorScheme, frame, ran
         })) {
             el.setAttribute("style", "stroke-width:3;stroke:rgb(0,0,0)");
         }
-        el.setAttribute("fill", colorScheme.colorFor(frame, random));
+        el.setAttribute("fill", colorScheme.colorFor(frame, samples));
     };
 };
 

@@ -228,8 +228,8 @@ function FG_Color_Default() {
 FG_Color_Default.prototype = Object.create(FG_Color.prototype);
 FG_Color_Default.prototype.constructor = FG_Color_Default;
 
-FG_Color_Default.prototype.colorFor = function(f, r) {
-    r = (typeof r !== 'undefined') ? r : Math.random();
+FG_Color_Default.prototype.colorFor = function(frame, samples) {
+    samples = (typeof samples !== 'undefined') ? samples : Math.random();
     var colors = [ "red", "orange", "yellow" ];
-    return colorValueFor(colors[Math.floor(3 * r)], f.name);
+    return colorValueFor(colors[Math.floor(3 * samples)], frame.name);
 };

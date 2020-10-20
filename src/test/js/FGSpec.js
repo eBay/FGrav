@@ -291,8 +291,8 @@ describe("FG", function() {
             jasmine.Ajax.stubRequest("js/color/overlay/FG_Overlay_Test.js").andReturn({
                 responseText: "" +
                     "function FG_Overlay_Test() {}\n" +
-                    "FG_Overlay_Test.prototype.colorFor = function(f, r) {" +
-                    "    return (f.name === 'overlay') ? 'rgb(122,122,122)' : colorScheme.colorFor(f, r);" +
+                    "FG_Overlay_Test.prototype.colorFor = function(f, s) {" +
+                    "    return (f.name === 'overlay') ? 'rgb(122,122,122)' : colorScheme.colorFor(f, s);" +
                     "}"
             });
             frameFilter.reset();

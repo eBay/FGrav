@@ -6,7 +6,7 @@ describe("FG_Color", function () {
     beforeEach(function () {
         scheme = new FG_Color();
 
-        scheme.colorFor = function (f, r) {
+        scheme.colorFor = function (frame, samples) {
             return "black";
         };
 
@@ -47,7 +47,7 @@ describe("FG_Color", function () {
 
     function FG_MyOverlay() {}
 
-    FG_MyOverlay.prototype.applyStyle = function (colorScheme, frame, random) {
+    FG_MyOverlay.prototype.applyStyle = function (colorScheme, frame, samples) {
         if (frame === "override") {
             return function (el) {
                 el.setAttribute("fill", "white");
@@ -56,10 +56,10 @@ describe("FG_Color", function () {
         else if (frame === "overlay"){
             return function (el) {
                 el.setAttribute("style", "stroke-width:3;stroke:rgb(0,0,0)");
-                el.setAttribute("fill", colorScheme.colorFor(frame, random));
+                el.setAttribute("fill", colorScheme.colorFor(frame, samples));
             };
         }
-        return colorScheme.colorFor(frame, random); // fallback to original color
+        return colorScheme.colorFor(frame, samples); // fallback to original color
     };
 
 });

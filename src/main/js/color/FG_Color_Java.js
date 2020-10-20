@@ -30,7 +30,7 @@ function FG_Color_Java() {
 
 FG_Color_Java.prototype = Object.create(FG_Color.prototype);
 FG_Color_Java.prototype.constructor = FG_Color_Java;
-FG_Color_Java.prototype.colorFor = function(f, r) {
+FG_Color_Java.prototype.colorFor = function(f, samples) {
     var name = f.name;
     if (name.match(/_\[j\]$/)) {
         return colorValueFor("green", name);

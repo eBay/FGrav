@@ -30,7 +30,7 @@ describe("FGrav", function() {
                     "}\n" +
                     "FG_Color_Test.prototype = Object.create(FG_Color.prototype);\n" +
                     "FG_Color_Test.prototype.constructor = FG_Color_Test;\n" +
-                    "FG_Color_Test.prototype.colorFor = function(f, r) {" +
+                    "FG_Color_Test.prototype.colorFor = function(f, s) {" +
                     "    return 'rgb(122,122,122)';" +
                     "}"
             });
