@@ -24,7 +24,7 @@ FG_Overlay_Java_Blocking.prototype.applyStyle = function(colorScheme, frame, sam
         if (blockingJavaCallsPrefixes.find(function (prefix) {
             return name.startsWith(prefix);
         })) {
-            el.setAttribute("style", "stroke-width:3;stroke:rgb(0,0,0)");
+           mark(el);
         }
         el.setAttribute("fill", colorScheme.colorFor(frame, samples));
     };

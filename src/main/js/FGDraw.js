@@ -17,6 +17,7 @@
 function FGDraw(fg, _d) {
     FGravDraw.call(this, fg, _d);
     this.fg = fg;
+    this.fg.draw = this;
     this.buttonsMargin = 24;
     this.setDefaultColorScheme(new FG_Color_Default());
 }
@@ -114,7 +115,7 @@ FGDraw.prototype.drawOverlayDropDown = function(overlayBtn) {
             overlayEntry.setAttribute("class", "overlay");
             var overlayEntryText = draw.text(this, "", xText, y + draw.fg.textPadding + 4);
             overlayEntryText.setAttribute("class", "overlay");
-            overlayEntryText.setAttribute("onclick", "fg.loadOverlay(\"" + url + "\", function() { draw.drawOverlay(draw.svg) } );");
+            overlayEntryText.setAttribute("onclick", "fg.loadOverlay(\"" + url + "\");");
             g.appendChild(overlayEntry);
             g.appendChild(overlayEntryText);
 
@@ -123,14 +124,6 @@ FGDraw.prototype.drawOverlayDropDown = function(overlayBtn) {
         this.svg.appendChild(overlayBtn);
         this.fg.overlayEl = g;
     }
-};
-
-FGDraw.prototype.drawOverlay = function (svg) {
-    var framesGroup = svg.getElementById(this.fg.namePerFG("frames"));
-    var frames = framesGroup.getElementsByTagName("g");
-    $.each(frames, function () {
-       // TODO  colorScheme.currentOverlay.applyStyle(colorScheme, this);
-    })
 };
 
 FGDraw.prototype.drawInfoElements = function() {
@@ -169,7 +162,20 @@ FGDraw.prototype.drawInfoElements = function() {
 };
 
 FGDraw.prototype.drawFG = function(stackFrames) {
+    this.currentDrawnFrames = stackFrames;
     this.fg.totalSamples = stackFrames.totalSamples;
+    var g = this.generateFramesCells();
+    this.svg.appendChild(g);
+};
+
+FGDraw.prototype.redrawFG = function() {
+    var old = this.svg.getElementById(this.fg.namePerFG("frames"));
+    var g = this.generateFramesCells();
+    this.svg.replaceChild(g, old);
+};
+
+FGDraw.prototype.generateFramesCells = function() {
+    var stackFrames = this.currentDrawnFrames;
     var g = this.d.createElementNS("http://www.w3.org/2000/svg", "g");
     g.setAttribute("id", this.fg.namePerFG("frames"));
     var draw = this;
@@ -181,9 +187,9 @@ FGDraw.prototype.drawFG = function(stackFrames) {
             }
         });
     });
-
-    this.svg.appendChild(g);
+    return g;
 };
+
 
 FGDraw.prototype.drawFrame = function (f) {
     return frame(this, f.name, f.stack, f.samples, f.x() + this.fg.shiftWidth, f.y() + this.fg.shiftHeight,

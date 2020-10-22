@@ -32,6 +32,10 @@ function escText(text) {
     return text.replace(/>/g, "&gt;");
 }
 
+function mark(element) {
+    element.setAttribute("style", "stroke-width:3;stroke:rgb(0,0,0)");
+}
+
 // accessed from potentially remote code evaluated only when loaded.
 function colorValueFor(palette, name, value) {
     var v = typeof value !== 'undefined' ? value : Math.random();

@@ -313,6 +313,14 @@ describe("FG", function() {
 
 
         it("should load dynamic overlay js file", function (done) {
+            var redrawn = false;
+
+            fg.draw = {
+              redrawFG: function () {
+                  redrawn = true;
+              }
+            };
+
             fg.loadOverlay("Test", function () {
 
                 var request = jasmine.Ajax.requests.mostRecent();
@@ -321,6 +329,8 @@ describe("FG", function() {
 
                 expect(colorScheme.currentOverlay.colorFor({ name: 'overlay'})).toEqual("rgb(122,122,122)");
                 expect(colorScheme.currentOverlay.colorFor({ name: 'do not overlay. original color'})).toEqual("rgb(0,0,0)");
+
+                expect(redrawn).toBe(true);
 
                 done();
             }, function () {

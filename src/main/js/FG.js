@@ -142,13 +142,23 @@ FG.prototype.generateDynamicallyLoadingObject = function(name, conventionPrefix,
 };
 
 FG.prototype.loadOverlay = function(overlayName, successCallback) {
+    var fg = this;
     this.toggle_overlay();
     this.loadDynamicJs([ this.generateDynamicallyLoadingObject(overlayName, "js/color/overlay/FG_Overlay_", function (name) {
         return "colorScheme.currentOverlay = new "+ name + "();";
-    })], successCallback
-      , function(response) {
-          log.console("Failed to load " + overlayName + ": " + response.errorMessage());
-    });
+    })], function() {
+            fg.redrawFrames();
+            if (successCallback) {
+                successCallback();
+            }
+        }, function(response) {
+            log.console("Failed to load " + overlayName + ": " + response.errorMessage());
+        }
+    );
+};
+
+FG.prototype.redrawFrames = function () {
+    this.draw.redrawFG();
 };
 
 // accessed from eval (yes, I know, see below)
