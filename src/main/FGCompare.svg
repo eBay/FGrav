@@ -28,19 +28,21 @@
 	</linearGradient>
 </defs>
 <style type="text/css">
-	tspan { font-weight: bold; }
-	rect.tooltip { opacity:0.85 }
+	rect.tooltip, rect.overlay { opacity:0.8 }
 	text.tooltip { fill:rgb(255,255,255); font-size:12px }
-	#search, #ignorecase { opacity:0.1; cursor:pointer; font-size:12px }
-	#search:hover, #search.show, #ignorecase:hover, #ignorecase.show { opacity:1; }
+	text.overlay { fill:blue; font-size:12px; text-decoration: underline; cursor:pointer }
+	#search, #ignorecase, #legendBtn, #overlayBtn { opacity:0.1; cursor:pointer; font-size:12px }
+	#search:hover, #search.show, #ignorecase:hover, #ignorecase.show, #legendBtn:hover, #legendBtn.show,  #overlayBtn:hover, #overlayBtn.show { opacity:1; }
 	#subtitle { text-anchor:middle; font-color:rgb(160,160,160); }
 	#title { text-anchor:middle; font-size:17px}
 	#unzoom { cursor:pointer; font-size:12px }
-	#rframes > *:hover { stroke:black; stroke-width:1.0; cursor:pointer; outline: -webkit-focus-ring-color auto 5px; }
-	#lframes > *:hover { stroke:black; stroke-width:1.0; cursor:pointer; outline: -webkit-focus-ring-color auto 5px; }
 	.hide { display:none; }
 	.parent { opacity:0.5; }
+
+	#rframes > *:hover { stroke:black; stroke-width:1.0; cursor:pointer; outline: -webkit-focus-ring-color auto 5px; }
+	#lframes > *:hover { stroke:black; stroke-width:1.0; cursor:pointer; outline: -webkit-focus-ring-color auto 5px; }
 	.highlight_g { stroke:black; stroke-width:1.0; cursor:pointer; outline: -webkit-focus-ring-color auto 5px; }
+	tspan { font-weight: bold; }
 </style>
 <text id="alt" x="10" y="50" fill="black" font-size="50">FGCompare.svg is drawn dynamically. Please wait</text>
 <script href="js/FGrav.js"/>

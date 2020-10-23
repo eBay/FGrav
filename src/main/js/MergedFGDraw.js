@@ -15,8 +15,8 @@
  limitations under the License.
  **************************************************************************/
 
-function MergedFGDraw(fg, collapsed, visualDiff) {
-    FGDraw.call(this, fg);
+function MergedFGDraw(fg, collapsed, visualDiff, _d) {
+    FGDraw.call(this, fg, _d);
     this.visualDiff = visualDiff;
     this.collapsed = collapsed;
     fg.g_details = function (g) {
@@ -45,10 +45,10 @@ MergedFGDraw.prototype.drawFrame = function (f) {
     if (f.stack === ";all") {
         f.individualSamples = draw.collapsed.totalIndividualSamples;
     }
-    var x = f.x() + this.fg.shiftWidth;
+    var x = f.x() + draw.fg.shiftWidth;
     var w = f.w();
-    var y = f.y() + this.fg.shiftHeight;
-    var element = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    var y = f.y() + draw.fg.shiftHeight;
+    var element = draw.d.createElementNS("http://www.w3.org/2000/svg", "g");
     if (draw.fg.id) {
         element.setAttribute("id", draw.fg.namePerFG(f.stack));
     }
@@ -59,14 +59,16 @@ MergedFGDraw.prototype.drawFrame = function (f) {
         var p1 = percentage(f.individualSamples[1], draw.collapsed.totalIndividualSamples[1]);
 
         var diff =  p0 - p1;
-        frameRect = drawRect(x, y, w, "white");
+        frameRect = drawRect(x, y, w, function (el) {
+            el.setAttribute("fill", "white");
+        });
         if (diff !== 0) {
             diff = (diff < 0) ? diff / p1 : diff / p0;
             var diffW = w * Math.abs(diff);
-            var diffRect = drawRect(x, y, diffW, colorScheme.colorFor(f, draw.collapsed.totalIndividualSamples));
+            var diffRect = drawRect(x, y, diffW, colorScheme.applyStyle(f, draw.collapsed.totalIndividualSamples));
         }
     } else {
-        frameRect = drawRect(x, y, w, colorScheme.colorFor(f, draw.collapsed.totalIndividualSamples));
+        frameRect = drawRect(x, y, w, colorScheme.applyStyle(f, draw.collapsed.totalIndividualSamples));
     }
 
     var textInFrame = draw.frameText(draw, f.name, w - 2, draw.fg.fontSize);
@@ -83,8 +85,8 @@ MergedFGDraw.prototype.drawFrame = function (f) {
 
     return element;
 
-    function drawRect(x, y, w, color) {
-        var frameRect = draw.rect(x, y, w, draw.fg.frameHeight - 1, color);
+    function drawRect(x, y, w, styleFunction) {
+        var frameRect = draw.rect(x, y, w, draw.fg.frameHeight - 1, styleFunction);
         frameRect.setAttribute("rx", "2");
         frameRect.setAttribute("ry", "2");
         return frameRect;

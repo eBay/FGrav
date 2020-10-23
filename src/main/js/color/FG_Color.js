@@ -16,9 +16,17 @@
  **************************************************************************/
 function FG_Color() {
     this.legend = {};
-    this.overlays = [];
+    this.overlays = {};
+    this.currentOverlay = undefined;
 }
 
-FG_Color.prototype.colorFor = function(f, r) {
+FG_Color.prototype.colorFor = function(frame, samples) {
     throw Error("Did not load any color scheme");
+};
+
+FG_Color.prototype.applyStyle = function (frame, samples) {
+    var c = this;
+    return (c.currentOverlay) ? c.currentOverlay.applyStyle(c, frame, samples) : function (el) {
+        el.setAttribute("fill", c.colorFor(frame, samples));
+    };
 };

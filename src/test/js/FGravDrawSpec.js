@@ -3,9 +3,15 @@
 describe("FGravDraw", function() {
 
     var t;
+    var d;
 
     beforeEach(function () {
-        t = new FGravDraw(new FGrav(1, 2, 3, 4, "TITLE"));
+        d = {
+            createElementNS: function(ns, name) {
+                return domElement();
+            }
+        };
+        t = new FGravDraw(new FGrav(1, 2, 3, 4, "TITLE"), d);
         colorScheme = {
             legend: {}
         };
@@ -15,6 +21,25 @@ describe("FGravDraw", function() {
         colorScheme = {
             legend: {}
         };
+    });
+
+    describe("draw rect", function () {
+
+        it('should draw rectangle', function () {
+
+            var r = t.rect(17, 19, 23, 29, function (el) {
+                el.setAttribute("fill", "red");
+                el.setAttribute("style", "fill:rgb(0,0,255);stroke-width:3;stroke:rgb(0,0,0)");
+            });
+
+            expect(r.getAttributeValue("x")).toEqual(17);
+            expect(r.getAttributeValue("y")).toEqual(19);
+            expect(r.getAttributeValue("width")).toEqual(23);
+            expect(r.getAttributeValue("height")).toEqual(29);
+            expect(r.getAttributeValue("fill")).toEqual("red");
+            expect(r.getAttributeValue("style")).toEqual("fill:rgb(0,0,255);stroke-width:3;stroke:rgb(0,0,0)");
+        });
+
     });
 
     describe("when colorValueFor invoked", function () {
@@ -51,5 +76,4 @@ describe("FGravDraw", function() {
             expect(t.textToFit("text", 8, 8)).toEqual("");
         });
     });
-
 });

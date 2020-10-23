@@ -20,7 +20,7 @@
  */
 
 function MultiFG(_w, _prompt) {
-    FG.call(this, "multi", 0, "Flame Graph Diff", _w, _prompt);
+    FG.call(this, "multi", 0, "Flame Graph Diff", 650, _w, _prompt);
     this.fgs = {};
 }
 MultiFG.prototype = Object.create(FG.prototype);
@@ -148,6 +148,14 @@ MultiFG.prototype.find_group = function(node) {
     return this.find_group(parent);
 };
 
+//overlay
+MultiFG.prototype.redrawFrames = function () {
+    this.onAllFGs(function (fg) {
+        fg.redrawFrames(fg);
+    });
+};
+
+
 // zoom
 MultiFG.prototype.zoom = function(node) {
     var multiFG = this;
@@ -162,6 +170,8 @@ MultiFG.prototype.unzoom = function() {
         fg.unzoom(multiFG);
     });
 };
+
+//search
 MultiFG.prototype.search_prompt = function() {
     if (!this.searching) {
         var term = this.searchTermPromptFunction.call(this.ignorecase);
