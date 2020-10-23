@@ -130,7 +130,7 @@ FGDraw.prototype.drawInfoElements = function() {
     var details = this.text(" ", this.fg.namePerFG("details"),
             this.fg.margin + this.fg.shiftWidth, this.fg.height - 4 + this.fg.shiftHeight);
     var matched = this.text(" ", this.fg.namePerFG("matched"),
-            this.fg.width - (this.fg.margin * 6) + this.fg.shiftWidth, this.fg.height - 4 + this.fg.shiftHeight);
+            this.fg.width - 70 - this.fg.margin + this.fg.shiftWidth, this.fg.height - 4 + this.fg.shiftHeight);
     var tooltip = tooltip(this);
     this.svg.appendChild(details);
     this.svg.appendChild(matched);
