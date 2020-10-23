@@ -18,6 +18,7 @@ function FG_Color() {
     this.legend = {};
     this.overlays = {};
     this.currentOverlay = undefined;
+    this.loadedOverlays = {};
 }
 
 FG_Color.prototype.colorFor = function(frame, samples) {

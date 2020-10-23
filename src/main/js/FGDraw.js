@@ -115,7 +115,7 @@ FGDraw.prototype.drawOverlayDropDown = function(overlayBtn) {
             overlayEntry.setAttribute("class", "overlay");
             var overlayEntryText = draw.text(this, "", xText, y + draw.fg.textPadding + 4);
             overlayEntryText.setAttribute("class", "overlay");
-            overlayEntryText.setAttribute("onclick", "fg.loadOverlay(\"" + url + "\");");
+            overlayEntryText.setAttribute("onclick", "fg.loadOverlay(\""+ this +"\", \"" + url + "\");");
             g.appendChild(overlayEntry);
             g.appendChild(overlayEntryText);
 
