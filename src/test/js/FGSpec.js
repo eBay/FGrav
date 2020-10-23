@@ -138,7 +138,25 @@ describe("FG", function() {
             expect(fg.overlay).toBe(false);
         });
 
+        it('should reset overlay', function () {
+            fg.overlaying = true;
+            colorScheme.currentOverlay = "some overlay";
+            var redrawn = false;
 
+            fg.draw = {
+                redrawFG: function () {
+                    redrawn = true;
+                }
+            };
+            fg.toggle_overlay();
+
+            expect(fg.overlayEl.classList.class[0]).toEqual("hide");
+            expect(fg.overlayBtn.classList.class.length).toEqual(0);
+            expect(fg.overlay).toBe(false);
+            expect(fg.overlaying).toBe(false);
+            expect(redrawn).toBe(true);
+            expect(colorScheme.currentOverlay).toBe(undefined);
+        });
 
         it('should toggle ignoreCase on', function () {
             fg.ignorecase = false;
@@ -315,6 +333,7 @@ describe("FG", function() {
         it("should load dynamic overlay js file", function (done) {
             var redrawn = false;
 
+            fg.overlayBtn = domElement();
             fg.draw = {
               redrawFG: function () {
                   redrawn = true;
@@ -331,6 +350,8 @@ describe("FG", function() {
                 expect(colorScheme.currentOverlay.colorFor({ name: 'do not overlay. original color'})).toEqual("rgb(0,0,0)");
 
                 expect(redrawn).toBe(true);
+
+                expect(fg.overlayBtn.firstChild.nodeValue).toBe("Reset Test");
 
                 done();
             }, function () {

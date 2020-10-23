@@ -32,6 +32,7 @@ function FG(id, shiftWidth, defaultTitle, minWidth, _w, _prompt) {
     this.ignorecase = 0;
     this.legend = 0;
     this.overlay = 0;
+    this.overlaying = false;
     this.currentSearchTerm = null;
     this.frameFilterNames = this.getParameter("frameFilter", undefined);
     this.colorSchemeName = this.getParameter("color", undefined);
@@ -148,7 +149,9 @@ FG.prototype.loadOverlay = function(overlayName, successCallback) {
         return "colorScheme.currentOverlay = new "+ name + "();";
     })], function() {
             fg.redrawFrames();
-            if (successCallback) {
+            fg.overlayBtn.firstChild.nodeValue = "Reset " + overlayName;
+            fg.overlaying = true;
+        if (successCallback) {
                 successCallback();
             }
         }, function(response) {
@@ -451,6 +454,9 @@ FG.prototype.toggle_legend = function() {
 
 // overlay
 FG.prototype.toggle_overlay = function() {
+    if (this.overlaying) {
+        this.reset_overlay();
+    }
     if (this.overlayEl) {
         this.overlay = !this.overlay;
         if (this.overlay) {
@@ -461,6 +467,14 @@ FG.prototype.toggle_overlay = function() {
             this.overlayEl.classList.add("hide");
         }
     }
+};
+
+FG.prototype.reset_overlay = function() {
+    this.overlayBtn.firstChild.nodeValue = "Overlay";
+    colorScheme.currentOverlay = undefined;
+    this.redrawFrames();
+    this.overlaying = false;
+    this.overlay = true;
 };
 
 // search
