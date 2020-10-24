@@ -166,6 +166,7 @@ FG.prototype.loadOverlay = function(overlayName, overlayUrl, successCallback) {
 FG.prototype.applyingOverlay = function(overlayName) {
     this.redrawFrames();
     this.overlayBtn.firstChild.nodeValue = "Reset " + overlayName;
+    this.overlayBtn.classList.add("show");
     this.overlaying = true;
     colorScheme.loadedOverlays[overlayName] = colorScheme.currentOverlay;
 };
