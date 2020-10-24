@@ -51,7 +51,7 @@ describe("MergedFGDraw", function () {
             draw = new MergedFGDraw(fg, collapsed, true, d);
 
             colorScheme = {
-                applyStyle: function(f, s) {
+                applyColor: function(f, s) {
                     return function (el) {
                         el.setAttribute("fill", "my-black");
                     }

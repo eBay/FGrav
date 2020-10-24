@@ -193,7 +193,7 @@ FGDraw.prototype.generateFramesCells = function() {
 
 FGDraw.prototype.drawFrame = function (f) {
     return frame(this, f.name, f.stack, f.samples, f.x() + this.fg.shiftWidth, f.y() + this.fg.shiftHeight,
-        f.w(), colorScheme.applyStyle(f), this.d);
+        f.w(), colorScheme.applyColor(f), this.d);
 
 
     function frame(draw, name, id, samples, x, y, w, styleFunction, d) {

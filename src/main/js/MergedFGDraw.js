@@ -65,10 +65,10 @@ MergedFGDraw.prototype.drawFrame = function (f) {
         if (diff !== 0) {
             diff = (diff < 0) ? diff / p1 : diff / p0;
             var diffW = w * Math.abs(diff);
-            var diffRect = drawRect(x, y, diffW, colorScheme.applyStyle(f, draw.collapsed.totalIndividualSamples));
+            var diffRect = drawRect(x, y, diffW, colorScheme.applyColor(f, draw.collapsed.totalIndividualSamples));
         }
     } else {
-        frameRect = drawRect(x, y, w, colorScheme.applyStyle(f, draw.collapsed.totalIndividualSamples));
+        frameRect = drawRect(x, y, w, colorScheme.applyColor(f, draw.collapsed.totalIndividualSamples));
     }
 
     var textInFrame = draw.frameText(draw, f.name, w - 2, draw.fg.fontSize);

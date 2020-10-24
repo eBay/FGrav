@@ -25,7 +25,7 @@ FG_Color.prototype.colorFor = function(frame, samples) {
     throw Error("Did not load any color scheme");
 };
 
-FG_Color.prototype.applyStyle = function (frame, samples) {
+FG_Color.prototype.applyColor = function (frame, samples) {
     var c = this;
     return (c.currentOverlay) ? c.currentOverlay.applyStyle(c, frame, samples) : function (el) {
         el.setAttribute("fill", c.colorFor(frame, samples));

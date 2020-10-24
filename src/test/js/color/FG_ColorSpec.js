@@ -18,7 +18,7 @@ describe("FG_Color", function () {
         scheme.currentOverlay = new FG_MyOverlay();
 
 
-        var style = scheme.applyStyle("override", 17);
+        var style = scheme.applyColor("override", 17);
         style(el);
 
         expect(el.getAttributeValue("fill")).toEqual('white');
@@ -29,7 +29,7 @@ describe("FG_Color", function () {
 
         scheme.currentOverlay = new FG_MyOverlay();
 
-        var style = scheme.applyStyle("overlay", 17);
+        var style = scheme.applyColor("overlay", 17);
         style(el);
 
         expect(el.getAttributeValue("fill")).toEqual('black');
@@ -38,7 +38,7 @@ describe("FG_Color", function () {
 
     it("should ignore overlay if no current is assigned", function () {
 
-        var style = scheme.applyStyle("name", 17);
+        var style = scheme.applyColor("name", 17);
         style(el);
 
         expect(el.getAttributeValue("fill")).toEqual('black');

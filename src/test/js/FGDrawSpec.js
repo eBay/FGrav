@@ -25,7 +25,7 @@ describe("FGDraw", function () {
             draw = new FGDraw(fg, d);
 
             colorScheme = {
-                applyStyle: function() {
+                applyColor: function() {
                     return function (el) {
                         el.setAttribute("fill", "my-black");
                     }
