@@ -45,6 +45,18 @@ describe("FG_Color", function () {
         expect(el.getAttribute("style")).toEqual(undefined);
     });
 
+    it('should set fill attribute when applying style using this color scheme', function () {
+        scheme.currentOverlay = new FG_Color();
+        scheme.currentOverlay.colorFor = function (frame, samples) {
+            return "white";
+        };
+
+        var style = scheme.applyColor("name", 17);
+        style(el);
+
+        expect(el.getAttributeValue("fill")).toEqual('white');
+    });
+
     function FG_MyOverlay() {}
 
     FG_MyOverlay.prototype.applyStyle = function (colorScheme, frame, samples) {
