@@ -109,7 +109,6 @@ FG.prototype.objectsToLoad = function() {
     var toLoad = [];
     var fg = this;
     if (typeof this.colorSchemeName !== 'undefined') {
-        var url;
         var obj = fg.generateDynamicallyLoadingObject(this.colorSchemeName, "js/color/FG_Color_", function (objName) {
             return "colorScheme = new " + objName + "();"
         });
@@ -117,7 +116,6 @@ FG.prototype.objectsToLoad = function() {
     }
     if (typeof this.frameFilterNames !== 'undefined') {
         $.each(this.frameFilterNames.split(",").map(function (n) {
-            var url;
             return fg.generateDynamicallyLoadingObject(n, "js/frame/FG_Filter_", function (objName) {
                 return "frameFilter.filters.push(new "+ objName +"());";
             });

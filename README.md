@@ -193,8 +193,8 @@ If no color parameter is defined on the HTTP request then 'Default' color scheme
  
 #### Custom color schemes
 
-To build a custom color scheme, simply implement your own color scheme JS function.
-Built-in functions can serve as an exammple of how to implement a color scheme JS file.
+To build a custom color scheme, simply implement your own color scheme JS object (extend `FG_Color`).
+Built-in color schemes can serve as an example of how to implement a color scheme JS file.
 It must contain a function that returns the color given the frame and number of samples.
 It must also set global var `colorScheme.colorFor` to your function.  
 Optionally you can also define a legend for your color scheme by setting an object (map of color to name) to `colorScheme.legend`.
