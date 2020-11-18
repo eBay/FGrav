@@ -1,0 +1,13 @@
+{
+  "color": {
+    "Java": {
+      "uri": "Java",
+      "overlays": "Blocking"
+    }
+  },
+  "overlay": {
+    "Blocking" : "Java_Blocking"
+  }
+
+}
+

@@ -14,47 +14,48 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  **************************************************************************/
+
+
+var blockingPrefixes = [
+        "java/lang/Thread.sleep",
+        "java/lang/Thread.yield",
+        "java/lang/Thread.onSpinWait",
+        "java/lang/Object.wait",
+        "java/lang/UNIXProcess.forkAndExec",
+        "java/lang/ProcessImpl.forkAndExec",
+        "java/util/concurrent/locks/LockSupport.park",
+        "java/util/concurrent/locks/LockSupport.park",
+        "sun/misc/Unsafe.park",
+        "jdk/internal/misc/Unsafe.park",
+        "java/io/FileInputStream.read",
+        "java/io/FileOutputStream.write",
+        "java/io/RandomAccessFile.read",
+        "java/io/RandomAccessFile.write",
+        "java/net/Socket.connect",
+        "java/net/DatagramSocket.connect",
+        "java/net/PlainDatagramSocketImpl.connect",
+        "java/net/PlainDatagramSocketImpl.peekData",
+        "java/net/PlainDatagramSocketImpl.send",
+        "java/net/PlainSocketImpl.socketAccept",
+        "java/net/ServerSocket.implAccept",
+        "java/net/SocketInputStream.socketRead0",
+        "java/net/Socket$SocketInputStream.read",
+        "java/net/SocketOutputStream.socketWrite0",
+        "java/net/Socket$SocketOutputStream.write",
+    ];
+
 function FG_Overlay_Java_Blocking() {
-}
-
-FG_Overlay_Java_Blocking.prototype.applyStyle = function(colorScheme, frame, samples) {
-
-    return function (el) {
-        var name = frame.name;
-        if (blockingJavaCallsPrefixes.find(function (prefix) {
-            return name.startsWith(prefix);
-        })) {
-           mark(el);
+    FGOverlayMarkByPredicate.call(this,
+        function(frame) {
+            return function (el) {
+                return blockingPrefixes.find(function (prefix) {
+                    return frame.name.startsWith(prefix);
+                });
+            }
         }
-        el.setAttribute("fill", colorScheme.colorFor(frame, samples));
-    };
-};
+    );
+}
+FG_Overlay_Java_Blocking.prototype = Object.create(FGOverlayMarkByPredicate.prototype);
+FG_Overlay_Java_Blocking.prototype.constructor = FG_Overlay_Java_Blocking;
 
-var blockingJavaCallsPrefixes = [
-    "java/lang/Thread.sleep",
-    "java/lang/Thread.yield",
-    "java/lang/Thread.onSpinWait",
-    "java/lang/Object.wait",
-    "java/lang/UNIXProcess.forkAndExec",
-    "java/lang/ProcessImpl.forkAndExec",
-    "java/util/concurrent/locks/LockSupport.park",
-    "java/util/concurrent/locks/LockSupport.park",
-    "sun/misc/Unsafe.park",
-    "jdk/internal/misc/Unsafe.park",
-    "java/io/FileInputStream.read",
-    "java/io/FileOutputStream.write",
-    "java/io/RandomAccessFile.read",
-    "java/io/RandomAccessFile.write",
-    "java/net/Socket.connect",
-    "java/net/DatagramSocket.connect",
-    "java/net/PlainDatagramSocketImpl.connect",
-    "java/net/PlainDatagramSocketImpl.peekData",
-    "java/net/PlainDatagramSocketImpl.send",
-    "java/net/PlainSocketImpl.socketAccept",
-    "java/net/ServerSocket.implAccept",
-    "java/net/SocketInputStream.socketRead0",
-    "java/net/Socket$SocketInputStream.read",
-    "java/net/SocketOutputStream.socketWrite0",
-    "java/net/Socket$SocketOutputStream.write",
-];
 
