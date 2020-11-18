@@ -37,7 +37,8 @@ describe("FG", function() {
             }
         };
         colorScheme = {
-            legend: {}
+            legend: {},
+            loadedOverlays: {}
         };
 
         textNode = {
@@ -70,7 +71,8 @@ describe("FG", function() {
 
     afterEach(function () {
         colorScheme = {
-            legend: {}
+            legend: {},
+            loadedOverlays: {}
         };
     });
 
@@ -316,6 +318,7 @@ describe("FG", function() {
             frameFilter.reset();
             colorScheme = {
                 legend: {},
+                loadedOverlays: {},
                 colorFor: function () {
                     return 'rgb(0,0,0)';
                 }
@@ -324,7 +327,8 @@ describe("FG", function() {
 
         afterEach(function () {
             colorScheme = {
-                legend: {}
+                legend: {},
+                loadedOverlays: {}
             };
             jasmine.Ajax.uninstall();
         });
@@ -340,7 +344,7 @@ describe("FG", function() {
               }
             };
 
-            fg.loadOverlay("Test", function () {
+            fg.loadOverlay("MyTest", "Test", function () {
 
                 var request = jasmine.Ajax.requests.mostRecent();
                 expect(request.url).toBe("js/color/overlay/FG_Overlay_Test.js");
@@ -351,13 +355,40 @@ describe("FG", function() {
 
                 expect(redrawn).toBe(true);
 
-                expect(fg.overlayBtn.firstChild.nodeValue).toBe("Reset Test");
+                expect(fg.overlayBtn.firstChild.nodeValue).toBe("Reset MyTest");
 
                 done();
             }, function () {
                 fail("ajax should succeed");
                 done();
             });
+        });
+
+
+        it("should load already loaded overlay object", function () {
+            var redrawn = false;
+
+            fg.overlayBtn = domElement();
+            fg.draw = {
+                redrawFG: function () {
+                    redrawn = true;
+                }
+            };
+
+            colorScheme.loadedOverlays["My Test"] = {
+                colorFor: function(f, s) {
+                    return (f.name === 'overlay') ? 'rgb(80,80,80)' : colorScheme.colorFor(f, s);
+                }
+            };
+
+            fg.loadOverlay("My Test", "Test");
+
+            expect(colorScheme.currentOverlay.colorFor({ name: 'overlay'})).toEqual("rgb(80,80,80)");
+            expect(colorScheme.currentOverlay.colorFor({ name: 'do not overlay. original color'})).toEqual("rgb(0,0,0)");
+
+            expect(redrawn).toBe(true);
+
+            expect(fg.overlayBtn.firstChild.nodeValue).toBe("Reset My Test");
         });
     });
 

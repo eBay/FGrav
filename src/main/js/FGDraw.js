@@ -115,7 +115,7 @@ FGDraw.prototype.drawOverlayDropDown = function(overlayBtn) {
             overlayEntry.setAttribute("class", "overlay");
             var overlayEntryText = draw.text(this, "", xText, y + draw.fg.textPadding + 4);
             overlayEntryText.setAttribute("class", "overlay");
-            overlayEntryText.setAttribute("onclick", "fg.loadOverlay(\"" + url + "\");");
+            overlayEntryText.setAttribute("onclick", "fg.loadOverlay(\""+ this +"\", \"" + url + "\");");
             g.appendChild(overlayEntry);
             g.appendChild(overlayEntryText);
 
@@ -130,7 +130,7 @@ FGDraw.prototype.drawInfoElements = function() {
     var details = this.text(" ", this.fg.namePerFG("details"),
             this.fg.margin + this.fg.shiftWidth, this.fg.height - 4 + this.fg.shiftHeight);
     var matched = this.text(" ", this.fg.namePerFG("matched"),
-            this.fg.width - (this.fg.margin * 6) + this.fg.shiftWidth, this.fg.height - 4 + this.fg.shiftHeight);
+            this.fg.width - 70 - this.fg.margin + this.fg.shiftWidth, this.fg.height - 4 + this.fg.shiftHeight);
     var tooltip = tooltip(this);
     this.svg.appendChild(details);
     this.svg.appendChild(matched);
@@ -193,7 +193,7 @@ FGDraw.prototype.generateFramesCells = function() {
 
 FGDraw.prototype.drawFrame = function (f) {
     return frame(this, f.name, f.stack, f.samples, f.x() + this.fg.shiftWidth, f.y() + this.fg.shiftHeight,
-        f.w(), colorScheme.applyStyle(f), this.d);
+        f.w(), colorScheme.applyColor(f), this.d);
 
 
     function frame(draw, name, id, samples, x, y, w, styleFunction, d) {
