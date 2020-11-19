@@ -70,10 +70,7 @@ describe("FG", function() {
     });
 
     afterEach(function () {
-        colorScheme = {
-            legend: {},
-            loadedOverlays: {}
-        };
+        colorScheme = undefined;
     });
 
     describe('interactivity', function () {
@@ -326,10 +323,7 @@ describe("FG", function() {
         });
 
         afterEach(function () {
-            colorScheme = {
-                legend: {},
-                loadedOverlays: {}
-            };
+            colorScheme = undefined;
             jasmine.Ajax.uninstall();
         });
 

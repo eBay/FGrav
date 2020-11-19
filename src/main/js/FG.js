@@ -212,7 +212,7 @@ FG.prototype.calculateHeight = function (maxLevel) {
             this.textPadding = 8;
         }
         if (!this.forcedHeight) {
-            var additional = (colorScheme.legend) ? Object.keys(colorScheme.legend).length : 0;
+            var additional = (colorScheme && colorScheme.legend) ? Object.keys(colorScheme.legend).length : 0;
             this.height = Math.max(this.minHeight, Math.min(this.height, ((maxLevel + additional + 1) * (this.frameHeight + 2)) + (this.margin * 4)));
         }
     }

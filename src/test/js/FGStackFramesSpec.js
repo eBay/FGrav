@@ -162,9 +162,7 @@ describe("FGStackFrames", function() {
         });
 
         afterEach(function() {
-            colorScheme = {
-                legend: {}
-            };
+            colorScheme = undefined;
             frameFilter.reset();
             jasmine.Ajax.uninstall();
         });

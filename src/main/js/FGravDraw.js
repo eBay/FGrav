@@ -97,7 +97,9 @@ FGravDraw.prototype.rect = function(x, y, width, height, styleFunction) {
     element.setAttribute("y", y);
     element.setAttribute("width", width);
     element.setAttribute("height", height);
-    styleFunction(element);
+    if (styleFunction) {
+        styleFunction(element);
+    }
     return element;
 };
 

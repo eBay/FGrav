@@ -29,6 +29,7 @@
 </defs>
 <style type="text/css">
 	rect.tooltip, rect.overlay { opacity:0.8 }
+	#frames rect { fill:rgb(255,255,255) }
 	text.tooltip { fill:rgb(255,255,255); font-size:12px }
 	text.overlay { fill:blue; font-size:12px; text-decoration: underline; cursor:pointer }
 	#search, #ignorecase, #legendBtn, #overlayBtn  { opacity:0.1; cursor:pointer; font-size:12px }
