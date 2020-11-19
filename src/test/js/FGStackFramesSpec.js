@@ -165,14 +165,18 @@ describe("FGStackFrames", function() {
         it("should keep default dimensions when freezeDimensions is true", function () {
             fg.freezeDimensions = true;
 
-            stackFrames.loadCollapsed(fg, "test.collapsed");
-
-            expect(fg.width).toEqual(1200);
-            expect(fg.height).toEqual(2200);
-            expect(fg.frameHeight).toEqual(15);
-            expect(fg.margin).toEqual(24);
-            expect(fg.fontSize).toEqual(12);
-            expect(fg.textPadding).toEqual(10.5);
+            stackFrames.loadCollapsed(fg, "test.collapsed", function() {
+                expect(fg.width).toEqual(1200);
+                expect(fg.height).toEqual(2200);
+                expect(fg.frameHeight).toEqual(15);
+                expect(fg.margin).toEqual(24);
+                expect(fg.fontSize).toEqual(12);
+                expect(fg.textPadding).toEqual(10.5);
+                done();
+            }, function () {
+                fail("ajax should succeed");
+                done();
+            });
         });
 
         it("should calculate dimensions based on stack frames", function () {
@@ -180,26 +184,41 @@ describe("FGStackFrames", function() {
                 red: 'items',
                 blue: 'more items'
             };
-            stackFrames.loadCollapsed(fg, "test.collapsed");
+            stackFrames.loadCollapsed(fg, "test.collapsed", function() {
+                expect(fg.width).toEqual((2 * 24) + (60 * 14));
+                expect(fg.height).toEqual((3 + 2 + 1) * (15 + 2) + (24 * 4)); // 3 = maxLevel, 2 = legend size
+                done();
+            }, function () {
+                fail("ajax should succeed");
+                done();
+            });
 
-            expect(fg.width).toEqual((2 * 24) + (60 * 14));
-            expect(fg.height).toEqual((3 + 2 + 1) * (15 + 2) + (24 * 4)); // 3 = maxLevel, 2 = legend size
         });
 
         it("should modify margin and font when width is tight", function () {
-            stackFrames.loadCollapsed(fg, "test_many_samples_with_small_minimum.collapsed");
-
-            expect(fg.width).toEqual(1200);
-            expect(fg.margin).toEqual(8);
-            expect(fg.fontSize).toEqual(8);
+            stackFrames.loadCollapsed(fg, "test_many_samples_with_small_minimum.collapsed", function() {
+                expect(fg.width).toEqual(1200);
+                expect(fg.margin).toEqual(8);
+                expect(fg.fontSize).toEqual(8);
+                done();
+            }, function () {
+                fail("ajax should succeed");
+                done();
+            });
         });
 
         it("should modify frame height font and text padding when height is tight", function () {
-            stackFrames.loadCollapsed(fg, "test_large_path.collapsed");
+            stackFrames.loadCollapsed(fg, "test_large_path.collapsed", function() {
+                expect(fg.frameHeight).toEqual(14);
+                expect(fg.fontSize).toEqual(8);
+                expect(fg.textPadding).toEqual(8);
+                done();
+            }, function () {
+                fail("ajax should succeed");
+                done();
+            });
 
-            expect(fg.frameHeight).toEqual(14);
-            expect(fg.fontSize).toEqual(8);
-            expect(fg.textPadding).toEqual(8);
+
         });
     });
 });
