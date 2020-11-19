@@ -51,32 +51,38 @@ describe("FGrav", function() {
         it("should load dynamic js file", function (done) {
             t.loadDynamicJs([new DynamicallyLoading("js/frame/FG_Filter_Test.js", "frameFilter.filters.push(new FG_Filter_Test());")], function () {
 
-                var request = jasmine.Ajax.requests.mostRecent();
-                expect(request.url).toBe("js/frame/FG_Filter_Test.js");
-                expect(request.method).toBe('GET');
+                try {
+                    var request = jasmine.Ajax.requests.mostRecent();
+                    expect(request.url).toBe("js/frame/FG_Filter_Test.js");
+                    expect(request.method).toBe('GET');
 
-                expect(frameFilter.filters[0].filter('foo')).toEqual("foofoo");
+                    expect(frameFilter.filters[0].filter('foo')).toEqual("foofoo");
 
-                done();
+                    done();
+                } catch (e) {
+                    done(e);
+                }
             }, function () {
-                fail("ajax should succeed");
-                done();
+                done.fail("ajax should succeed");
             });
         });
 
         it("should load dynamic js file with additional installation script", function (done) {
             t.loadDynamicJs([new DynamicallyLoading("js/color/FG_Color_Test.js", "colorScheme = new FG_Color_Test();")], function () {
 
-                var request = jasmine.Ajax.requests.mostRecent();
-                expect(request.url).toBe("js/color/FG_Color_Test.js");
-                expect(request.method).toBe('GET');
+                try {
+                    var request = jasmine.Ajax.requests.mostRecent();
+                    expect(request.url).toBe("js/color/FG_Color_Test.js");
+                    expect(request.method).toBe('GET');
 
-                expect(colorScheme.colorFor()).toEqual("rgb(122,122,122)");
+                    expect(colorScheme.colorFor()).toEqual("rgb(122,122,122)");
 
-                done();
+                    done();
+                } catch (e) {
+                    done(e);
+                }
             }, function () {
-                fail("ajax should succeed");
-                done();
+                done.fail("ajax should succeed");
             });
         });
 
@@ -86,16 +92,19 @@ describe("FGrav", function() {
                 new DynamicallyLoading("js/color/FG_Color_Test.js", "colorScheme = new FG_Color_Test();"),
                 new DynamicallyLoading("js/frame/FG_Filter_Test.js", "frameFilter.filters.push(new FG_Filter_Test());")], function () {
 
+            try {
                 expect(frameFilter.filters.length).toEqual(2);
                 expect(frameFilter.filters[0].filter('foo')).toEqual("x");
                 expect(frameFilter.filters[1].filter('foo')).toEqual("foofoo");
                 expect(colorScheme.colorFor()).toEqual("rgb(122,122,122)");
 
                 done();
-            }, function () {
-                fail("ajax should succeed");
-                done();
-            });
+            } catch (e) {
+                done(e);
+            }
+        }, function () {
+            done.fail("ajax should succeed");
+        });
         });
     });
 

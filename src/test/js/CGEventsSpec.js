@@ -52,18 +52,26 @@ describe("CalendarEvents", function () {
             jasmine.Ajax.uninstall();
         });
 
-        it("should load calendar events", function () {
-            cgEvents.loadCalendarEvents("test.json");
+        it("should load calendar events", function (done) {
+            cgEvents.loadCalendarEvents("test.json", function () {
+                try {
+                    var request = jasmine.Ajax.requests.mostRecent();
+                    expect(request.url).toBe("test.json");
+                    expect(request.method).toBe('GET');
 
-            var request = jasmine.Ajax.requests.mostRecent();
-            expect(request.url).toBe("test.json");
-            expect(request.method).toBe('GET');
+                    expect(cgEvents.maxSamples).toEqual(14100);
+                    expect(cgEvents.getEvents(new Date("2019-08-24")).length).toEqual(0);
+                    expect(cgEvents.getEvents(new Date("2019-08-23")).length).toEqual(1);
+                    expect(cgEvents.getEvents(new Date("2019-08-21")).length).toEqual(3);
+                    expect(cgEvents.getEvents(new Date("2019-08-21")).map(function (x) { return x.samples; })).toEqual([5000, 7000, 500]);
 
-            expect(cgEvents.maxSamples).toEqual(14100);
-            expect(cgEvents.getEvents(new Date("2019-08-24")).length).toEqual(0);
-            expect(cgEvents.getEvents(new Date("2019-08-23")).length).toEqual(1);
-            expect(cgEvents.getEvents(new Date("2019-08-21")).length).toEqual(3);
-            expect(cgEvents.getEvents(new Date("2019-08-21")).map(function (x) { return x.samples; })).toEqual([5000, 7000, 500]);
+                    done();
+                } catch (e) {
+                    done(e);
+                }
+            }, function () {
+                done.fail("ajax should succeed");
+            });
         });
     });
 });

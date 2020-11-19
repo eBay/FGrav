@@ -346,21 +346,24 @@ describe("FG", function() {
 
             fg.loadOverlay("MyTest", "Test", function () {
 
-                var request = jasmine.Ajax.requests.mostRecent();
-                expect(request.url).toBe("js/color/overlay/FG_Overlay_Test.js");
-                expect(request.method).toBe('GET');
+                try {
+                    var request = jasmine.Ajax.requests.mostRecent();
+                    expect(request.url).toBe("js/color/overlay/FG_Overlay_Test.js");
+                    expect(request.method).toBe('GET');
 
-                expect(colorScheme.currentOverlay.colorFor({ name: 'overlay'})).toEqual("rgb(122,122,122)");
-                expect(colorScheme.currentOverlay.colorFor({ name: 'do not overlay. original color'})).toEqual("rgb(0,0,0)");
+                    expect(colorScheme.currentOverlay.colorFor({ name: 'overlay'})).toEqual("rgb(122,122,122)");
+                    expect(colorScheme.currentOverlay.colorFor({ name: 'do not overlay. original color'})).toEqual("rgb(0,0,0)");
 
-                expect(redrawn).toBe(true);
+                    expect(redrawn).toBe(true);
 
-                expect(fg.overlayBtn.firstChild.nodeValue).toBe("Reset MyTest");
+                    expect(fg.overlayBtn.firstChild.nodeValue).toBe("Reset MyTest");
 
-                done();
+                    done();
+                } catch (e) {
+                    done(e);
+                }
             }, function () {
-                fail("ajax should succeed");
-                done();
+                    done.fail("ajax should succeed");
             });
         });
 
