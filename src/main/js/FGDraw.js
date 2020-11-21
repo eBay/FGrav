@@ -98,7 +98,7 @@ FGDraw.prototype.drawOverlayDropDown = function(overlayBtn) {
         var x = overlayBtn.getAttribute("x");
         var xText = parseInt(x) + 4;
         $.each(overlayKeys, function (i) {
-            var url = colorScheme.overlays[this];
+            var uri = colorScheme.overlays[this];
             var y = (i + 1) * (size + 1) + draw.buttonsMargin;
             var overlayEntry = draw.rect(x, y, 90, 20, function (el) {
                 el.setAttribute("fill", "rgb(90,90,90)");
@@ -108,7 +108,7 @@ FGDraw.prototype.drawOverlayDropDown = function(overlayBtn) {
             overlayEntry.setAttribute("class", "overlay");
             var overlayEntryText = draw.text(this, "", xText, y + draw.fg.textPadding + 4);
             overlayEntryText.setAttribute("class", "overlay");
-            overlayEntryText.setAttribute("onclick", "fg.loadOverlay(\""+ this +"\", \"" + url + "\");");
+            overlayEntryText.setAttribute("onclick", "fg.loadOverlay(\""+ this +"\", \"" + uri + "\");");
             g.appendChild(overlayEntry);
             g.appendChild(overlayEntryText);
 
