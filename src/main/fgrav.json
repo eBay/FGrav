@@ -1,13 +1,23 @@
 {
   "color": {
+    "Flames": {
+      "uri": "Flames"
+    },
+    "Js": {
+      "uri": "Js"
+    },
     "Java": {
       "uri": "Java",
-      "overlays": "Blocking"
+      "overlays": "Blocking, Reflection"
     }
   },
   "overlay": {
-    "Blocking" : "Java_Blocking"
+    "Blocking": {
+      "uri": "Java_Blocking"
+    },
+    "Reflection": {
+      "uri": "Java_Reflection"
+    }
   }
-
 }
 

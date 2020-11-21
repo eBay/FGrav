@@ -34,6 +34,7 @@ function FG(id, shiftWidth, defaultTitle, minWidth, _w, _prompt) {
     this.overlay = 0;
     this.overlaying = false;
     this.currentSearchTerm = null;
+    this.configUrl = this.getParameter("config", "fgrav.json");
     this.frameFilterNames = this.getParameter("frameFilter", undefined);
     this.colorSchemeName = this.getParameter("color", undefined);
     this.searchTermPromptFunction = (typeof _prompt !== "undefined") ? _prompt :
@@ -103,6 +104,40 @@ FG.prototype.setup = function(_w) {
 
 FG.prototype.load = function (successCallback, errorCallback) {
     this.loadDynamicJs(this.objectsToLoad(), successCallback, errorCallback);
+};
+
+
+FGrav.prototype.loadDynamicJs = function(toLoad, successCallback, errorCallback) {
+    var response = new FGravResponse();
+    var ajaxObjs = [];
+    var jsSrc = [];
+    $.each(toLoad, function (i, l) {
+        var ajax = $.ajax({ type: "GET",
+            url: l.getUrl(),
+            dataType: 'text',
+            success: function(data) {
+                jsSrc[i] = l.appendInstallScript(data);
+                // console.log("load " + l.getUrl());
+                // console.log("call " + l.appendInstallScript(""));
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                response.addError(errorThrown, textStatus);
+            }
+        });
+        ajaxObjs[i] = ajax;
+    });
+
+    this.multipleAjaxCalls(ajaxObjs, response, function () {
+        // TODO DOES NOT WORK. HAD TO RESORT TO EVAL!!!
+        // var loadedScript = document.createElement('script');
+        // loadedScript.type = "text/javascript";
+        // loadedScript.innerHTML = data;
+        // loadedScript.text = data;
+        //
+        // svg.children[1].parentNode.insertBefore(loadedScript, svg.children[1].nextSibling);
+        eval(jsSrc.join("\n"));
+        successCallback(response);
+    }, errorCallback);
 };
 
 FG.prototype.objectsToLoad = function() {

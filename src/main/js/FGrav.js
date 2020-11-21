@@ -43,36 +43,10 @@ function FGrav(w, h, margin, fontSize, title, _w) {
 
 }
 
-FGrav.prototype.loadDynamicJs = function(toLoad, successCallback, errorCallback) {
-    var response = new FGravResponse();
-    var ajaxObjs = [];
-    var jsSrc = [];
-    $.each(toLoad, function (i, l) {
-        var ajax = $.ajax({ type: "GET",
-            url: l.getUrl(),
-            dataType: 'text',
-            success: function(data) {
-                jsSrc[i] = l.appendInstallScript(data);
-                // console.log("load " + l.getUrl());
-                // console.log("call " + l.appendInstallScript(""));
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                response.addError(errorThrown, textStatus);
-            }
-        });
-        ajaxObjs[i] = ajax;
-    });
+FGrav.prototype.multipleAjaxCalls = function(ajaxObjs, response, successCallback, errorCallback) {
     $.when.apply($, ajaxObjs)
         .then(function () {
             if (response.isSuccess()) {
-                // TODO DOES NOT WORK. HAD TO RESORT TO EVAL!!!
-                // var loadedScript = document.createElement('script');
-                // loadedScript.type = "text/javascript";
-                // loadedScript.innerHTML = data;
-                // loadedScript.text = data;
-                //
-                // svg.children[1].parentNode.insertBefore(loadedScript, svg.children[1].nextSibling);
-                eval(jsSrc.join("\n"));
                 successCallback(response);
             } else {
                 errorCallback(response);
