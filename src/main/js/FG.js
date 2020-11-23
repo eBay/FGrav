@@ -175,22 +175,23 @@ FG.prototype.generateDynamicallyLoadingObject = function(name, conventionPrefix,
     return new DynamicallyLoading(url, generateInstallScript(objName));
 };
 
-FG.prototype.loadOverlay = function(overlayName, overlayUrl, successCallback) {
+FG.prototype.loadOverlay = function(overlayName, overlayUri, successCallback) {
     var fg = this;
     this.toggle_overlay();
     if (colorScheme.loadedOverlays[overlayName]) {
         colorScheme.currentOverlay = colorScheme.loadedOverlays[overlayName];
         fg.applyingOverlay(overlayName);
     } else {
-        this.loadDynamicJs([this.generateDynamicallyLoadingObject(overlayUrl, "js/color/overlay/FG_Overlay_", function (name) {
-                return "colorScheme.currentOverlay = new " + name + "();";
-            })], function () {
+        var dynamicallyLoading = this.generateDynamicallyLoadingObject(overlayUri, "js/color/overlay/FG_Overlay_", function (name) {
+            return "colorScheme.currentOverlay = new " + name + "();";
+        });
+        this.loadDynamicJs([dynamicallyLoading], function () {
                 fg.applyingOverlay(overlayName);
                 if (successCallback) {
                     successCallback();
                 }
             }, function (response) {
-                log.console("Failed to load " + overlayUrl + ": " + response.errorMessage());
+                log.console("Failed to load " + overlayUri + ": " + response.errorMessage());
             }
         );
     }
