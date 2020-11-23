@@ -46,6 +46,7 @@
 <script href="js/FGravDraw.js"/>
 <script href="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"/>
 <script href="js/color/FG_Color.js"/>
+<script href="js/color/overlay/FGOverlayMarkByPredicate.js"/>
 <script href="js/FGDraw.js"/>
 <script href="js/FGStackFrames.js"/>
 <script href="js/Collapsed.js"/>

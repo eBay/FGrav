@@ -36,8 +36,9 @@ function frames(framesArray) {
     };
 }
 
-function domElement() {
+function domElement(name) {
     return {
+        name: name,
         attributes: {},
         children: [],
         getAttributeValue: function(k) {

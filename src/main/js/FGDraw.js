@@ -19,17 +19,10 @@ function FGDraw(fg, _d) {
     this.fg = fg;
     this.fg.draw = this;
     this.buttonsMargin = 24;
-    this.setDefaultColorScheme(new FG_Color_Default());
 }
 
 FGDraw.prototype = Object.create(FGravDraw.prototype);
 FGDraw.prototype.constructor = FGDraw;
-
-FGDraw.prototype.setDefaultColorScheme = function(colorSchemeImpl) {
-    if (!colorScheme || colorScheme.constructor.name === "FG_Color_Default") {
-        colorScheme = colorSchemeImpl;
-    }
-};
 
 FGDraw.prototype.drawCanvas = function() {
     this.svg.setAttribute("width", this.fg.width);
@@ -68,7 +61,7 @@ FGDraw.prototype.drawCanvas = function() {
 };
 
 FGDraw.prototype.drawLegend = function(legendBtn) {
-    var legendKeys = Object.keys(colorScheme.legend);
+    var legendKeys = (colorScheme && colorScheme.legend) ?  Object.keys(colorScheme.legend) : [];
     if (legendKeys.length > 0) {
         var g = this.d.createElementNS("http://www.w3.org/2000/svg", "g");
         g.setAttribute("id", "legend");
@@ -95,7 +88,7 @@ FGDraw.prototype.drawLegend = function(legendBtn) {
 };
 
 FGDraw.prototype.drawOverlayDropDown = function(overlayBtn) {
-    var overlayKeys = Object.keys(colorScheme.overlays);
+    var overlayKeys = (colorScheme && colorScheme.overlays) ? Object.keys(colorScheme.overlays): [];
     if (overlayKeys.length > 0) {
         var g = this.d.createElementNS("http://www.w3.org/2000/svg", "g");
         g.setAttribute("id", "overlay");
@@ -105,7 +98,7 @@ FGDraw.prototype.drawOverlayDropDown = function(overlayBtn) {
         var x = overlayBtn.getAttribute("x");
         var xText = parseInt(x) + 4;
         $.each(overlayKeys, function (i) {
-            var url = colorScheme.overlays[this];
+            var uri = colorScheme.overlays[this];
             var y = (i + 1) * (size + 1) + draw.buttonsMargin;
             var overlayEntry = draw.rect(x, y, 90, 20, function (el) {
                 el.setAttribute("fill", "rgb(90,90,90)");
@@ -115,7 +108,7 @@ FGDraw.prototype.drawOverlayDropDown = function(overlayBtn) {
             overlayEntry.setAttribute("class", "overlay");
             var overlayEntryText = draw.text(this, "", xText, y + draw.fg.textPadding + 4);
             overlayEntryText.setAttribute("class", "overlay");
-            overlayEntryText.setAttribute("onclick", "fg.loadOverlay(\""+ this +"\", \"" + url + "\");");
+            overlayEntryText.setAttribute("onclick", "fg.loadOverlay(\""+ this +"\", \"" + uri + "\");");
             g.appendChild(overlayEntry);
             g.appendChild(overlayEntryText);
 
@@ -193,7 +186,7 @@ FGDraw.prototype.generateFramesCells = function() {
 
 FGDraw.prototype.drawFrame = function (f) {
     return frame(this, f.name, f.stack, f.samples, f.x() + this.fg.shiftWidth, f.y() + this.fg.shiftHeight,
-        f.w(), colorScheme.applyColor(f), this.d);
+        f.w(), (colorScheme) ? colorScheme.applyColor(f) : undefined, this.d);
 
 
     function frame(draw, name, id, samples, x, y, w, styleFunction, d) {
@@ -225,17 +218,4 @@ FGDraw.prototype.frameText = function(draw, text, widthToFit, fontSize) {
         return "";
     }
     return draw.textToFit(text, widthToFit, fontSize);
-};
-
-function FG_Color_Default() {
-    FG_Color.call(this);
-}
-
-FG_Color_Default.prototype = Object.create(FG_Color.prototype);
-FG_Color_Default.prototype.constructor = FG_Color_Default;
-
-FG_Color_Default.prototype.colorFor = function(frame, samples) {
-    samples = (typeof samples !== 'undefined') ? samples : Math.random();
-    var colors = [ "red", "orange", "yellow" ];
-    return colorValueFor(colors[Math.floor(3 * samples)], frame.name);
 };

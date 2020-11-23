@@ -61,9 +61,7 @@ describe("MergedFGDraw", function () {
         });
 
         afterEach(function () {
-            colorScheme = {
-                legend: {}
-            };
+            colorScheme = undefined;
         });
 
         it("should draw frame with a diff rectangle", function () {

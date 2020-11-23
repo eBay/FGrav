@@ -6,7 +6,7 @@ Flamegraph visualizations and related tools implemented in Javascript.
 
 This vanilla Javascript library is designed to **dynamically** create **[Flamegraph](https://github.com/brendangregg/FlameGraph)** and Flamegraph related visualizations in the browser from the **raw** [collapsed stack](./src/test/resources/collapsed/java.collapsed) file.
 
-Because the FGrav visualizations are done dynamically within the browser, it offers a lot more customization options and allows a user to create many interactive features unavailable with a conventional SVG file. 
+Because the FGrav visualizations are done dynamically within the browser, it offers a lot more customization options and allows a user to create many interactive features unavailable with a conventional SVG file (See [filters](#frame-filter), [color-schemes](#color-scheme), [overlays](#overlays)). 
 
 As shown in this project, FGrav also provides a basis to compare related data visually by easily extending or embedding the JS flamegraph implementation - See [FlameGraph comparison](#flamegraph-compare) and a [FlameGraph diff](#flamegraph-diff) views.  
 
@@ -45,6 +45,7 @@ __Usage:__
 
 The ability to create the Flamegraph dynamically rather than using a static SVG file allows a lot more flexbility in visualizing and analysing the data such as:
 1. dynamic [color scheme](#color-scheme)
+1. dynamic [overlays](#overlays)
 1. specific [frame filters](#frame-filter)
 1. grouping of code paths (TODO) 
 
@@ -225,6 +226,22 @@ See [Java](./src/main/js/color/FG_Color_Java.js) color scheme for an example.
 The legend is hidden by default but can be toggled by clicking on the **legend** button.
 
 ![Java Legend Example](img/Legend.png "Java Legend Example")
+
+#### Overlays
+
+Specific color schemes can have overlays. This is a dynamic ability to highlight specific frames in the context of a particular scheme.
+You can think of an overlay as an extended pre-defined search query that allows the user to highlight parts of the Flamegraph.
+Because overlays are defined as a Javascript function, they can be much more powerful than a search regex. 
+(e.g They can involve external data). They can also be easier to write, and of course they can be shared among users.
+Because overlays are dynamic, specific overlays for your specific code can be easily integrated into the visualization.
+
+See [Java_Blocking](./src/main/js/color/overlay/FG_Overlay_Java_Blocking.js) overlay as an example for an overlay to highlight Java blocking code.
+
+Choose an overlay:
+![Java Blocking Overlay Choose Example](img/Overlay_choose.png "Java Blocking Overlay Choose Example")
+
+Overlay applied:
+![Java Blocking Overlay Example](img/Overlay_applied.png "Java Blocking Overlay Example")
 
 ### Frame Filter
 

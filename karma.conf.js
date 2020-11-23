@@ -23,6 +23,7 @@ module.exports = function(config) {
       'src/main/js/Collapsed.js',
       'src/main/js/FG.js',
       'src/main/js/color/FG_Color.js',
+      'src/main/js/color/FG_Color_Flames.js',
       'src/main/js/color/FG_Color_Java.js',
       'src/main/js/color/FG_Color_Js.js',
       'src/main/js/color/overlay/FGOverlayMarkByPredicate.js',
