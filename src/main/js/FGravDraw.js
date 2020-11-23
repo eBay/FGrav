@@ -99,6 +99,8 @@ FGravDraw.prototype.rect = function(x, y, width, height, styleFunction) {
     element.setAttribute("height", height);
     if (styleFunction) {
         styleFunction(element);
+    } else {
+        element.setAttribute("fill", "white");
     }
     return element;
 };

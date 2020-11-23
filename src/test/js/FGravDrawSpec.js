@@ -40,7 +40,7 @@ describe("FGravDraw", function() {
             expect(r.getAttributeValue("y")).toEqual(19);
             expect(r.getAttributeValue("width")).toEqual(23);
             expect(r.getAttributeValue("height")).toEqual(29);
-            expect(r.getAttribute("fill")).toBeUndefined();
+            expect(r.getAttributeValue("fill")).toEqual("white");
             expect(r.getAttribute("style")).toBeUndefined();
         });
 

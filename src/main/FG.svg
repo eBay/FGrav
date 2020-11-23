@@ -29,7 +29,6 @@
 </defs>
 <style type="text/css">
 	rect.tooltip, rect.overlay { opacity:0.8 }
-	#frames rect { fill:rgb(255,255,255) }
 	text.tooltip { fill:rgb(255,255,255); font-size:12px }
 	text.overlay { fill:blue; font-size:12px; text-decoration: underline; cursor:pointer }
 	#search, #ignorecase, #legendBtn, #overlayBtn  { opacity:0.1; cursor:pointer; font-size:12px }
@@ -47,6 +46,7 @@
 <script href="js/FGravDraw.js"/>
 <script href="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"/>
 <script href="js/color/FG_Color.js"/>
+<script href="js/color/overlay/FGOverlayMarkByPredicate.js"/>
 <script href="js/FGDraw.js"/>
 <script href="js/FGStackFrames.js"/>
 <script href="js/Collapsed.js"/>
