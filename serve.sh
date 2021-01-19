@@ -29,4 +29,4 @@ if [[ "$1" != "" ]]; then
 fi
 
 echo "Launching FGrav server at http://localhost:$PORT from $ROOT_DIR"
-docker container run -v $ROOT_DIR:/usr/share/nginx/html:ro -v $ROOT_DIR/nginx.conf:/etc/nginx/conf.d/default.conf:ro -v $ROOT_DIR:/etc/nginx/html:ro -p $PORT:80 nginx
+docker container run -v $ROOT_DIR:/usr/share/nginx/html:ro -v $ROOT_DIR/nginx.conf:/etc/nginx/conf.d/default.conf -v $ROOT_DIR:/etc/nginx/html:ro -p $PORT:80 nginx

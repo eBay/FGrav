@@ -1,0 +1,158 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>reveal.js</title>
+
+		<style>
+			.reveal section h2#flamegraphs {
+				font-size: 4em;
+				background: -webkit-linear-gradient(red, yellow);
+				-webkit-background-clip: text;
+				-webkit-text-fill-color: transparent;
+			}
+			.reveal section {
+				text-align: left;
+			}
+			.reveal section img {
+				margin: 0 20px;
+			}
+			.reveal section span {
+				background-color: white;
+				font-size: 1.1em;
+				padding: 5px;
+			}
+		</style>
+		<link rel="stylesheet" href="dist/reset.css">
+		<link rel="stylesheet" href="dist/reveal.css">
+		<link rel="stylesheet" href="dist/theme/beige.css" id="theme">
+
+		<!-- Theme used for syntax highlighted code -->
+		<link rel="stylesheet" href="plugin/highlight/monokai.css" id="highlight-theme">
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section data-markdown>
+					<textarea data-template>
+					## The Dark Side of
+					## Flamegraphs
+					### Amir Langer
+
+					This talk is brought to you courtesy of <img src="/img/ebay.png" style="vertical-align: bottom">
+					</textarea>
+				</section>
+				<section data-preload="true" data-markdown>
+					<textarea data-template>
+						### Agenda
+						* What are Flamegraphs?
+						* The (dark) side you cannot see with Flamegraphs
+						* Solutions (a.k.a. FGrav)
+					</textarea>
+				</section>
+				<section data-background-image="/img/profiler.png" data-preload="true" data-markdown>
+					<textarea data-template class="has-dark-background">
+					What Sampling Profiling Visualization used to look like
+					</textarea>
+				</section>
+				<section data-background-image="/img/fg.png"
+						 data-background-size="contain"
+						 data-preload="true">
+				</section>
+				<section data-background-iframe="/FG.svg?url=/collapsed/fg.collapsed&color=Java"
+						 data-background-interactive="true" data-preload="true">
+				</section>
+				<section data-background-image="/img/fg_svg.png" data-preload="true">
+					<h1>FlameGraphs</h1>
+					<span class="has-dark-background">“Flame Graphs are a visualization of profiled software, allowing the most frequent code-paths to be identified quickly and accurately”</span>
+					<p>&nbsp;</p>
+					<span class="has-dark-background">Brendan Gregg - Netflix</span>
+				</section>
+				<section data-background-image="/img/darksideofthemoon.jpeg" data-preload="true">
+					<span class="has-light-background">But Flamegraphs have a dark side</span>
+				</section>
+				<section data-preload="true" data-markdown>
+					<textarea data-template>
+						### What we cannot see in Flamegraphs
+						* Simple Flamegraphs offer us only a snapshot of the running process
+						* There is no time dimension. There is no before or after
+						* There is no ability to compare are two sets of results
+						* There is no ability to manipulate the raw data
+
+						In regression analysis we want to compare between (at least) two snapshots and focus on the differences
+					</textarea>
+				</section>
+				<section data-background-iframe="/img/animated.svg"
+						 data-background-interactive="true" data-preload="true">
+					<h1>Animation</h1>
+				</section>
+				<section data-background-iframe="/FGCompare.svg?left=/collapsed/left.collapsed&right=/collapsed/right.collapsed&color=Java&frameFilter=Java8"
+						 data-background-interactive="true" data-preload="true">
+					<h1>Compare</h1>
+				</section>
+				<section data-background-iframe="/FGDiff.svg?url=/collapsed/diff2.collapsed&frameFilter=Java8"
+						 data-background-interactive="true" data-preload="true">
+					<h1>Differential Flamegraph</h1>
+				</section>
+				<section data-background-iframe="/FGDiff.svg?url=/collapsed/diff2.collapsed&color=Java&frameFilter=Java8"
+						 data-background-interactive="true" data-preload="true">
+					<h1>Differential Flamegraph</h1>
+				</section>
+				<section data-background-iframe="/FGDiff.svg?url=/collapsed/diff2.collapsed"
+						 data-background-interactive="true" data-preload="true">
+					<h1>Differential Flamegraph</h1>
+				</section>
+				<section data-background-iframe="/FGDiff.svg?url=/collapsed/diff2.collapsed&frameFilter=Java8"
+						 data-background-interactive="true" data-preload="true">
+					<h1>Differential Flamegraph</h1>
+				</section>
+				<section data-background-iframe="/FG.svg?url=/collapsed/blocking_calls.collapsed&color=Java"
+						 data-background-interactive="true" data-preload="true">
+					<h1>Overlays</h1>
+				</section>
+				<section data-markdown>
+					<textarea data-template>
+					All the visualisations in this presentation were created using FGrav open source Javascript library
+
+					[http://github.com/eBay/FGrav](http://github.com/eBay/FGrav)
+
+					Dynamic Flamegraph visualisations from raw data in your browser
+					</textarea>
+				</section>
+				<section data-markdown>
+					<textarea data-template>
+					# Thank you
+
+					<img width="50" height="50" src="/img/email.png" style="vertical-align: bottom"> langera@gmail.com
+
+					<img width="50" height="50" src="/img/github.png" style="vertical-align: bottom"> langera
+
+					<img width="50" height="50" src="/img/linkedin.png" style="vertical-align: bottom"> langera@gmail.com
+
+					</textarea>
+				</section>
+			</div>
+		</div>
+
+		<script src="dist/reveal.js"></script>
+		<script src="plugin/notes/notes.js"></script>
+		<script src="plugin/markdown/markdown.js"></script>
+		<script src="plugin/highlight/highlight.js"></script>
+		<script>
+			// More info about initialization & config:
+			// - https://revealjs.com/initialization/
+			// - https://revealjs.com/config/
+			Reveal.initialize({
+				hash: true,
+
+				// Learn about plugins: https://revealjs.com/plugins/
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ],
+                markdown: {
+                    smartypants: true
+                }
+			});
+		</script>
+	</body>
+</html>

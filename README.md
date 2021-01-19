@@ -22,6 +22,7 @@ __Thanks:__
     * [JQuery](https://jquery.com/)
     * (Test code only) [Jasmine](https://jasmine.github.io/)
     * (Test code only) [Jasmine-Ajax](https://github.com/jasmine/jasmine-ajax)
+    * (Presentation under docs/presentation) [reveal.js](https://revealjs.com/)
 
 __Visualizations:__
   * [FlameGraph](#flamegraph)
@@ -272,7 +273,7 @@ Loading the filter JS file can be done by either:
 Deploy all src files and libs to an http server.
 
 You can use [deploy.sh](./deploy.sh) as an example which will create a directory called **web** and copy all files to it.
-You can then run an http server via docker with [serve.sh](./serve.sh). (**Note:** port is configured inside script to **9090**)
+You can then run an http server via docker with [serve.sh](./serve.sh). (**Note:** port is configured to **9090** in the script. Feel free to change)
 
 Once the http server is up, request an SVG file from it on a browser.
 
@@ -307,6 +308,8 @@ FGrav visualizations requests examples:
 `http://${host}:${port}/FGDiff.svg?url=${diff-raw-file}&color=Java&frameFilter=Java8,RemoveJavaGCThreads`
 
 `http://${host}:${port}/FGDiff.svg?url=${diff-raw-file}&color=${custom-color-scheme}&frameFilter=${custom-frame-filters}`
+
+See also presentation about FGrav using [reveal.js](https://revealjs.com/) in `http://${host}:${port}/presentation/index.html`
 
 # License Information
 Copyright 2020 eBay Inc.
