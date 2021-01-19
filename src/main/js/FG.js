@@ -37,7 +37,6 @@ function FG(id, shiftWidth, defaultTitle, minWidth, _w, _prompt) {
     this.configUrl = this.getParameter("config", "fgrav.json");
     this.frameFilterNames = this.getParameter("frameFilter", undefined);
     this.colorSchemeName = this.getParameter("color", undefined);
-    this.config;
     this.searchTermPromptFunction = (typeof _prompt !== "undefined") ? _prompt :
         function(ic) {
           return prompt("Enter a search term (regexp " +
@@ -104,35 +103,13 @@ FG.prototype.setup = function(_w) {
 };
 
 FG.prototype.load = function (successCallback, errorCallback) {
+    this.loadDynamicJs(this.objectsToLoad(), successCallback, errorCallback);
+};
+
+
+FGrav.prototype.loadDynamicJs = function(toLoad, successCallback, errorCallback) {
     var response = new FGravResponse();
-    var configAjax = this.loadConfig(response);
-    this.loadDynamicJs(this.objectsToLoad(), successCallback, errorCallback, [configAjax], response);
-};
-
-FG.prototype.loadConfig = function(response, successCallback, errorCallback) {
-    var fg = this;
-    return $.ajax({
-        type: "GET",
-        url: fg.configUrl,
-        dataType: 'json',
-        success: function (data) {
-            fg.config = data;
-            if (successCallback) {
-                successCallback();
-            }
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-            response.addError(errorThrown, textStatus);
-            if (errorCallback) {
-                errorCallback();
-            }
-        }
-    });
-};
-
-FG.prototype.loadDynamicJs = function(toLoad, successCallback, errorCallback, parallelAjaxObjs, response) {
-    response = (response) ? response : new FGravResponse();
-    var ajaxObjs = (typeof parallelAjaxObjs !== "undefined") ? parallelAjaxObjs : [];
+    var ajaxObjs = [];
     var jsSrc = [];
     $.each(toLoad, function (i, l) {
         var ajax = $.ajax({ type: "GET",
@@ -147,7 +124,7 @@ FG.prototype.loadDynamicJs = function(toLoad, successCallback, errorCallback, pa
                 response.addError(errorThrown, textStatus);
             }
         });
-        ajaxObjs.push(ajax);
+        ajaxObjs[i] = ajax;
     });
 
     this.multipleAjaxCalls(ajaxObjs, response, function () {
@@ -205,10 +182,9 @@ FG.prototype.loadOverlay = function(overlayName, overlayUrl, successCallback) {
         colorScheme.currentOverlay = colorScheme.loadedOverlays[overlayName];
         fg.applyingOverlay(overlayName);
     } else {
-        var dynamicallyLoading = this.generateDynamicallyLoadingObject(overlayUrl, "js/color/overlay/FG_Overlay_", function (name) {
-            return "colorScheme.currentOverlay = new " + name + "();";
-        });
-        this.loadDynamicJs([dynamicallyLoading], function () {
+        this.loadDynamicJs([this.generateDynamicallyLoadingObject(overlayUrl, "js/color/overlay/FG_Overlay_", function (name) {
+                return "colorScheme.currentOverlay = new " + name + "();";
+            })], function () {
                 fg.applyingOverlay(overlayName);
                 if (successCallback) {
                     successCallback();
