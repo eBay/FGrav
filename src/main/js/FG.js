@@ -37,7 +37,7 @@ function FG(id, shiftWidth, defaultTitle, minWidth, _w, _prompt) {
     this.configUrl = this.getParameter("config", "fgrav.json");
     this.frameFilterNames = this.getParameter("frameFilter", undefined);
     this.colorSchemeName = this.getParameter("color", undefined);
-    this.config;
+    this.config = {};
     this.searchTermPromptFunction = (typeof _prompt !== "undefined") ? _prompt :
         function(ic) {
           return prompt("Enter a search term (regexp " +
@@ -105,7 +105,7 @@ FG.prototype.setup = function(_w) {
 
 FG.prototype.load = function (successCallback, errorCallback) {
     var response = new FGravResponse();
-    var configAjax = this.loadConfig(response);
+    var configAjax = this. loadConfig(response);
     this.loadDynamicJs(this.objectsToLoad(), successCallback, errorCallback, [configAjax], response);
 };
 
@@ -230,6 +230,13 @@ FG.prototype.applyingOverlay = function(overlayName) {
 
 FG.prototype.redrawFrames = function () {
     this.draw.redrawFG();
+};
+
+FG.prototype.frameOf = function(element) {
+    return {
+        getName: function () { return element.getAttribute("name").value },
+        getSamples: function () { return parseInt(element.getAttribute("samples").value) }
+    };
 };
 
 // accessed from eval (yes, I know, see below)

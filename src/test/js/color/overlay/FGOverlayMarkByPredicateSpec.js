@@ -24,7 +24,7 @@ describe("FGOverlayMarkByPredicate", function () {
 
     it("should not overlay style and keep original color when prefix does not match", function () {
 
-        var style = overlay.applyStyle(scheme, {name:'not_a_match_for_prefixes'});
+        var style = overlay.applyStyle(scheme, frameObject('not_a_match_for_prefixes'));
 
         style(el);
 
@@ -35,7 +35,7 @@ describe("FGOverlayMarkByPredicate", function () {
 
     it("should overlay style and keep original color on a matched prefix", function () {
 
-        var style = overlay.applyStyle(scheme, {name:'prefix222222'});
+        var style = overlay.applyStyle(scheme, frameObject('prefix222222'));
 
         style(el);
 

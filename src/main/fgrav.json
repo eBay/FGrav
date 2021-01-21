@@ -8,7 +8,7 @@
     },
     "Java": {
       "uri": "Java",
-      "overlays": [ "Blocking, Reflection" ]
+      "overlays": [ "Blocking", "Reflection" ]
     }
   },
   "overlay": {

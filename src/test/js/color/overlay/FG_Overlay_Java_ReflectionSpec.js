@@ -17,7 +17,7 @@ describe("FG_Overlay_Java_Reflection", function () {
 
     it("should not overlay style and keep original color on non reflection code", function () {
 
-        var style = overlay.applyStyle(scheme, {name:'java/lang/String.toString'});
+        var style = overlay.applyStyle(scheme, frameObject('java/lang/String.toString'));
 
         style(el);
 
@@ -28,7 +28,7 @@ describe("FG_Overlay_Java_Reflection", function () {
 
     it("should overlay style and keep original color on reflection code", function () {
 
-        var style = overlay.applyStyle(scheme, {name:'java/lang/Class.loadClass'});
+        var style = overlay.applyStyle(scheme, frameObject('java/lang/Class.loadClass'));
 
         style(el);
 

@@ -17,7 +17,7 @@ describe("FG_Overlay_Java_Blocking", function () {
 
     it("should not overlay style and keep original color on non blocking code", function () {
 
-        var style = overlay.applyStyle(scheme, {name:'java/lang/Thread.run'});
+        var style = overlay.applyStyle(scheme, frameObject('java/lang/Thread.run'));
 
         style(el);
 
@@ -28,7 +28,7 @@ describe("FG_Overlay_Java_Blocking", function () {
 
     it("should overlay style and keep original color on blocking code", function () {
 
-        var style = overlay.applyStyle(scheme, {name:'java/lang/Thread.sleep'});
+        var style = overlay.applyStyle(scheme, frameObject('java/lang/Thread.sleep'));
 
         style(el);
 

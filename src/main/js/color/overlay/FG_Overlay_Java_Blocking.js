@@ -49,7 +49,7 @@ function FG_Overlay_Java_Blocking() {
         function(frame) {
             return function (el) {
                 return blockingPrefixes.find(function (prefix) {
-                    return frame.name.startsWith(prefix);
+                    return frame.getName().startsWith(prefix);
                 });
             }
         }

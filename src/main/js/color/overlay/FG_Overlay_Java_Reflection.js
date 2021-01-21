@@ -26,7 +26,7 @@ function FG_Overlay_Java_Reflection() {
         function(frame) {
             return function (el) {
                 return reflectionPrefixes.find(function (prefix) {
-                    return frame.name.startsWith(prefix);
+                    return frame.getName().startsWith(prefix);
                 });
             }
         }

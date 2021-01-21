@@ -18,7 +18,7 @@ function FGOverlayMarkByPredicate(predicate) {
     this.predicate = predicate;
 }
 
-FGOverlayMarkByPredicate.prototype.applyStyle = function(colorScheme, frame, samples) {
+FGOverlayMarkByPredicate.prototype.applyStyle = function(colorScheme, frame, totalSamples) {
 
     var p = this.predicate(frame);
 
@@ -26,6 +26,6 @@ FGOverlayMarkByPredicate.prototype.applyStyle = function(colorScheme, frame, sam
         if (p(el)) {
            mark(el);
         }
-        el.setAttribute("fill", colorScheme.colorFor(frame, samples));
+        el.setAttribute("fill", colorScheme.colorFor(frame, totalSamples));
     };
 };

@@ -13,6 +13,12 @@ function frameObject(name, stack, samples, x, y, w) {
         },
         w: function() {
             return w;
+        },
+        getName: function () {
+            return name;
+        },
+        getSamples: function () {
+            return samples;
         }
     }
 }
