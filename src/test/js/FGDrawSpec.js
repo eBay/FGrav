@@ -4,14 +4,14 @@ describe("FGDraw", function () {
     var fg;
 
     beforeEach(function () {
-        var d = {
-            createElementNS: function (ns, name) {
-                return domElement(name);
-            }
-        };
         fg = new FG("my-fg", 13, "title", "179");
-        fg.svg = domElement("svg");
-        draw = new FGDraw(fg, d);
+        fg.svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+
+        draw = new FGDraw(fg);
+    });
+
+    afterEach(function () {
+        colorScheme = undefined;
     });
 
     describe("FG", function () {
@@ -48,11 +48,11 @@ describe("FGDraw", function () {
                     draw.drawFG(stackFrames);
 
                     expect(fg.totalSamples).toEqual(6); // 1 + 2 + 3
-                    expect(draw.svg.children[0].name).toEqual("g");
-                    expect(draw.svg.children[0].getAttribute("id").value).toEqual("my-fgframes");
+                    expect(draw.svg.children[0].localName).toEqual("g");
+                    expect(draw.svg.children[0].getAttribute("id").toString()).toEqual("my-fgframes");
                     expect(draw.svg.children[0].children.length).toEqual(7); // all, a, b, x, c, d (above b), d (above x)
-                    expect(draw.svg.children[0].children.map(c => c.children[1].innerHTML).join(",")).toEqual("all,a,b,x,c,d,d");
-                    expect(draw.svg.children[0].children.map(c => c.children[0].getAttribute("width").value.toString()).join(",")).toEqual("155,155,77.5,77.5,25.8333,51.6667,77.5");
+                    expect([].slice.call(draw.svg.children[0].children).map(c => c.children[1].innerHTML).join(",")).toEqual("all,a,b,x,c,d,d");
+                    expect([].slice.call(draw.svg.children[0].children).map(c => c.children[0].getAttribute("width").toString()).join(",")).toEqual("155,155,77.5,77.5,25.8333,51.6667,77.5");
                     done();
                 } catch (e) {
                     done(e);
@@ -63,27 +63,6 @@ describe("FGDraw", function () {
         });
 
         it('should redraw FG', function (done) {
-
-            var replaced = false;
-
-            fg.svg.getElementById = function (name) {
-                expect(name).toEqual("my-fgframes");
-                return "old";
-            };
-
-            fg.svg.replaceChild = function (g, old) {
-                expect(old).toEqual("old");
-                expect(fg.totalSamples).toEqual(6); // 1 + 2 + 3
-                expect(g.name).toEqual("g");
-                expect(g.getAttribute("id").value).toEqual("my-fgframes");
-                expect(g.children.length).toEqual(7); // all, a, b, x, c, d (above b), d (above x)
-                expect(g.children.map(c => c.children[1].innerHTML).join(",")).
-                    toEqual("all,a,b,x,c,d,d");
-                expect(g.children.map(c => c.children[0].getAttribute("width").value.toString()).join(",")).
-                    toEqual("155,155,77.5,77.5,25.8333,51.6667,77.5");
-                replaced = true;
-            };
-
 
             var stackFrames = new FGStackFrames();
 
@@ -96,9 +75,14 @@ describe("FGDraw", function () {
 
                     draw.drawFG(stackFrames);
 
+                    expect(draw.svg.children[0].children[1].children[1].getAttribute('name').toString()).toEqual("a");
+
+                    stackFrames.stackFrameRows[0][0].name = 'replaced';
+
                     draw.redrawFG();
 
-                    expect(replaced).toBe(true);
+                    expect(draw.svg.children[0].children[1].children[1].getAttribute('name').toString()).toEqual("replaced");
+
                     done();
                 } catch (e) {
                     done(e);
@@ -106,6 +90,55 @@ describe("FGDraw", function () {
             }, function () {
                 done.fail("ajax should succeed");
             });
+        });
+
+        it('should reapply color', function (done) {
+            var stackFrames = new FGStackFrames();
+
+            colorScheme = {
+                applyColor: function() {
+                    return function (el) {
+                        el.setAttribute("fill", "black1");
+                    }
+                },
+                legend: {}
+            };
+
+            stackFrames.loadCollapsed(fg, "test.collapsed", function () {
+
+                try {
+                    var request = jasmine.Ajax.requests.mostRecent();
+                    expect(request.url).toBe("test.collapsed");
+                    expect(request.method).toBe('GET');
+
+                    draw.drawFG(stackFrames);
+
+                    expect(draw.svg.children[0].children[0].children[0].getAttribute('fill').toString()).toEqual("black1");
+
+                    colorScheme = {
+                        applyColor: function() {
+                            return function (el) {
+                                el.setAttribute("fill", "black2");
+                            }
+                        },
+                        legend: {}
+                    };
+                    draw.svg.getElementById = function(id) {
+                        return draw.svg.children[0];
+                    };
+
+                    draw.reapplyColor();
+
+                    expect(draw.svg.children[0].children[0].children[0].getAttribute('fill').toString()).toEqual("black2");
+
+                    done();
+                } catch (e) {
+                    done(e);
+                }
+            }, function () {
+                done.fail("ajax should succeed");
+            });
+
         });
 
     });
@@ -132,11 +165,11 @@ describe("FGDraw", function () {
             var f = frameObject("a","a:b:c", 17, 19, 23, 29);
             var el = draw.drawFrame(f);
 
-            expect(el.children[0].getAttributeValue("x")).toEqual(19 + 13); // = (x + shift width defined in FG constructor)
-            expect(el.children[0].getAttributeValue("y")).toEqual(23);
-            expect(el.children[0].getAttributeValue("width")).toEqual(29);
-            expect(el.children[0].getAttributeValue("fill")).toEqual("my-black");
-            expect(el.children[1].getAttributeValue("name")).toEqual("a");
+            expect(parseInt(el.children[0].getAttribute("x"))).toEqual(19 + 13); // = (x + shift width defined in FG constructor)
+            expect(parseInt(el.children[0].getAttribute("y"))).toEqual(23);
+            expect(parseInt(el.children[0].getAttribute("width"))).toEqual(29);
+            expect(el.children[0].getAttribute("fill")).toEqual("my-black");
+            expect(el.children[1].getAttribute("name")).toEqual("a");
         });
     });
 
@@ -168,6 +201,57 @@ describe("FGDraw", function () {
 
             expect(text).toEqual("my-text");
 
+        });
+    });
+
+    describe("canvas", function () {
+
+        it('should draw canvas', function () {
+
+            fg.width = 17;
+            fg.height = 23;
+            draw.drawCanvas();
+
+            expect(draw.svg.getAttribute("width")).toEqual("17");
+            expect(draw.svg.getAttribute("height")).toEqual("23");
+            expect(draw.svg.getAttribute("viewBox")).toEqual("0 0 17 23");
+
+        });
+
+        it('should draw info elements', function () {
+
+            draw.drawCanvas();
+            draw.drawInfoElements();
+
+            expect(fg.details).not.toBe(undefined);
+            expect(fg.matchedtxt.localName).toEqual("text");
+            expect(fg.tooltip.localName).toEqual("g");
+
+        });
+
+
+        it('should draw legend', function () {
+
+            colorScheme = {
+                applyColor: function() {
+                    return function (el) {
+                        el.setAttribute("fill", "black1");
+                    }
+                },
+                legend: {
+                    black: 'A',
+                    red: 'B'
+                }
+            };
+
+            draw.drawCanvas();
+
+            expect(fg.legendEl.localName).toEqual("g");
+            expect(fg.legendEl.children.length).toEqual(4);
+            expect(fg.legendEl.children[0].getAttribute("fill")).toEqual("black");
+            expect(fg.legendEl.children[1].innerHTML).toEqual("A");
+            expect(fg.legendEl.children[2].getAttribute("fill")).toEqual("red");
+            expect(fg.legendEl.children[3].innerHTML).toEqual("B");
         });
     });
 });

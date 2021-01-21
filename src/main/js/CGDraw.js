@@ -34,7 +34,7 @@ CGDraw.prototype.drawCanvas = function() {
         self.svg.appendChild(self.text(day, day, self.cg.margin - 20, self.cg.margin + 7 +( 13 * (i + 1)), 9, "left"));
     });
 
-    this.cg.details = this.d.getElementById("details").firstChild;
+    this.cg.details = this.svg.getElementById("details").firstChild;
 };
 
 CGDraw.prototype.drawLegend = function() {

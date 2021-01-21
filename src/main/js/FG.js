@@ -229,14 +229,7 @@ FG.prototype.applyingOverlay = function(overlayName) {
 };
 
 FG.prototype.redrawFrames = function () {
-    this.draw.redrawFG();
-};
-
-FG.prototype.frameOf = function(element) {
-    return {
-        getName: function () { return element.getAttribute("name").value },
-        getSamples: function () { return parseInt(element.getAttribute("samples").value) }
-    };
+    this.draw.reapplyColor();
 };
 
 // accessed from eval (yes, I know, see below)

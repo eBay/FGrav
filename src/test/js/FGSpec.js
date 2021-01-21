@@ -73,19 +73,6 @@ describe("FG", function() {
         colorScheme = undefined;
     });
 
-    describe('frame', function () {
-
-        it('should create a facade of Frame from element', function () {
-            var element = domElement();
-            element.setAttribute("name", "n");
-            element.setAttribute("samples", "17");
-            var f = fg.frameOf(element);
-
-            expect(f.getName()).toEqual("n");
-            expect(f.getSamples()).toEqual(17);
-        });
-    });
-
     describe('interactivity', function () {
 
         beforeEach(function () {
@@ -156,7 +143,7 @@ describe("FG", function() {
             var redrawn = false;
 
             fg.draw = {
-                redrawFG: function () {
+                reapplyColor: function () {
                     redrawn = true;
                 }
             };
@@ -521,7 +508,7 @@ describe("FG", function() {
 
             fg.overlayBtn = domElement();
             fg.draw = {
-              redrawFG: function () {
+              reapplyColor: function () {
                   redrawn = true;
               }
             };
@@ -555,7 +542,7 @@ describe("FG", function() {
 
             fg.overlayBtn = domElement();
             fg.draw = {
-                redrawFG: function () {
+                reapplyColor: function () {
                     redrawn = true;
                 }
             };

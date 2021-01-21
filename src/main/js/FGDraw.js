@@ -57,7 +57,9 @@ FGDraw.prototype.drawCanvas = function() {
     this.fg.legendBtn = this.d.getElementById("legendBtn");
     this.fg.overlayBtn = this.d.getElementById("overlayBtn");
 
-    this.d.styleSheets[0].insertRule("text { font-family:Verdana; font-size:"+ this.fg.fontSize +"px; fill:rgb(0,0,0); }", 0);
+    if (this.d.styleSheets[0]) {
+        this.d.styleSheets[0].insertRule("text { font-family:Verdana; font-size:" + this.fg.fontSize + "px; fill:rgb(0,0,0); }", 0);
+    }
 };
 
 FGDraw.prototype.drawLegend = function(legendBtn) {
@@ -129,9 +131,9 @@ FGDraw.prototype.drawInfoElements = function() {
     this.svg.appendChild(matched);
     this.svg.appendChild(tooltip);
 
-    this.fg.details = this.d.getElementById(this.fg.namePerFG("details")).firstChild;
-    this.fg.matchedtxt = this.d.getElementById(this.fg.namePerFG("matched"));
-    this.fg.tooltip = this.d.getElementById(this.fg.namePerFG("tooltip"));
+    this.fg.details = this.svg.getElementById(this.fg.namePerFG("details")).firstChild;
+    this.fg.matchedtxt = this.svg.getElementById(this.fg.namePerFG("matched"));
+    this.fg.tooltip = this.svg.getElementById(this.fg.namePerFG("tooltip"));
 
 
     function tooltip(draw) {
@@ -166,6 +168,28 @@ FGDraw.prototype.redrawFG = function() {
     var g = this.generateFramesCells();
     this.svg.replaceChild(g, old);
 };
+
+FGDraw.prototype.reapplyColor = function() {
+    var g = this.svg.getElementById(this.fg.namePerFG("frames"));
+    var c = find_children(g, "g");
+    var f = frameFlyweight();
+    for(var i=0; i<c.length; i++) {
+        var r = find_child(c[i], "rect");
+        r.removeAttribute("style");
+        f.e = find_child(c[i], "text");
+        var styleFunction = colorScheme.applyColor(f);
+        styleFunction(r);
+    }
+
+    function frameFlyweight() {
+        return {
+            e: undefined,
+            getName: function () { return this.e.getAttribute("name") },
+            getSamples: function () { return parseInt(this.e.getAttribute("samples")) }
+        };
+    }
+};
+
 
 FGDraw.prototype.generateFramesCells = function() {
     var stackFrames = this.currentDrawnFrames;
