@@ -205,9 +205,16 @@ FG.prototype.loadOverlay = function(overlayName, overlayUrl, successCallback) {
         colorScheme.currentOverlay = colorScheme.loadedOverlays[overlayName];
         fg.applyingOverlay(overlayName);
     } else {
-        var dynamicallyLoading = this.generateDynamicallyLoadingObject(overlayUrl, "js/color/overlay/FG_Overlay_", function (name) {
-            return "colorScheme.currentOverlay = new " + name + "();";
-        });
+        var dynamicallyLoading
+        if (overlayUrl.startsWith("overlay:")) {
+            dynamicallyLoading = this.generateDynamicallyLoadingObject(overlayUrl.substring("overlay:".length), "js/color/overlay/FG_Overlay_", function (name) {
+                return "colorScheme.currentOverlay = new " + name + "();";
+            });
+        } else if (overlayUrl.startsWith("color:")) {
+            dynamicallyLoading = this.generateDynamicallyLoadingObject(overlayUrl.substring("color:".length), "js/color/FG_Color_", function (name) {
+                return "colorScheme = new " + name + "();";
+            });
+        }
         this.loadDynamicJs([dynamicallyLoading], function () {
                 fg.applyingOverlay(overlayName);
                 if (successCallback) {

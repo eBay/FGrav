@@ -99,6 +99,7 @@ function percentage(samples, total) {
 
 function FG_Color_Diff() {
     FG_Color.call(this);
+    this.colorsAsOverlays = true;
     this.legend = {
         red: 'Growth',
         blue: 'Reduction'

@@ -48,6 +48,7 @@ FGDraw.prototype.drawCanvas = function() {
     this.svg.appendChild(search);
     this.svg.appendChild(ignorecase);
 
+    this.setupColorScheme();
     this.drawLegend(legend);
     this.drawOverlayDropDown(overlay);
 
@@ -59,6 +60,19 @@ FGDraw.prototype.drawCanvas = function() {
 
     if (this.d.styleSheets[0]) {
         this.d.styleSheets[0].insertRule("text { font-family:Verdana; font-size:" + this.fg.fontSize + "px; fill:rgb(0,0,0); }", 0);
+    }
+};
+
+FGDraw.prototype.setupColorScheme = function() {
+    if (colorScheme && colorScheme.colorsAsOverlays) {
+
+        $.each(Object.entries(this.fg.config.color), function (i, entry) {
+            var colorName = entry[0];
+            var uri = entry[1].uri;
+            if (uri) {
+                colorScheme.overlays[colorName] = uri;
+            }
+        });
     }
 };
 
@@ -96,12 +110,12 @@ FGDraw.prototype.drawOverlayDropDown = function(overlayBtn) {
         g.setAttribute("id", "overlay");
         g.classList.add("hide");
         var draw = this;
-        var size = draw.fg.frameHeight - 1;
+        var h = draw.fg.frameHeight;
         var x = overlayBtn.getAttribute("x");
         var xText = parseInt(x) + 4;
         $.each(overlayKeys, function (i) {
             var uri = colorScheme.overlays[this];
-            var y = (i + 1) * (size + 1) + draw.buttonsMargin;
+            var y = (i + 1) * (h + draw.buttonsMargin);
             var overlayEntry = draw.rect(x, y, 90, 20, function (el) {
                 el.setAttribute("fill", "rgb(90,90,90)");
             });

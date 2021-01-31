@@ -24,7 +24,7 @@ function FG_Color_Java() {
         red: 'User'
     };
     this.overlays = {
-        'Blocking' : 'Java_Blocking'
+        'Blocking' : 'overlay:Java_Blocking'
     };
 }
 

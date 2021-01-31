@@ -513,7 +513,7 @@ describe("FG", function() {
               }
             };
 
-            fg.loadOverlay("MyTest", "Test", function () {
+            fg.loadOverlay("MyTest", "overlay:Test", function () {
 
                 try {
                     var request = jasmine.Ajax.requests.mostRecent();
@@ -536,6 +536,39 @@ describe("FG", function() {
             });
         });
 
+
+        it("should load dynamic color scheme js file as overlay", function (done) {
+            var redrawn = false;
+
+            fg.overlayBtn = domElement();
+            fg.draw = {
+                reapplyColor: function () {
+                    redrawn = true;
+                }
+            };
+
+            fg.loadOverlay("MyTest", "color:Test", function () {
+
+                try {
+                    var request = jasmine.Ajax.requests.mostRecent();
+                    expect(request.url).toBe("js/color/FG_Color_Test.js");
+                    expect(request.method).toBe('GET');
+
+                    expect(colorScheme.currentOverlay.colorFor({ name: 'overlay'})).toEqual("rgb(122,122,122)");
+                    expect(colorScheme.currentOverlay.colorFor({ name: 'do not overlay. original color'})).toEqual("rgb(0,0,0)");
+
+                    expect(redrawn).toBe(true);
+
+                    expect(fg.overlayBtn.firstChild.nodeValue).toBe("Reset MyTest");
+
+                    done();
+                } catch (e) {
+                    done(e);
+                }
+            }, function () {
+                done.fail("ajax should succeed");
+            });
+        });
 
         it("should load already loaded overlay object", function () {
             var redrawn = false;

@@ -17,6 +17,7 @@
 function FG_Color() {
     this.legend = {};
     this.overlays = {};
+    this.colorsAsOverlays = false;
     this.currentOverlay = undefined;
     this.loadedOverlays = {};
 }

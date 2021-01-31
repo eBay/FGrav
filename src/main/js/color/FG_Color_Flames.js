@@ -16,6 +16,7 @@
  **************************************************************************/
 function FG_Color_Flames() {
     FG_Color.call(this);
+    this.colorsAsOverlays = true;
 }
 
 FG_Color_Flames.prototype = Object.create(FG_Color.prototype);
