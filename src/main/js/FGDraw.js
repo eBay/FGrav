@@ -14,6 +14,11 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  **************************************************************************/
+
+// accessed from eval (yes, I know, see FGrav.js loadDynamicJs())
+// and therefore global to allow dynamic loading
+var colorScheme;
+
 function FGDraw(fg, _d) {
     FGravDraw.call(this, fg, _d);
     this.fg = fg;

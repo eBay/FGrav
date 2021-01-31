@@ -12,7 +12,6 @@ describe("FGravDraw", function() {
             }
         };
         t = new FGravDraw(new FGrav(1, 2, 3, 4, "TITLE"), d);
-        colorScheme = undefined;
     });
 
     describe("draw rect", function () {

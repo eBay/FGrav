@@ -10,24 +10,20 @@ describe("CGDraw", function() {
         draw = new CGDraw(cg);
     });
 
-    afterEach(function () {
-        colorScheme = undefined;
-    });
-
     it('should draw blue for type memory', function () {
-        expect(colorScheme.colorFor("MEMORY", 1)).toEqual("rgb(140,140,255)");
+        expect(draw.colorScheme.colorFor("MEMORY", 1)).toEqual("rgb(140,140,255)");
     });
 
     it('should draw red for type cpu', function () {
-        expect(colorScheme.colorFor("CPU", 1)).toEqual("rgb(255,130,130)");
+        expect(draw.colorScheme.colorFor("CPU", 1)).toEqual("rgb(255,130,130)");
     });
 
     it('should draw yellow for other', function () {
-        expect(colorScheme.colorFor("OTHER", 1)).toEqual("rgb(230,230,70)");
+        expect(draw.colorScheme.colorFor("OTHER", 1)).toEqual("rgb(230,230,70)");
     });
 
     it('should draw grey for none', function () {
-        expect(colorScheme.colorFor()).toEqual("rgb(192, 192, 192)");
+        expect(draw.colorScheme.colorFor()).toEqual("rgb(192, 192, 192)");
     });
 
     it('should draw a canvas', function () {
