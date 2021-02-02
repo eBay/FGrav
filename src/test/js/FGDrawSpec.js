@@ -250,5 +250,142 @@ describe("FGDraw", function () {
             expect(fg.legendEl.children[2].getAttribute("fill")).toEqual("red");
             expect(fg.legendEl.children[3].innerHTML).toEqual("B");
         });
+
+        it('should redraw legend', function () {
+            fg.context.currentColorScheme = {
+                applyColor: function() {
+                    return function (el) {
+                        el.setAttribute("fill", "black1");
+                    }
+                },
+                legend: {
+                    black: 'A',
+                    red: 'B'
+                }
+            };
+
+            draw.drawCanvas();
+
+            var newScheme = {
+                legend: {
+                    orange: 'C',
+                    yellow: 'D'
+                }
+            };
+
+            draw.drawLegend(newScheme, fg.legendEl);
+
+            expect(fg.legendEl.localName).toEqual("g");
+            expect(fg.legendEl.children.length).toEqual(4);
+            expect(fg.legendEl.children[0].getAttribute("fill")).toEqual("orange");
+            expect(fg.legendEl.children[1].innerHTML).toEqual("C");
+            expect(fg.legendEl.children[2].getAttribute("fill")).toEqual("yellow");
+            expect(fg.legendEl.children[3].innerHTML).toEqual("D");
+        });
+
+        it('should redraw legend to an empty one', function () {
+            fg.context.currentColorScheme = {
+                applyColor: function() {
+                    return function (el) {
+                        el.setAttribute("fill", "black1");
+                    }
+                },
+                legend: {
+                    black: 'A',
+                    red: 'B'
+                }
+            };
+
+            draw.drawCanvas();
+
+            var newScheme = {
+                legend: {}
+            };
+
+            draw.drawLegend(newScheme, fg.legendEl);
+
+            expect(fg.legendEl).toEqual(undefined);
+        });
+
+
+        it('should draw overlay drop down', function () {
+
+            fg.context.currentColorScheme = {
+                applyColor: function() {
+                    return function (el) {
+                        el.setAttribute("fill", "black1");
+                    }
+                },
+                overlays: {
+                    a: 'A',
+                    b: 'B'
+                }
+            };
+
+            draw.drawCanvas();
+
+            expect(fg.overlayEl.localName).toEqual("g");
+            expect(fg.overlayEl.children.length).toEqual(4);
+            expect(fg.overlayEl.children[1].onclick.toString()).toEqual('function onclick(evt) {\n' +
+                'fg.loadOverlay("a", "A");\n}');
+            expect(fg.overlayEl.children[3].onclick.toString()).toEqual('function onclick(evt) {\n' +
+                'fg.loadOverlay("b", "B");\n}');
+        });
+
+        it('should redraw overlay drop down', function () {
+            fg.context.currentColorScheme = {
+                applyColor: function() {
+                    return function (el) {
+                        el.setAttribute("fill", "black1");
+                    }
+                },
+                overlays: {
+                    a: 'A',
+                    b: 'B'
+                }
+            };
+
+            draw.drawCanvas();
+
+            var newScheme = {
+                overlays: {
+                    c: 'C',
+                    d: 'D'
+                }
+            };
+
+            draw.drawOverlayDropDown(newScheme, fg.overlayEl);
+
+            expect(fg.overlayEl.localName).toEqual("g");
+            expect(fg.overlayEl.children.length).toEqual(4);
+            expect(fg.overlayEl.children[1].onclick.toString()).toEqual('function onclick(evt) {\n' +
+                'fg.loadOverlay("c", "C");\n}');
+            expect(fg.overlayEl.children[3].onclick.toString()).toEqual('function onclick(evt) {\n' +
+                'fg.loadOverlay("d", "D");\n}');
+        });
+
+        it('should redraw overlay drop down to an empty one', function () {
+            fg.context.currentColorScheme = {
+                applyColor: function() {
+                    return function (el) {
+                        el.setAttribute("fill", "black1");
+                    }
+                },
+                overlays: {
+                    a: 'A',
+                    b: 'B'
+                }
+            };
+
+            draw.drawCanvas();
+
+            var newScheme = {
+                overlays: {}
+            };
+
+            draw.drawOverlayDropDown(newScheme, fg.overlayEl);
+
+            expect(fg.overlayEl).toEqual(undefined);
+        });
     });
 });

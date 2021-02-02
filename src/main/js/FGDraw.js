@@ -37,8 +37,8 @@ FGDraw.prototype.drawCanvas = function() {
 
     var unzoom = this.text("Reset Zoom", "unzoom", this.buttonsMargin, this.buttonsMargin);
     unzoom.classList.add("hide");
-    var legend = this.text("Legend", "legendBtn", this.buttonsMargin + 90, this.buttonsMargin);
-    var overlay = this.text("Overlay", "overlayBtn", this.buttonsMargin + 90 + 60, this.buttonsMargin);
+    this.legend = this.text("Legend", "legendBtn", this.buttonsMargin + 90, this.buttonsMargin);
+    this.overlay = this.text("Overlay", "overlayBtn", this.buttonsMargin + 90 + 60, this.buttonsMargin);
 
     var ignorecase = this.text("IC", "ignorecase", this.fg.width - this.buttonsMargin - 12, this.buttonsMargin);
     var search = this.text("Search", "search", this.fg.width - this.buttonsMargin - 12 - 90, this.buttonsMargin);
@@ -46,13 +46,12 @@ FGDraw.prototype.drawCanvas = function() {
     this.svg.appendChild(background);
     this.svg.appendChild(title);
     this.svg.appendChild(unzoom);
-    this.svg.appendChild(overlay);
     this.svg.appendChild(search);
     this.svg.appendChild(ignorecase);
 
     this.setupColorScheme(this.fg.context.currentColorScheme);
-    this.drawLegend(this.fg.context.currentColorScheme, legend);
-    this.drawOverlayDropDown(this.fg.context.currentColorScheme, overlay);
+    this.drawLegend(this.fg.context.currentColorScheme);
+    this.drawOverlayDropDown(this.fg.context.currentColorScheme);
 
     this.fg.searchbtn = this.d.getElementById("search");
     this.fg.ignorecaseBtn = this.d.getElementById("ignorecase");
@@ -78,7 +77,7 @@ FGDraw.prototype.setupColorScheme = function(colorScheme) {
     }
 };
 
-FGDraw.prototype.drawLegend = function(colorScheme, legendBtn) {
+FGDraw.prototype.drawLegend = function(colorScheme, old) {
     var legendKeys = (colorScheme.legend) ?  Object.keys(colorScheme.legend) : [];
     if (legendKeys.length > 0) {
         var g = this.d.createElementNS("http://www.w3.org/2000/svg", "g");
@@ -99,13 +98,21 @@ FGDraw.prototype.drawLegend = function(colorScheme, legendBtn) {
             g.appendChild(legendEntryText);
 
         });
-        this.svg.appendChild(g);
-        this.svg.appendChild(legendBtn);
+        if (old) {
+            this.svg.replaceChild(g, old);
+        } else {
+            this.svg.appendChild(g);
+            this.svg.appendChild(this.legend);
+        }
         this.fg.legendEl = g;
+    } else if (old) {
+        this.svg.removeChild(old);
+        this.fg.legendEl = undefined;
     }
+
 };
 
-FGDraw.prototype.drawOverlayDropDown = function(colorScheme, overlayBtn) {
+FGDraw.prototype.drawOverlayDropDown = function(colorScheme, old) {
     var overlayKeys = (colorScheme.overlays) ? Object.keys(colorScheme.overlays): [];
     if (overlayKeys.length > 0) {
         var g = this.d.createElementNS("http://www.w3.org/2000/svg", "g");
@@ -113,7 +120,7 @@ FGDraw.prototype.drawOverlayDropDown = function(colorScheme, overlayBtn) {
         g.classList.add("hide");
         var draw = this;
         var h = draw.fg.frameHeight;
-        var x = overlayBtn.getAttribute("x");
+        var x = this.overlay.getAttribute("x");
         var xText = parseInt(x) + 4;
         $.each(overlayKeys, function (i) {
             var uri = colorScheme.overlays[this];
@@ -131,9 +138,16 @@ FGDraw.prototype.drawOverlayDropDown = function(colorScheme, overlayBtn) {
             g.appendChild(overlayEntryText);
 
         });
-        this.svg.appendChild(g);
-        this.svg.appendChild(overlayBtn);
+        if (old) {
+            this.svg.replaceChild(g, old);
+        } else {
+            this.svg.appendChild(g);
+            this.svg.appendChild(this.overlay);
+        }
         this.fg.overlayEl = g;
+    } else if (old) {
+        this.svg.removeChild(old);
+        this.fg.overlayEl = undefined;
     }
 };
 

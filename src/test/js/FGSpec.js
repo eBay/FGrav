@@ -595,10 +595,10 @@ describe("FG", function() {
                 reapplyColor: function (c) {
                     redrawn = true;
                 },
-                drawLegend: function (c, btn) {
+                drawLegend: function (c, old) {
                     redrawnLegend = true;
                 },
-                drawOverlayDropDown: function (c, btn) {
+                drawOverlayDropDown: function (c, old) {
                     redrawnOverlayDropDown = true;
                 }
             };
@@ -669,10 +669,10 @@ describe("FG", function() {
                 reapplyColor: function (c) {
                     redrawn = true;
                 },
-                drawLegend: function (c, btn) {
+                drawLegend: function (c, old) {
                     redrawnLegend = true;
                 },
-                drawOverlayDropDown: function (c, btn) {
+                drawOverlayDropDown: function (c, old) {
                     redrawnOverlayDropDown = true;
                 }
             };
