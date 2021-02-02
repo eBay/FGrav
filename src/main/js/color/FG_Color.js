@@ -19,7 +19,6 @@ function FG_Color() {
     this.overlays = {};
     this.colorsAsOverlays = false;
     this.currentOverlay = undefined;
-    this.loadedOverlays = {};
 }
 /*
 The function to override when defining a color scheme.

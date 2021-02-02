@@ -40,7 +40,8 @@ function FG(id, shiftWidth, defaultTitle, minWidth, _w, _prompt) {
     this.colorSchemeName = this.getParameter("color", undefined);
     this.config = {};
     this.context = {
-        currentColorScheme: undefined
+        currentColorScheme: undefined,
+        overlay: {}
     };
     this.searchTermPromptFunction = (typeof _prompt !== "undefined") ? _prompt :
         function(ic) {
@@ -207,8 +208,8 @@ FG.prototype.loadOverlay = function(overlayName, overlayUrl, successCallback, gl
     var global = (globalVarName) ? globalVarName : "fg";
     var fg = this;
     this.toggle_overlay();
-    if (fg.context.currentColorScheme.loadedOverlays[overlayName]) {
-        fg.context.currentColorScheme.currentOverlay = fg.context.currentColorScheme.loadedOverlays[overlayName];
+    if (fg.context.overlay[overlayName]) {
+        fg.context.currentColorScheme.currentOverlay = fg.context.overlay[overlayName];
         fg.applyingOverlay(overlayName);
     } else {
         var dynamicallyLoading;
@@ -238,7 +239,7 @@ FG.prototype.applyingOverlay = function(overlayName) {
     this.overlayBtn.firstChild.nodeValue = "Reset " + overlayName;
     this.overlayBtn.classList.add("show");
     this.overlaying = true;
-    this.context.currentColorScheme.loadedOverlays[overlayName] = this.context.currentColorScheme.currentOverlay;
+    this.context.overlay[overlayName] = this.context.currentColorScheme.currentOverlay;
 };
 
 FG.prototype.redrawFrames = function () {

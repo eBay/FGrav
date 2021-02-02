@@ -43,7 +43,6 @@ describe("FG", function() {
         };
         fg.context.currentColorScheme = {
             legend: {},
-            loadedOverlays: {}
         };
 
         textNode = {
@@ -594,7 +593,7 @@ describe("FG", function() {
                 }
             };
 
-            fg.context.currentColorScheme.loadedOverlays["My Test"] = {
+            fg.context.overlay["My Test"] = {
                 applyStyle: function(c, f, s) {
                     return function(element) {
                         element.setAttribute("fill", (f.name === 'overlay') ?  'rgb(80,80,80)': c.colorFor(f, s));
