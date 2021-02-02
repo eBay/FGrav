@@ -254,7 +254,7 @@ describe("FG", function() {
         });
 
        it("should generate DynamicallyLoading objects from names", function () {
-            fg.colorSchemeName = "ColorScheme";
+            fg.colorSchemeUri = "ColorScheme";
             fg.frameFilterNames = "FrameFilter";
 
             var objs = fg.objectsToLoad();
@@ -268,7 +268,7 @@ describe("FG", function() {
         });
 
         it("should generate DynamicallyLoading objects from urls", function () {
-            fg.colorSchemeName = "/js/MyCustomColorScheme.js";
+            fg.colorSchemeUri = "/js/MyCustomColorScheme.js";
             fg.frameFilterNames = "/js/fgrav/custom/MyFrameFilter.js";
 
             var objs = fg.objectsToLoad();
@@ -282,7 +282,7 @@ describe("FG", function() {
         });
 
         it("should generate multiple DynamicallyLoading objects", function () {
-            fg.colorSchemeName = "ColorScheme";
+            fg.colorSchemeUri = "ColorScheme";
             fg.frameFilterNames = "FrameFilter1,FrameFilter2,/js/MyCustomFilter.js";
 
             var objs = fg.objectsToLoad();

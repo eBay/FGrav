@@ -37,7 +37,7 @@ function FG(id, shiftWidth, defaultTitle, minWidth, _w, _prompt) {
     this.currentSearchTerm = null;
     this.configUrl = this.getParameter("config", "fgrav.json");
     this.frameFilterNames = this.getParameter("frameFilter", undefined);
-    this.colorSchemeName = this.getParameter("color", undefined);
+    this.colorSchemeUri = this.getParameter("color", undefined);
     this.config = {};
     this.context = {
         currentColorScheme: undefined,
@@ -172,8 +172,8 @@ FG.prototype.loadDynamicJs = function(toLoad, successCallback, errorCallback, pa
 FG.prototype.objectsToLoad = function() {
     var toLoad = [];
     var fg = this;
-    if (typeof this.colorSchemeName !== 'undefined') {
-        var obj = fg.generateDynamicallyLoadingObject(this.colorSchemeName, "js/color/FG_Color_", function (objName) {
+    if (typeof this.colorSchemeUri !== 'undefined') {
+        var obj = fg.generateDynamicallyLoadingObject(this.colorSchemeUri, "js/color/FG_Color_", function (objName) {
             return "fg.context.currentColorScheme = new " + objName + "();"
         });
         toLoad.push(obj);
