@@ -197,6 +197,12 @@ describe("FGDraw", function () {
 
     describe("canvas", function () {
 
+        beforeEach(function () {
+            fg.config = {
+                color: {}
+            };
+        });
+
         it('should draw canvas', function () {
 
             fg.width = 17;

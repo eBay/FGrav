@@ -20,6 +20,7 @@ function FGDraw(fg, _d) {
     this.fg = fg;
     this.fg.draw = this;
     this.buttonsMargin = 24;
+    fg.context.currentColorScheme = new FG_Color_White();
 }
 
 FGDraw.prototype = Object.create(FGravDraw.prototype);
@@ -65,7 +66,7 @@ FGDraw.prototype.drawCanvas = function() {
 };
 
 FGDraw.prototype.setupColorScheme = function(colorScheme) {
-    if (colorScheme && colorScheme.colorsAsOverlays) {
+    if (colorScheme.colorsAsOverlays) {
 
         $.each(Object.entries(this.fg.config.color), function (i, entry) {
             var colorName = entry[0];
@@ -78,7 +79,7 @@ FGDraw.prototype.setupColorScheme = function(colorScheme) {
 };
 
 FGDraw.prototype.drawLegend = function(colorScheme, legendBtn) {
-    var legendKeys = (colorScheme && colorScheme.legend) ?  Object.keys(colorScheme.legend) : [];
+    var legendKeys = (colorScheme.legend) ?  Object.keys(colorScheme.legend) : [];
     if (legendKeys.length > 0) {
         var g = this.d.createElementNS("http://www.w3.org/2000/svg", "g");
         g.setAttribute("id", "legend");
@@ -105,7 +106,7 @@ FGDraw.prototype.drawLegend = function(colorScheme, legendBtn) {
 };
 
 FGDraw.prototype.drawOverlayDropDown = function(colorScheme, overlayBtn) {
-    var overlayKeys = (colorScheme && colorScheme.overlays) ? Object.keys(colorScheme.overlays): [];
+    var overlayKeys = (colorScheme.overlays) ? Object.keys(colorScheme.overlays): [];
     if (overlayKeys.length > 0) {
         var g = this.d.createElementNS("http://www.w3.org/2000/svg", "g");
         g.setAttribute("id", "overlay");
@@ -225,7 +226,7 @@ FGDraw.prototype.generateFramesCells = function(colorScheme) {
 
 FGDraw.prototype.drawFrame = function (colorScheme, f) {
     return frame(this, f.name, f.stack, f.samples, f.x() + this.fg.shiftWidth, f.y() + this.fg.shiftHeight,
-        f.w(), (colorScheme) ? colorScheme.applyColor(f) : undefined, this.d);
+        f.w(), colorScheme.applyColor(f), this.d);
 
 
     function frame(draw, name, id, samples, x, y, w, styleFunction, d) {
@@ -257,4 +258,14 @@ FGDraw.prototype.frameText = function(draw, text, widthToFit, fontSize) {
         return "";
     }
     return draw.textToFit(text, widthToFit, fontSize);
+};
+
+function FG_Color_White() {
+    FG_Color.call(this);
+    this.colorsAsOverlays = true;
+}
+FG_Color_White.prototype = Object.create(FG_Color.prototype);
+FG_Color_White.prototype.constructor = FG_Color_White;
+FG_Color_White.prototype.colorFor = function(frame, totalSamples) {
+    return "white";
 };
