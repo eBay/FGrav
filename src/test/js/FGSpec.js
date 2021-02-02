@@ -73,6 +73,49 @@ describe("FG", function() {
         };
     });
 
+    describe('context', function () {
+
+        it('should set loaded color scheme to both current and by its name', function () {
+
+            var scheme = new FG_Color_Black();
+
+            fg.context.setColorScheme(scheme);
+
+            expect(fg.context.currentColorScheme).toBe(scheme);
+            expect(fg.context.color["Black"]).toBe(scheme);
+        });
+
+        it('should set loaded custom color scheme to both current and by its full name', function () {
+
+            var scheme = new MyCustomColorScheme();
+
+            fg.context.setColorScheme(scheme);
+
+            expect(fg.context.currentColorScheme).toBe(scheme);
+            expect(fg.context.color["MyCustomColorScheme"]).toBe(scheme);
+        });
+
+        it('should set loaded color overlay to both current and by its name', function () {
+
+            var overlay = new FG_Overlay_Java_Blocking();
+
+            fg.context.setColorOverlay(overlay);
+
+            expect(fg.context.currentColorScheme.currentOverlay).toBe(overlay);
+            expect(fg.context.overlay["Java_Blocking"]).toBe(overlay);
+        });
+
+        it('should set loaded custom color overlay to both current and by its full name', function () {
+
+            var overlay = new MyCustomColorScheme();
+
+            fg.context.setColorOverlay(overlay);
+
+            expect(fg.context.currentColorScheme.currentOverlay).toBe(overlay);
+            expect(fg.context.overlay["MyCustomColorScheme"]).toBe(overlay);
+        });
+    });
+
     describe('interactivity', function () {
 
         beforeEach(function () {
@@ -261,7 +304,7 @@ describe("FG", function() {
 
             expect(objs.length).toBe(2);
             expect(objs[0].getUrl()).toEqual("js/color/FG_Color_ColorScheme.js");
-            expect(objs[0].appendInstallScript("")).toEqual("\nfg.context.currentColorScheme = new FG_Color_ColorScheme();");
+            expect(objs[0].appendInstallScript("")).toEqual("\nfg.context.setColorScheme(new FG_Color_ColorScheme());");
             expect(objs[1].getUrl()).toEqual("js/frame/FG_Filter_FrameFilter.js");
             expect(objs[1].appendInstallScript("")).toEqual("\nframeFilter.filters.push(new FG_Filter_FrameFilter());");
 
@@ -275,7 +318,7 @@ describe("FG", function() {
 
             expect(objs.length).toBe(2);
             expect(objs[0].getUrl()).toEqual("/js/MyCustomColorScheme.js");
-            expect(objs[0].appendInstallScript("")).toEqual("\nfg.context.currentColorScheme = new MyCustomColorScheme();");
+            expect(objs[0].appendInstallScript("")).toEqual("\nfg.context.setColorScheme(new MyCustomColorScheme());");
             expect(objs[1].getUrl()).toEqual("/js/fgrav/custom/MyFrameFilter.js");
             expect(objs[1].appendInstallScript("")).toEqual("\nframeFilter.filters.push(new MyFrameFilter());");
 
@@ -289,7 +332,7 @@ describe("FG", function() {
 
             expect(objs.length).toBe(4);
             expect(objs[0].getUrl()).toEqual("js/color/FG_Color_ColorScheme.js");
-            expect(objs[0].appendInstallScript("")).toEqual("\nfg.context.currentColorScheme = new FG_Color_ColorScheme();");
+            expect(objs[0].appendInstallScript("")).toEqual("\nfg.context.setColorScheme(new FG_Color_ColorScheme());");
             expect(objs[1].getUrl()).toEqual("js/frame/FG_Filter_FrameFilter1.js");
             expect(objs[1].appendInstallScript("")).toEqual("\nframeFilter.filters.push(new FG_Filter_FrameFilter1());");
             expect(objs[2].getUrl()).toEqual("js/frame/FG_Filter_FrameFilter2.js");
@@ -517,10 +560,9 @@ describe("FG", function() {
               }
             };
             loadedO = {
-                context: {
-                    currentColorScheme: new FG_Color_Black()
-                }
+                context: new FG_Context()
             };
+            loadedO.context.setColorScheme(new FG_Color_Black());
 
             fg.loadOverlay("MyOTest", "overlay:Test", function () {
 
@@ -547,18 +589,23 @@ describe("FG", function() {
 
         it("should load dynamic color scheme js file as overlay", function (done) {
             var redrawn = false;
-
-            fg.overlayBtn = domElement();
+            var redrawnLegend = false;
+            var redrawnOverlayDropDown = false;
             fg.draw = {
                 reapplyColor: function (c) {
                     redrawn = true;
+                },
+                drawLegend: function (c, btn) {
+                    redrawnLegend = true;
+                },
+                drawOverlayDropDown: function (c, btn) {
+                    redrawnOverlayDropDown = true;
                 }
             };
             loadedC = {
-                context: {
-                    currentColorScheme: new FG_Color_Black()
-                }
+                context: new FG_Context()
             };
+            loadedC.context.setColorScheme(new FG_Color_Black());
 
 
             fg.loadOverlay("MyCTest", "color:Test", function () {
@@ -573,8 +620,8 @@ describe("FG", function() {
                     expect(el.getAttributeValue("fill")).toEqual("rgb(66,66,66)");
 
                     expect(redrawn).toBe(true);
-
-                    expect(fg.overlayBtn.firstChild.nodeValue).toBe("Reset MyCTest");
+                    expect(redrawnLegend).toBe(true);
+                    expect(redrawnOverlayDropDown).toBe(true);
 
                     done();
                 } catch (e) {
@@ -601,7 +648,7 @@ describe("FG", function() {
                 }
             };
 
-            fg.loadOverlay("My Test", "Test");
+            fg.loadOverlay("My Test", "overlay:Test");
 
             var el = domElement();
             fg.context.currentColorScheme.applyColor({ name: 'overlay'})(el);
@@ -612,6 +659,35 @@ describe("FG", function() {
             expect(redrawn).toBe(true);
 
             expect(fg.overlayBtn.firstChild.nodeValue).toBe("Reset My Test");
+        });
+
+        it("should load already loaded color scheme object", function () {
+            var redrawn = false;
+            var redrawnLegend = false;
+            var redrawnOverlayDropDown = false;
+            fg.draw = {
+                reapplyColor: function (c) {
+                    redrawn = true;
+                },
+                drawLegend: function (c, btn) {
+                    redrawnLegend = true;
+                },
+                drawOverlayDropDown: function (c, btn) {
+                    redrawnOverlayDropDown = true;
+                }
+            };
+
+            fg.context.color["My Test"] = new MyCustomColorScheme();
+
+            fg.loadOverlay("My Test", "color:Test");
+
+            var el = domElement();
+            fg.context.currentColorScheme.applyColor({ name: 'x'})(el);
+            expect(el.getAttributeValue("fill")).toEqual("orange");
+
+            expect(redrawn).toBe(true);
+            expect(redrawnLegend).toBe(true);
+            expect(redrawnOverlayDropDown).toBe(true);
         });
     });
 

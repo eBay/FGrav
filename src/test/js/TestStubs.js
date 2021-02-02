@@ -108,3 +108,13 @@ FG_Color_Black.prototype.constructor = FG_Color_Black;
 FG_Color_Black.prototype.colorFor = function(frame, totalSamples) {
     return "black";
 };
+
+function MyCustomColorScheme() {
+    FG_Color.call(this);
+}
+
+MyCustomColorScheme.prototype = Object.create(FG_Color.prototype);
+MyCustomColorScheme.prototype.constructor = MyCustomColorScheme;
+MyCustomColorScheme.prototype.colorFor = function(frame, totalSamples) {
+    return "orange";
+};

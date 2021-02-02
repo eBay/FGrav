@@ -39,10 +39,7 @@ function FG(id, shiftWidth, defaultTitle, minWidth, _w, _prompt) {
     this.frameFilterNames = this.getParameter("frameFilter", undefined);
     this.colorSchemeUri = this.getParameter("color", undefined);
     this.config = {};
-    this.context = {
-        currentColorScheme: undefined,
-        overlay: {}
-    };
+    this.context = new FG_Context();
     this.searchTermPromptFunction = (typeof _prompt !== "undefined") ? _prompt :
         function(ic) {
           return prompt("Enter a search term (regexp " +
@@ -174,7 +171,7 @@ FG.prototype.objectsToLoad = function() {
     var fg = this;
     if (typeof this.colorSchemeUri !== 'undefined') {
         var obj = fg.generateDynamicallyLoadingObject(this.colorSchemeUri, "js/color/FG_Color_", function (objName) {
-            return "fg.context.currentColorScheme = new " + objName + "();"
+            return "fg.context.setColorScheme(new " + objName + "());"
         });
         toLoad.push(obj);
     }
@@ -208,29 +205,42 @@ FG.prototype.loadOverlay = function(overlayName, overlayUrl, successCallback, gl
     var global = (globalVarName) ? globalVarName : "fg";
     var fg = this;
     this.toggle_overlay();
-    if (fg.context.overlay[overlayName]) {
-        fg.context.currentColorScheme.currentOverlay = fg.context.overlay[overlayName];
-        fg.applyingOverlay(overlayName);
-    } else {
-        var dynamicallyLoading;
-        if (overlayUrl.startsWith("overlay:")) {
-            dynamicallyLoading = this.generateDynamicallyLoadingObject(overlayUrl.substring("overlay:".length), "js/color/overlay/FG_Overlay_", function (name) {
-                return global + ".context.currentColorScheme.currentOverlay = new " + name + "();";
+    if (overlayUrl.startsWith("overlay:")) {
+        if (fg.context.overlay[overlayName]) {
+            fg.context.setColorOverlay(fg.context.overlay[overlayName]);
+            fg.applyingOverlay(overlayName);
+        } else {
+            var dynamicallyLoading = this.generateDynamicallyLoadingObject(overlayUrl.substring("overlay:".length), "js/color/overlay/FG_Overlay_", function (name) {
+                return global + ".context.setColorOverlay(new " + name + "());";
             });
-        } else if (overlayUrl.startsWith("color:")) {
-            dynamicallyLoading = this.generateDynamicallyLoadingObject(overlayUrl.substring("color:".length), "js/color/FG_Color_", function (name) {
-                return global + ".context.currentColorScheme = new " + name + "();";
-            });
-        }
-        this.loadDynamicJs([dynamicallyLoading], function () {
-                fg.applyingOverlay(overlayName);
-                if (successCallback) {
-                    successCallback();
+            this.loadDynamicJs([dynamicallyLoading], function () {
+                    fg.applyingOverlay(overlayName);
+                    if (successCallback) {
+                        successCallback();
+                    }
+                }, function (response) {
+                    log.console("Failed to load " + overlayUrl + ": " + response.errorMessage());
                 }
-            }, function (response) {
-                log.console("Failed to load " + overlayUrl + ": " + response.errorMessage());
-            }
-        );
+            );
+        }
+    } else if (overlayUrl.startsWith("color:")) {
+        if (fg.context.color[overlayName]) {
+            fg.context.setColorScheme(fg.context.color[overlayName]);
+            fg.applyingColor(overlayName);
+        } else {
+            var dynamicallyLoading = this.generateDynamicallyLoadingObject(overlayUrl.substring("color:".length), "js/color/FG_Color_", function (name) {
+                return global + ".context.setColorScheme(new " + name + "());";
+            });
+            this.loadDynamicJs([dynamicallyLoading], function () {
+                    fg.applyingColor(overlayName);
+                    if (successCallback) {
+                        successCallback();
+                    }
+                }, function (response) {
+                    log.console("Failed to load " + overlayUrl + ": " + response.errorMessage());
+                }
+            );
+        }
     }
 };
 
@@ -239,7 +249,12 @@ FG.prototype.applyingOverlay = function(overlayName) {
     this.overlayBtn.firstChild.nodeValue = "Reset " + overlayName;
     this.overlayBtn.classList.add("show");
     this.overlaying = true;
-    this.context.overlay[overlayName] = this.context.currentColorScheme.currentOverlay;
+};
+
+FG.prototype.applyingColor = function(overlayName) {
+    this.redrawFrames();
+    this.draw.drawLegend(this.context.currentColorScheme, this.legendBtn);
+    this.draw.drawOverlayDropDown(this.context.currentColorScheme, this.overlayBtn);
 };
 
 FG.prototype.redrawFrames = function () {
@@ -677,6 +692,23 @@ FG.prototype.search = function(topFG) {
     pct = 100 * count / maxwidth;
     if (pct != 100) pct = pct.toFixed(1);
     this.matchedtxt.firstChild.nodeValue = "Matched: " + pct + "%";
+};
+
+function FG_Context() {
+    this.color = {};
+    this.overlay = {};
+}
+FG_Context.prototype.setColorScheme = function(cs) {
+        this.currentColorScheme = cs;
+        var name = cs.constructor.name;
+        name = (name.startsWith("FG_Color_")) ? name.substring("FG_Color_".length) : name;
+        this.color[name] = cs;
+};
+FG_Context.prototype.setColorOverlay = function(overlay) {
+    this.currentColorScheme.currentOverlay = overlay;
+    var name = overlay.constructor.name;
+    name = (name.startsWith("FG_Overlay_")) ? name.substring("FG_Overlay_".length) : name;
+    this.overlay[name] = overlay;
 };
 
 
