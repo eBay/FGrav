@@ -34,13 +34,13 @@ function MergedFGDraw(fg, collapsed, visualDiff, _d) {
         details = details + "])";
         return detailsText(escText(details), details);
     };
-    colorScheme = new FG_Color_Diff();
+    colorScheme = new FG_Color_Diff();//TODO do not use global
 }
 
 MergedFGDraw.prototype = Object.create(FGDraw.prototype);
 MergedFGDraw.prototype.constructor = MergedFGDraw;
 
-MergedFGDraw.prototype.drawFrame = function (f) {
+MergedFGDraw.prototype.drawFrame = function (colorScheme, f) {
     var draw = this;
     if (f.stack === ";all") {
         f.individualSamples = draw.collapsed.totalIndividualSamples;

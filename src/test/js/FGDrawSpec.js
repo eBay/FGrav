@@ -127,7 +127,7 @@ describe("FGDraw", function () {
                         return draw.svg.children[0];
                     };
 
-                    draw.reapplyColor();
+                    draw.reapplyColor(colorScheme);
 
                     expect(draw.svg.children[0].children[0].children[0].getAttribute('fill').toString()).toEqual("black2");
 
@@ -163,7 +163,7 @@ describe("FGDraw", function () {
         it("should draw frame", function () {
 
             var f = frameObject("a","a:b:c", 17, 19, 23, 29);
-            var el = draw.drawFrame(f);
+            var el = draw.drawFrame(colorScheme, f);
 
             expect(parseInt(el.children[0].getAttribute("x"))).toEqual(19 + 13); // = (x + shift width defined in FG constructor)
             expect(parseInt(el.children[0].getAttribute("y"))).toEqual(23);

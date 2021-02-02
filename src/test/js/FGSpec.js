@@ -143,7 +143,7 @@ describe("FG", function() {
             var redrawn = false;
 
             fg.draw = {
-                reapplyColor: function () {
+                reapplyColor: function (colorScheme) {
                     redrawn = true;
                 }
             };
@@ -484,7 +484,18 @@ describe("FG", function() {
                 responseText: "" +
                     "function FG_Overlay_Test() {}\n" +
                     "FG_Overlay_Test.prototype.colorFor = function(f, s) {" +
-                    "    return (f.name === 'overlay') ? 'rgb(122,122,122)' : colorScheme.colorFor(f, s);" +
+                    "    return (f.name === 'overlay') ? 'rgb(123,123,123)' : colorScheme.colorFor(f, s);" +
+                    "}"
+            });
+            jasmine.Ajax.stubRequest("js/color/FG_Color_Test.js").andReturn({
+                responseText: "" +
+                    "function FG_Color_Test() {\n" +
+                    "    FG_Color.call(this);\n" +
+                    "}\n" +
+                    "FG_Color_Test.prototype = Object.create(FG_Color.prototype);\n" +
+                    "FG_Color_Test.prototype.constructor = FG_Color_Test;\n" +
+                    "FG_Color_Test.prototype.colorFor = function(f, s) {" +
+                    "    return 'rgb(122,122,122)';" +
                     "}"
             });
             frameFilter.reset();
@@ -508,24 +519,23 @@ describe("FG", function() {
 
             fg.overlayBtn = domElement();
             fg.draw = {
-              reapplyColor: function () {
+              reapplyColor: function (colorScheme) {
                   redrawn = true;
               }
             };
 
-            fg.loadOverlay("MyTest", "overlay:Test", function () {
+            fg.loadOverlay("MyOTest", "overlay:Test", function () {
 
                 try {
                     var request = jasmine.Ajax.requests.mostRecent();
                     expect(request.url).toBe("js/color/overlay/FG_Overlay_Test.js");
                     expect(request.method).toBe('GET');
 
-                    expect(colorScheme.currentOverlay.colorFor({ name: 'overlay'})).toEqual("rgb(122,122,122)");
                     expect(colorScheme.currentOverlay.colorFor({ name: 'do not overlay. original color'})).toEqual("rgb(0,0,0)");
 
                     expect(redrawn).toBe(true);
 
-                    expect(fg.overlayBtn.firstChild.nodeValue).toBe("Reset MyTest");
+                    expect(fg.overlayBtn.firstChild.nodeValue).toBe("Reset MyOTest");
 
                     done();
                 } catch (e) {
@@ -542,24 +552,24 @@ describe("FG", function() {
 
             fg.overlayBtn = domElement();
             fg.draw = {
-                reapplyColor: function () {
+                reapplyColor: function (colorScheme) {
                     redrawn = true;
                 }
             };
 
-            fg.loadOverlay("MyTest", "color:Test", function () {
+            fg.loadOverlay("MyCTest", "color:Test", function () {
 
                 try {
                     var request = jasmine.Ajax.requests.mostRecent();
                     expect(request.url).toBe("js/color/FG_Color_Test.js");
                     expect(request.method).toBe('GET');
 
-                    expect(colorScheme.currentOverlay.colorFor({ name: 'overlay'})).toEqual("rgb(122,122,122)");
-                    expect(colorScheme.currentOverlay.colorFor({ name: 'do not overlay. original color'})).toEqual("rgb(0,0,0)");
+                    expect(colorScheme.colorFor({ name: 'overlay'})).toEqual("rgb(122,122,122)");
+                    expect(colorScheme.colorFor({ name: 'do not overlay. original color'})).toEqual("rgb(122,122,122)");
 
                     expect(redrawn).toBe(true);
 
-                    expect(fg.overlayBtn.firstChild.nodeValue).toBe("Reset MyTest");
+                    expect(fg.overlayBtn.firstChild.nodeValue).toBe("Reset MyCTest");
 
                     done();
                 } catch (e) {
@@ -575,7 +585,7 @@ describe("FG", function() {
 
             fg.overlayBtn = domElement();
             fg.draw = {
-                reapplyColor: function () {
+                reapplyColor: function (colorScheme) {
                     redrawn = true;
                 }
             };

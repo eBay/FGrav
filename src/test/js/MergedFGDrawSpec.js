@@ -70,7 +70,7 @@ describe("MergedFGDraw", function () {
             f.individualSamples = [1, 2];
             collapsed.totalIndividualSamples = [10, 10];
 
-            var el = draw.drawFrame(f);
+            var el = draw.drawFrame(colorScheme, f);
 
             expect(el.children[0].getAttributeValue("x")).toEqual(19 + 13); // = (x + shift width defined in FG constructor)
             expect(el.children[0].getAttributeValue("y")).toEqual(23);

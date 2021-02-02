@@ -15,10 +15,6 @@
  limitations under the License.
  **************************************************************************/
 
-// accessed from eval (yes, I know, see FGrav.js loadDynamicJs())
-// and therefore global to allow dynamic loading
-var colorScheme;
-
 function FGDraw(fg, _d) {
     FGravDraw.call(this, fg, _d);
     this.fg = fg;
@@ -53,9 +49,9 @@ FGDraw.prototype.drawCanvas = function() {
     this.svg.appendChild(search);
     this.svg.appendChild(ignorecase);
 
-    this.setupColorScheme();
-    this.drawLegend(legend);
-    this.drawOverlayDropDown(overlay);
+    this.setupColorScheme(colorScheme); //TODO do not use global
+    this.drawLegend(colorScheme, legend); //TODO do not use global
+    this.drawOverlayDropDown(colorScheme, overlay); //TODO do not use global
 
     this.fg.searchbtn = this.d.getElementById("search");
     this.fg.ignorecaseBtn = this.d.getElementById("ignorecase");
@@ -68,7 +64,7 @@ FGDraw.prototype.drawCanvas = function() {
     }
 };
 
-FGDraw.prototype.setupColorScheme = function() {
+FGDraw.prototype.setupColorScheme = function(colorScheme) {
     if (colorScheme && colorScheme.colorsAsOverlays) {
 
         $.each(Object.entries(this.fg.config.color), function (i, entry) {
@@ -81,7 +77,7 @@ FGDraw.prototype.setupColorScheme = function() {
     }
 };
 
-FGDraw.prototype.drawLegend = function(legendBtn) {
+FGDraw.prototype.drawLegend = function(colorScheme, legendBtn) {
     var legendKeys = (colorScheme && colorScheme.legend) ?  Object.keys(colorScheme.legend) : [];
     if (legendKeys.length > 0) {
         var g = this.d.createElementNS("http://www.w3.org/2000/svg", "g");
@@ -108,7 +104,7 @@ FGDraw.prototype.drawLegend = function(legendBtn) {
     }
 };
 
-FGDraw.prototype.drawOverlayDropDown = function(overlayBtn) {
+FGDraw.prototype.drawOverlayDropDown = function(colorScheme, overlayBtn) {
     var overlayKeys = (colorScheme && colorScheme.overlays) ? Object.keys(colorScheme.overlays): [];
     if (overlayKeys.length > 0) {
         var g = this.d.createElementNS("http://www.w3.org/2000/svg", "g");
@@ -178,17 +174,17 @@ FGDraw.prototype.drawInfoElements = function() {
 FGDraw.prototype.drawFG = function(stackFrames) {
     this.currentDrawnFrames = stackFrames;
     this.fg.totalSamples = stackFrames.totalSamples;
-    var g = this.generateFramesCells();
+    var g = this.generateFramesCells(colorScheme); //TODO do not use global
     this.svg.appendChild(g);
 };
 
 FGDraw.prototype.redrawFG = function() {
     var old = this.svg.getElementById(this.fg.namePerFG("frames"));
-    var g = this.generateFramesCells();
+    var g = this.generateFramesCells(colorScheme); //TODO do not use global
     this.svg.replaceChild(g, old);
 };
 
-FGDraw.prototype.reapplyColor = function() {
+FGDraw.prototype.reapplyColor = function(colorScheme) {
     var g = this.svg.getElementById(this.fg.namePerFG("frames"));
     var c = find_children(g, "g");
     var f = frameFlyweight();
@@ -210,16 +206,16 @@ FGDraw.prototype.reapplyColor = function() {
 };
 
 
-FGDraw.prototype.generateFramesCells = function() {
+FGDraw.prototype.generateFramesCells = function(colorScheme) {
     var stackFrames = this.currentDrawnFrames;
     var g = this.d.createElementNS("http://www.w3.org/2000/svg", "g");
     g.setAttribute("id", this.fg.namePerFG("frames"));
     var draw = this;
-    g.appendChild(draw.drawFrame(stackFrames.allFrame(draw.fg)));
+    g.appendChild(draw.drawFrame(colorScheme, stackFrames.allFrame(draw.fg)));
     $.each(stackFrames.stackFrameRows, function() {
         $.each(this, function() {
             if (this.samples >= draw.fg.minDisplaySample) {
-                g.appendChild(draw.drawFrame(this));
+                g.appendChild(draw.drawFrame(colorScheme, this));
             }
         });
     });
@@ -227,7 +223,7 @@ FGDraw.prototype.generateFramesCells = function() {
 };
 
 
-FGDraw.prototype.drawFrame = function (f) {
+FGDraw.prototype.drawFrame = function (colorScheme, f) {
     return frame(this, f.name, f.stack, f.samples, f.x() + this.fg.shiftWidth, f.y() + this.fg.shiftHeight,
         f.w(), (colorScheme) ? colorScheme.applyColor(f) : undefined, this.d);
 

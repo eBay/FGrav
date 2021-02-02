@@ -14,6 +14,11 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  **************************************************************************/
+
+// accessed from eval (yes, I know, see loadDynamicJs())
+// and therefore global to allow dynamic loading
+var colorScheme;
+
 function FG(id, shiftWidth, defaultTitle, minWidth, _w, _prompt) {
     defaultTitle = (typeof defaultTitle !== 'undefined') ? defaultTitle : "Flame Graph";
     FGrav.call(this, 1200, 2200, 24, 12, defaultTitle, _w);
@@ -45,6 +50,7 @@ function FG(id, shiftWidth, defaultTitle, minWidth, _w, _prompt) {
             + (ic ? ", ignoring case" : "")
             + "\nPress Ctrl-i to toggle case sensitivity", "");
     }
+
 }
 
 FG.prototype = Object.create(FGrav.prototype);
@@ -201,8 +207,8 @@ FG.prototype.generateDynamicallyLoadingObject = function(name, conventionPrefix,
 FG.prototype.loadOverlay = function(overlayName, overlayUrl, successCallback) {
     var fg = this;
     this.toggle_overlay();
-    if (colorScheme.loadedOverlays[overlayName]) {
-        colorScheme.currentOverlay = colorScheme.loadedOverlays[overlayName];
+    if (colorScheme.loadedOverlays[overlayName]) {  //TODO do not use global
+        colorScheme.currentOverlay = colorScheme.loadedOverlays[overlayName];  //TODO do not use global
         fg.applyingOverlay(overlayName);
     } else {
         var dynamicallyLoading
@@ -232,11 +238,11 @@ FG.prototype.applyingOverlay = function(overlayName) {
     this.overlayBtn.firstChild.nodeValue = "Reset " + overlayName;
     this.overlayBtn.classList.add("show");
     this.overlaying = true;
-    colorScheme.loadedOverlays[overlayName] = colorScheme.currentOverlay;
+    colorScheme.loadedOverlays[overlayName] = colorScheme.currentOverlay; //TODO do not use global
 };
 
-FG.prototype.redrawFrames = function () {
-    this.draw.reapplyColor();
+FG.prototype.redrawFrames = function () { //TODO do not use global
+    this.draw.reapplyColor(colorScheme);
 };
 
 // accessed from eval (yes, I know, see below)
@@ -278,7 +284,7 @@ FG.prototype.calculateHeight = function (maxLevel) {
             this.textPadding = 8;
         }
         if (!this.forcedHeight) {
-            var additional = (colorScheme && colorScheme.legend) ? Object.keys(colorScheme.legend).length : 0;
+            var additional = (colorScheme && colorScheme.legend) ? Object.keys(colorScheme.legend).length : 0;  //TODO do not use global
             this.height = Math.max(this.minHeight, Math.min(this.height, ((maxLevel + additional + 1) * (this.frameHeight + 2)) + (this.margin * 4)));
         }
     }
@@ -546,7 +552,7 @@ FG.prototype.toggle_overlay = function() {
 
 FG.prototype.reset_overlay = function() {
     this.overlayBtn.firstChild.nodeValue = "Overlay";
-    colorScheme.currentOverlay = undefined;
+    colorScheme.currentOverlay = undefined; //TODO do not use global
     this.redrawFrames();
     this.overlaying = false;
     this.overlay = true;
