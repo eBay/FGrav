@@ -50,7 +50,7 @@ describe("MergedFGDraw", function () {
             };
             draw = new MergedFGDraw(fg, collapsed, true, d);
 
-            colorScheme = {
+            fg.context.currentColorScheme = {
                 applyColor: function(f, s) {
                     return function (el) {
                         el.setAttribute("fill", "my-black");
@@ -60,17 +60,13 @@ describe("MergedFGDraw", function () {
             };
         });
 
-        afterEach(function () {
-            colorScheme = undefined;
-        });
-
         it("should draw frame with a diff rectangle", function () {
 
             var f = frameObject("a","a:b:c", 17, 19, 23, 29);
             f.individualSamples = [1, 2];
             collapsed.totalIndividualSamples = [10, 10];
 
-            var el = draw.drawFrame(colorScheme, f);
+            var el = draw.drawFrame(fg.context.currentColorScheme, f);
 
             expect(el.children[0].getAttributeValue("x")).toEqual(19 + 13); // = (x + shift width defined in FG constructor)
             expect(el.children[0].getAttributeValue("y")).toEqual(23);

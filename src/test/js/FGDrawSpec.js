@@ -10,10 +10,6 @@ describe("FGDraw", function () {
         draw = new FGDraw(fg);
     });
 
-    afterEach(function () {
-        colorScheme = undefined;
-    });
-
     describe("FG", function () {
 
         beforeEach(function() {
@@ -27,7 +23,6 @@ describe("FGDraw", function () {
             frameFilter.reset();
             fg.margin = 12;
             fg.frameHeight = 7;
-            colorScheme = undefined;
         });
 
         afterEach(function() {
@@ -95,7 +90,7 @@ describe("FGDraw", function () {
         it('should reapply color', function (done) {
             var stackFrames = new FGStackFrames();
 
-            colorScheme = {
+            fg.context.currentColorScheme = {
                 applyColor: function() {
                     return function (el) {
                         el.setAttribute("fill", "black1");
@@ -115,7 +110,7 @@ describe("FGDraw", function () {
 
                     expect(draw.svg.children[0].children[0].children[0].getAttribute('fill').toString()).toEqual("black1");
 
-                    colorScheme = {
+                    fg.context.currentColorScheme = {
                         applyColor: function() {
                             return function (el) {
                                 el.setAttribute("fill", "black2");
@@ -127,7 +122,7 @@ describe("FGDraw", function () {
                         return draw.svg.children[0];
                     };
 
-                    draw.reapplyColor(colorScheme);
+                    draw.reapplyColor(fg.context.currentColorScheme);
 
                     expect(draw.svg.children[0].children[0].children[0].getAttribute('fill').toString()).toEqual("black2");
 
@@ -146,7 +141,7 @@ describe("FGDraw", function () {
     describe("frame", function () {
 
         beforeEach(function () {
-            colorScheme = {
+            fg.context.currentColorScheme = {
                 applyColor: function() {
                     return function (el) {
                         el.setAttribute("fill", "my-black");
@@ -156,14 +151,10 @@ describe("FGDraw", function () {
             };
         });
 
-        afterEach(function () {
-            colorScheme = undefined;
-        });
-
         it("should draw frame", function () {
 
             var f = frameObject("a","a:b:c", 17, 19, 23, 29);
-            var el = draw.drawFrame(colorScheme, f);
+            var el = draw.drawFrame(fg.context.currentColorScheme, f);
 
             expect(parseInt(el.children[0].getAttribute("x"))).toEqual(19 + 13); // = (x + shift width defined in FG constructor)
             expect(parseInt(el.children[0].getAttribute("y"))).toEqual(23);
@@ -232,7 +223,7 @@ describe("FGDraw", function () {
 
         it('should draw legend', function () {
 
-            colorScheme = {
+            fg.context.currentColorScheme = {
                 applyColor: function() {
                     return function (el) {
                         el.setAttribute("fill", "black1");

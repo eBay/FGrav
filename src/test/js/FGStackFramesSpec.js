@@ -155,14 +155,13 @@ describe("FGStackFrames", function() {
                     "a;b;c;d;e;f;g;h;i;j;k;l;m;n;o;p;q;r;s;t;u;v;w;x;y;z;" +
                     "a;b;c;d;e;f;g;h;i;j;k;l;m;n;o;p;q;r;s;t;u;v;w;x;y;z 100\n"
             });
-            colorScheme = {
+            fg.context.currentColorScheme = {
                 legend: {}
             };
             frameFilter.reset();
         });
 
         afterEach(function() {
-            colorScheme = undefined;
             frameFilter.reset();
             jasmine.Ajax.uninstall();
         });
@@ -188,7 +187,7 @@ describe("FGStackFrames", function() {
         });
 
         it("should calculate dimensions based on stack frames", function (done) {
-            colorScheme.legend = {
+            fg.context.currentColorScheme.legend = {
                 red: 'items',
                 blue: 'more items'
             };

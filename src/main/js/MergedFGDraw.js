@@ -34,7 +34,7 @@ function MergedFGDraw(fg, collapsed, visualDiff, _d) {
         details = details + "])";
         return detailsText(escText(details), details);
     };
-    colorScheme = new FG_Color_Diff();//TODO do not use global
+    fg.context.currentColorScheme = new FG_Color_Diff();
 }
 
 MergedFGDraw.prototype = Object.create(FGDraw.prototype);

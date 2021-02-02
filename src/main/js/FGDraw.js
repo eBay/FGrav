@@ -49,9 +49,9 @@ FGDraw.prototype.drawCanvas = function() {
     this.svg.appendChild(search);
     this.svg.appendChild(ignorecase);
 
-    this.setupColorScheme(colorScheme); //TODO do not use global
-    this.drawLegend(colorScheme, legend); //TODO do not use global
-    this.drawOverlayDropDown(colorScheme, overlay); //TODO do not use global
+    this.setupColorScheme(this.fg.context.currentColorScheme);
+    this.drawLegend(this.fg.context.currentColorScheme, legend);
+    this.drawOverlayDropDown(this.fg.context.currentColorScheme, overlay);
 
     this.fg.searchbtn = this.d.getElementById("search");
     this.fg.ignorecaseBtn = this.d.getElementById("ignorecase");
@@ -174,13 +174,13 @@ FGDraw.prototype.drawInfoElements = function() {
 FGDraw.prototype.drawFG = function(stackFrames) {
     this.currentDrawnFrames = stackFrames;
     this.fg.totalSamples = stackFrames.totalSamples;
-    var g = this.generateFramesCells(colorScheme); //TODO do not use global
+    var g = this.generateFramesCells(this.fg.context.currentColorScheme);
     this.svg.appendChild(g);
 };
 
 FGDraw.prototype.redrawFG = function() {
     var old = this.svg.getElementById(this.fg.namePerFG("frames"));
-    var g = this.generateFramesCells(colorScheme); //TODO do not use global
+    var g = this.generateFramesCells(this.fg.context.currentColorScheme);
     this.svg.replaceChild(g, old);
 };
 

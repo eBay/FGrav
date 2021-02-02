@@ -15,10 +15,6 @@
  limitations under the License.
  **************************************************************************/
 
-// accessed from eval (yes, I know, see loadDynamicJs())
-// and therefore global to allow dynamic loading
-var colorScheme;
-
 function FG(id, shiftWidth, defaultTitle, minWidth, _w, _prompt) {
     defaultTitle = (typeof defaultTitle !== 'undefined') ? defaultTitle : "Flame Graph";
     FGrav.call(this, 1200, 2200, 24, 12, defaultTitle, _w);
@@ -43,6 +39,9 @@ function FG(id, shiftWidth, defaultTitle, minWidth, _w, _prompt) {
     this.frameFilterNames = this.getParameter("frameFilter", undefined);
     this.colorSchemeName = this.getParameter("color", undefined);
     this.config = {};
+    this.context = {
+        currentColorScheme: undefined
+    };
     this.searchTermPromptFunction = (typeof _prompt !== "undefined") ? _prompt :
         function(ic) {
           return prompt("Enter a search term (regexp " +
@@ -174,7 +173,7 @@ FG.prototype.objectsToLoad = function() {
     var fg = this;
     if (typeof this.colorSchemeName !== 'undefined') {
         var obj = fg.generateDynamicallyLoadingObject(this.colorSchemeName, "js/color/FG_Color_", function (objName) {
-            return "colorScheme = new " + objName + "();"
+            return "fg.context.currentColorScheme = new " + objName + "();"
         });
         toLoad.push(obj);
     }
@@ -204,21 +203,22 @@ FG.prototype.generateDynamicallyLoadingObject = function(name, conventionPrefix,
     return new DynamicallyLoading(url, generateInstallScript(objName));
 };
 
-FG.prototype.loadOverlay = function(overlayName, overlayUrl, successCallback) {
+FG.prototype.loadOverlay = function(overlayName, overlayUrl, successCallback, globalVarName) {
+    var global = (globalVarName) ? globalVarName : "fg";
     var fg = this;
     this.toggle_overlay();
-    if (colorScheme.loadedOverlays[overlayName]) {  //TODO do not use global
-        colorScheme.currentOverlay = colorScheme.loadedOverlays[overlayName];  //TODO do not use global
+    if (fg.context.currentColorScheme.loadedOverlays[overlayName]) {
+        fg.context.currentColorScheme.currentOverlay = fg.context.currentColorScheme.loadedOverlays[overlayName];
         fg.applyingOverlay(overlayName);
     } else {
-        var dynamicallyLoading
+        var dynamicallyLoading;
         if (overlayUrl.startsWith("overlay:")) {
             dynamicallyLoading = this.generateDynamicallyLoadingObject(overlayUrl.substring("overlay:".length), "js/color/overlay/FG_Overlay_", function (name) {
-                return "colorScheme.currentOverlay = new " + name + "();";
+                return global + ".context.currentColorScheme.currentOverlay = new " + name + "();";
             });
         } else if (overlayUrl.startsWith("color:")) {
             dynamicallyLoading = this.generateDynamicallyLoadingObject(overlayUrl.substring("color:".length), "js/color/FG_Color_", function (name) {
-                return "colorScheme = new " + name + "();";
+                return global + ".context.currentColorScheme = new " + name + "();";
             });
         }
         this.loadDynamicJs([dynamicallyLoading], function () {
@@ -238,11 +238,11 @@ FG.prototype.applyingOverlay = function(overlayName) {
     this.overlayBtn.firstChild.nodeValue = "Reset " + overlayName;
     this.overlayBtn.classList.add("show");
     this.overlaying = true;
-    colorScheme.loadedOverlays[overlayName] = colorScheme.currentOverlay; //TODO do not use global
+    this.context.currentColorScheme.loadedOverlays[overlayName] = this.context.currentColorScheme.currentOverlay;
 };
 
-FG.prototype.redrawFrames = function () { //TODO do not use global
-    this.draw.reapplyColor(colorScheme);
+FG.prototype.redrawFrames = function () {
+    this.draw.reapplyColor(this.context.currentColorScheme);
 };
 
 // accessed from eval (yes, I know, see below)
@@ -284,7 +284,8 @@ FG.prototype.calculateHeight = function (maxLevel) {
             this.textPadding = 8;
         }
         if (!this.forcedHeight) {
-            var additional = (colorScheme && colorScheme.legend) ? Object.keys(colorScheme.legend).length : 0;  //TODO do not use global
+            var additional = (this.context.currentColorScheme && this.context.currentColorScheme.legend) ?
+                Object.keys(this.context.currentColorScheme.legend).length : 0;
             this.height = Math.max(this.minHeight, Math.min(this.height, ((maxLevel + additional + 1) * (this.frameHeight + 2)) + (this.margin * 4)));
         }
     }
@@ -552,7 +553,7 @@ FG.prototype.toggle_overlay = function() {
 
 FG.prototype.reset_overlay = function() {
     this.overlayBtn.firstChild.nodeValue = "Overlay";
-    colorScheme.currentOverlay = undefined; //TODO do not use global
+    this.context.currentColorScheme.currentOverlay = undefined;
     this.redrawFrames();
     this.overlaying = false;
     this.overlay = true;

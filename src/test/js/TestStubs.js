@@ -98,3 +98,13 @@ function domGroupElement() {
     el.childNodes = [ el.rect, el.text ];
     return el;
 }
+
+function FG_Color_Black() {
+    FG_Color.call(this);
+}
+
+FG_Color_Black.prototype = Object.create(FG_Color.prototype);
+FG_Color_Black.prototype.constructor = FG_Color_Black;
+FG_Color_Black.prototype.colorFor = function(frame, totalSamples) {
+    return "black";
+};
