@@ -591,6 +591,7 @@ describe("FG", function() {
             var redrawn = false;
             var redrawnLegend = false;
             var redrawnOverlayDropDown = false;
+            var colorSchemeSetup = false;
             fg.draw = {
                 reapplyColor: function (c) {
                     redrawn = true;
@@ -598,8 +599,11 @@ describe("FG", function() {
                 drawLegend: function (c, old) {
                     redrawnLegend = true;
                 },
-                drawOverlayDropDown: function (c, old) {
+                drawOverlayDropDown: function (c, btn, old) {
                     redrawnOverlayDropDown = true;
+                },
+                setColorSchemesAsOverlays: function (c) {
+                    colorSchemeSetup = true;
                 }
             };
             loadedC = {
@@ -622,6 +626,7 @@ describe("FG", function() {
                     expect(redrawn).toBe(true);
                     expect(redrawnLegend).toBe(true);
                     expect(redrawnOverlayDropDown).toBe(true);
+                    expect(colorSchemeSetup).toBe(true);
 
                     done();
                 } catch (e) {
@@ -665,6 +670,7 @@ describe("FG", function() {
             var redrawn = false;
             var redrawnLegend = false;
             var redrawnOverlayDropDown = false;
+            var colorSchemeSetup = false;
             fg.draw = {
                 reapplyColor: function (c) {
                     redrawn = true;
@@ -672,8 +678,11 @@ describe("FG", function() {
                 drawLegend: function (c, old) {
                     redrawnLegend = true;
                 },
-                drawOverlayDropDown: function (c, old) {
+                drawOverlayDropDown: function (c, btn, old) {
                     redrawnOverlayDropDown = true;
+                },
+                setColorSchemesAsOverlays: function (c) {
+                    colorSchemeSetup = true;
                 }
             };
 
@@ -688,6 +697,7 @@ describe("FG", function() {
             expect(redrawn).toBe(true);
             expect(redrawnLegend).toBe(true);
             expect(redrawnOverlayDropDown).toBe(true);
+            expect(colorSchemeSetup).toBe(true);
         });
     });
 

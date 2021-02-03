@@ -38,7 +38,7 @@ FGDraw.prototype.drawCanvas = function() {
     var unzoom = this.text("Reset Zoom", "unzoom", this.buttonsMargin, this.buttonsMargin);
     unzoom.classList.add("hide");
     this.legend = this.text("Legend", "legendBtn", this.buttonsMargin + 90, this.buttonsMargin);
-    this.overlay = this.text("Overlay", "overlayBtn", this.buttonsMargin + 90 + 60, this.buttonsMargin);
+    this.overlay = this.text("Overlays", "overlayBtn", this.buttonsMargin + 90 + 60, this.buttonsMargin);
 
     var ignorecase = this.text("IC", "ignorecase", this.fg.width - this.buttonsMargin - 12, this.buttonsMargin);
     var search = this.text("Search", "search", this.fg.width - this.buttonsMargin - 12 - 90, this.buttonsMargin);
@@ -49,7 +49,7 @@ FGDraw.prototype.drawCanvas = function() {
     this.svg.appendChild(search);
     this.svg.appendChild(ignorecase);
 
-    this.setupColorScheme(this.fg.context.currentColorScheme);
+    this.setColorSchemesAsOverlays(this.fg.context.currentColorScheme);
     this.drawLegend(this.fg.context.currentColorScheme);
     this.drawOverlayDropDown(this.fg.context.currentColorScheme);
 
@@ -64,7 +64,7 @@ FGDraw.prototype.drawCanvas = function() {
     }
 };
 
-FGDraw.prototype.setupColorScheme = function(colorScheme) {
+FGDraw.prototype.setColorSchemesAsOverlays = function(colorScheme) {
     if (colorScheme.colorsAsOverlays) {
 
         $.each(Object.entries(this.fg.config.color), function (i, entry) {
@@ -103,6 +103,7 @@ FGDraw.prototype.drawLegend = function(colorScheme, old) {
         } else {
             this.svg.appendChild(g);
             this.svg.appendChild(this.legend);
+            this.fg.legendBtn = this.d.getElementById("legendBtn");
         }
         this.fg.legendEl = g;
     } else if (old) {
@@ -112,7 +113,7 @@ FGDraw.prototype.drawLegend = function(colorScheme, old) {
 
 };
 
-FGDraw.prototype.drawOverlayDropDown = function(colorScheme, old) {
+FGDraw.prototype.drawOverlayDropDown = function(colorScheme, btn, old) {
     var overlayKeys = (colorScheme.overlays) ? Object.keys(colorScheme.overlays): [];
     if (overlayKeys.length > 0) {
         var g = this.d.createElementNS("http://www.w3.org/2000/svg", "g");
@@ -143,6 +144,11 @@ FGDraw.prototype.drawOverlayDropDown = function(colorScheme, old) {
         } else {
             this.svg.appendChild(g);
             this.svg.appendChild(this.overlay);
+            btn = this.d.getElementById("overlayBtn");
+            this.fg.overlayBtn = btn;
+        }
+        if (btn) {
+            btn.firstChild.nodeValue = (colorScheme.colorsAsOverlays) ? "Color Schemes" : "Overlays";
         }
         this.fg.overlayEl = g;
     } else if (old) {

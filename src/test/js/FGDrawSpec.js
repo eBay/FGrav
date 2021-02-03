@@ -353,8 +353,11 @@ describe("FGDraw", function () {
                     d: 'D'
                 }
             };
+            fg.overlayBtn = {
+                firstChild: {}
+            };
 
-            draw.drawOverlayDropDown(newScheme, fg.overlayEl);
+            draw.drawOverlayDropDown(newScheme, fg.overlayBtn, fg.overlayEl);
 
             expect(fg.overlayEl.localName).toEqual("g");
             expect(fg.overlayEl.children.length).toEqual(4);
@@ -362,6 +365,7 @@ describe("FGDraw", function () {
                 'fg.loadOverlay("c", "C");\n}');
             expect(fg.overlayEl.children[3].onclick.toString()).toEqual('function onclick(evt) {\n' +
                 'fg.loadOverlay("d", "D");\n}');
+            expect(fg.overlayBtn.firstChild.nodeValue).toEqual('Overlays');
         });
 
         it('should redraw overlay drop down to an empty one', function () {
@@ -382,8 +386,11 @@ describe("FGDraw", function () {
             var newScheme = {
                 overlays: {}
             };
+            fg.overlayBtn = {
+                firstChild: {}
+            };
 
-            draw.drawOverlayDropDown(newScheme, fg.overlayEl);
+            draw.drawOverlayDropDown(newScheme, fg.overlayBtn, fg.overlayEl);
 
             expect(fg.overlayEl).toEqual(undefined);
         });

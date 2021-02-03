@@ -226,13 +226,13 @@ FG.prototype.loadOverlay = function(overlayName, overlayUrl, successCallback, gl
     } else if (overlayUrl.startsWith("color:")) {
         if (fg.context.color[overlayName]) {
             fg.context.setColorScheme(fg.context.color[overlayName]);
-            fg.applyingColor(overlayName);
+            fg.applyingColor();
         } else {
             var dynamicallyLoading = this.generateDynamicallyLoadingObject(overlayUrl.substring("color:".length), "js/color/FG_Color_", function (name) {
                 return global + ".context.setColorScheme(new " + name + "());";
             });
             this.loadDynamicJs([dynamicallyLoading], function () {
-                    fg.applyingColor(overlayName);
+                    fg.applyingColor();
                     if (successCallback) {
                         successCallback();
                     }
@@ -251,10 +251,11 @@ FG.prototype.applyingOverlay = function(overlayName) {
     this.overlaying = true;
 };
 
-FG.prototype.applyingColor = function(overlayName) {
+FG.prototype.applyingColor = function() {
     this.redrawFrames();
+    this.draw.setColorSchemesAsOverlays(this.context.currentColorScheme);
     this.draw.drawLegend(this.context.currentColorScheme, this.legendEl);
-    this.draw.drawOverlayDropDown(this.context.currentColorScheme, this.overlayEl);
+    this.draw.drawOverlayDropDown(this.context.currentColorScheme, this.overlayBtn, this.overlayEl);
 };
 
 FG.prototype.redrawFrames = function () {
