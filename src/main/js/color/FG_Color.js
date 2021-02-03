@@ -17,13 +17,13 @@
 function FG_Color() {
     this.legend = {};
     this.overlays = {};
+    this.colorsAsOverlays = false;
     this.currentOverlay = undefined;
-    this.loadedOverlays = {};
 }
 /*
 The function to override when defining a color scheme.
  */
-FG_Color.prototype.colorFor = function(frame, samples) {
+FG_Color.prototype.colorFor = function(frame, totalSamples) {
     throw Error("Did not load any color scheme");
 };
 
@@ -31,18 +31,18 @@ FG_Color.prototype.colorFor = function(frame, samples) {
 Do not override.
 This is the function that is being used to apply color and possible style from overlay
  */
-FG_Color.prototype.applyColor = function (frame, samples) {
+FG_Color.prototype.applyColor = function (frame, totalSamples) {
     var c = this;
-    return (c.currentOverlay) ? c.currentOverlay.applyStyle(c, frame, samples) : c.applyStyle(c, frame, samples);
+    return (c.currentOverlay) ? c.currentOverlay.applyStyle(c, frame, totalSamples) : c.applyStyle(c, frame, totalSamples);
 };
 
 /*
 Do not override.
 This allows us to use the 'this' color scheme as overlay.
  */
-FG_Color.prototype.applyStyle = function(colorScheme, frame, samples) {
+FG_Color.prototype.applyStyle = function(colorScheme, frame, totalSamples) {
     var c = this;
     return function(el) {
-        el.setAttribute("fill", c.colorFor(frame, samples));
+        el.setAttribute("fill", c.colorFor(frame, totalSamples));
     };
 };

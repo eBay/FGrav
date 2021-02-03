@@ -16,12 +16,13 @@
  **************************************************************************/
 function FG_Color_Flames() {
     FG_Color.call(this);
+    this.colorsAsOverlays = true;
 }
 
 FG_Color_Flames.prototype = Object.create(FG_Color.prototype);
 FG_Color_Flames.prototype.constructor = FG_Color_Flames;
-FG_Color_Flames.prototype.colorFor = function(frame, samples) {
-    samples = (typeof samples !== 'undefined') ? samples : Math.random();
+FG_Color_Flames.prototype.colorFor = function(frame, totalSamples) {
+    totalSamples = (typeof totalSamples !== 'undefined' && totalSamples <= 1 && totalSamples >= 0) ? totalSamples : Math.random();
     var colors = [ "red", "orange", "yellow" ];
-    return colorValueFor(colors[Math.floor(3 * samples)], frame.name);
+    return colorValueFor(colors[Math.floor(3 * totalSamples)], frame.getName());
 };

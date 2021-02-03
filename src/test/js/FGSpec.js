@@ -1,3 +1,8 @@
+var loaded1;
+var loaded2;
+var loadedO;
+var loadedC;
+
 describe("FG", function() {
 
     var fg;
@@ -36,9 +41,8 @@ describe("FG", function() {
                 return this.attr.get(k);
             }
         };
-        colorScheme = {
+        fg.context.currentColorScheme = {
             legend: {},
-            loadedOverlays: {}
         };
 
         textNode = {
@@ -69,8 +73,73 @@ describe("FG", function() {
         };
     });
 
-    afterEach(function () {
-        colorScheme = undefined;
+    describe('context', function () {
+
+        it('should set loaded color scheme to both current and by its name', function () {
+
+            var scheme = new FG_Color_Black();
+
+            fg.context.setColorScheme(scheme);
+
+            expect(fg.context.currentColorScheme).toBe(scheme);
+            expect(fg.context.color["Black"]).toBe(scheme);
+        });
+
+        it('should set loaded custom color scheme to both current and by its full name', function () {
+
+            var scheme = new MyCustomColorScheme();
+
+            fg.context.setColorScheme(scheme);
+
+            expect(fg.context.currentColorScheme).toBe(scheme);
+            expect(fg.context.color["MyCustomColorScheme"]).toBe(scheme);
+        });
+
+        it('should set loaded color overlay to both current and by its name', function () {
+
+            var overlay = new FG_Overlay_Java_Blocking();
+
+            fg.context.setColorOverlay(overlay);
+
+            expect(fg.context.currentColorScheme.currentOverlay).toBe(overlay);
+            expect(fg.context.overlay["Java_Blocking"]).toBe(overlay);
+        });
+
+        it('should set loaded custom color overlay to both current and by its full name', function () {
+
+            var overlay = new MyCustomColorScheme();
+
+            fg.context.setColorOverlay(overlay);
+
+            expect(fg.context.currentColorScheme.currentOverlay).toBe(overlay);
+            expect(fg.context.overlay["MyCustomColorScheme"]).toBe(overlay);
+        });
+
+        it('should set color scheme if none was there before', function () {
+
+            fg.context = new FG_Context();
+            var scheme = new FG_Color_Black();
+
+            fg.context.optionallySetColorScheme(scheme);
+
+            expect(fg.context.currentColorScheme).toBe(scheme);
+            expect(fg.context.color["Black"]).toBe(scheme);
+        });
+
+        it('should NOT set color scheme if one was set before it', function () {
+
+            fg.context = new FG_Context();
+            var firstScheme = new FG_Color_White();
+            fg.context.setColorScheme(firstScheme);
+
+
+            var scheme = new FG_Color_Black();
+
+            fg.context.optionallySetColorScheme(scheme);
+
+            expect(fg.context.currentColorScheme).toBe(firstScheme);
+            expect(fg.context.color["Black"]).toBe(undefined);
+        });
     });
 
     describe('interactivity', function () {
@@ -139,11 +208,11 @@ describe("FG", function() {
 
         it('should reset overlay', function () {
             fg.overlaying = true;
-            colorScheme.currentOverlay = "some overlay";
+            fg.context.currentColorScheme.currentOverlay = "some overlay";
             var redrawn = false;
 
             fg.draw = {
-                redrawFG: function () {
+                reapplyColor: function (c) {
                     redrawn = true;
                 }
             };
@@ -154,7 +223,7 @@ describe("FG", function() {
             expect(fg.overlay).toBe(false);
             expect(fg.overlaying).toBe(false);
             expect(redrawn).toBe(true);
-            expect(colorScheme.currentOverlay).toBe(undefined);
+            expect(fg.context.currentColorScheme.currentOverlay).toBe(undefined);
         });
 
         it('should toggle ignoreCase on', function () {
@@ -254,42 +323,42 @@ describe("FG", function() {
         });
 
        it("should generate DynamicallyLoading objects from names", function () {
-            fg.colorSchemeName = "ColorScheme";
+            fg.colorSchemeUri = "ColorScheme";
             fg.frameFilterNames = "FrameFilter";
 
             var objs = fg.objectsToLoad();
 
             expect(objs.length).toBe(2);
             expect(objs[0].getUrl()).toEqual("js/color/FG_Color_ColorScheme.js");
-            expect(objs[0].appendInstallScript("")).toEqual("\ncolorScheme = new FG_Color_ColorScheme();");
+            expect(objs[0].appendInstallScript("")).toEqual("\nfg.context.setColorScheme(new FG_Color_ColorScheme());");
             expect(objs[1].getUrl()).toEqual("js/frame/FG_Filter_FrameFilter.js");
             expect(objs[1].appendInstallScript("")).toEqual("\nframeFilter.filters.push(new FG_Filter_FrameFilter());");
 
         });
 
         it("should generate DynamicallyLoading objects from urls", function () {
-            fg.colorSchemeName = "/js/MyCustomColorScheme.js";
+            fg.colorSchemeUri = "/js/MyCustomColorScheme.js";
             fg.frameFilterNames = "/js/fgrav/custom/MyFrameFilter.js";
 
             var objs = fg.objectsToLoad();
 
             expect(objs.length).toBe(2);
             expect(objs[0].getUrl()).toEqual("/js/MyCustomColorScheme.js");
-            expect(objs[0].appendInstallScript("")).toEqual("\ncolorScheme = new MyCustomColorScheme();");
+            expect(objs[0].appendInstallScript("")).toEqual("\nfg.context.setColorScheme(new MyCustomColorScheme());");
             expect(objs[1].getUrl()).toEqual("/js/fgrav/custom/MyFrameFilter.js");
             expect(objs[1].appendInstallScript("")).toEqual("\nframeFilter.filters.push(new MyFrameFilter());");
 
         });
 
         it("should generate multiple DynamicallyLoading objects", function () {
-            fg.colorSchemeName = "ColorScheme";
+            fg.colorSchemeUri = "ColorScheme";
             fg.frameFilterNames = "FrameFilter1,FrameFilter2,/js/MyCustomFilter.js";
 
             var objs = fg.objectsToLoad();
 
             expect(objs.length).toBe(4);
             expect(objs[0].getUrl()).toEqual("js/color/FG_Color_ColorScheme.js");
-            expect(objs[0].appendInstallScript("")).toEqual("\ncolorScheme = new FG_Color_ColorScheme();");
+            expect(objs[0].appendInstallScript("")).toEqual("\nfg.context.setColorScheme(new FG_Color_ColorScheme());");
             expect(objs[1].getUrl()).toEqual("js/frame/FG_Filter_FrameFilter1.js");
             expect(objs[1].appendInstallScript("")).toEqual("\nframeFilter.filters.push(new FG_Filter_FrameFilter1());");
             expect(objs[2].getUrl()).toEqual("js/frame/FG_Filter_FrameFilter2.js");
@@ -329,11 +398,9 @@ describe("FG", function() {
                     "}"
             });
             frameFilter.reset();
-            colorScheme = undefined;
         });
 
         afterEach(function () {
-            colorScheme = undefined;
             jasmine.Ajax.uninstall();
         });
 
@@ -358,14 +425,14 @@ describe("FG", function() {
         });
 
         it("should load dynamic js file with additional installation script", function (done) {
-            fg.loadDynamicJs([new DynamicallyLoading("js/color/FG_Color_Test.js", "colorScheme = new FG_Color_Test();")], function () {
+            fg.loadDynamicJs([new DynamicallyLoading("js/color/FG_Color_Test.js", "loaded1 = new FG_Color_Test();")], function () {
 
                 try {
                     var request = jasmine.Ajax.requests.mostRecent();
                     expect(request.url).toBe("js/color/FG_Color_Test.js");
                     expect(request.method).toBe('GET');
 
-                    expect(colorScheme.colorFor()).toEqual("rgb(122,122,122)");
+                    expect(loaded1.colorFor()).toEqual("rgb(122,122,122)");
 
                     done();
                 } catch (e) {
@@ -376,17 +443,17 @@ describe("FG", function() {
             });
         });
 
-        it("should load multiple dynamic js filters", function (done) {
+        it("should load multiple dynamic js filters and colors", function (done) {
             fg.loadDynamicJs([
                 new DynamicallyLoading("js/frame/FG_Filter_Other.js", "frameFilter.filters.push(new FG_Filter_Other());"),
-                new DynamicallyLoading("js/color/FG_Color_Test.js", "colorScheme = new FG_Color_Test();"),
+                new DynamicallyLoading("js/color/FG_Color_Test.js", "loaded2 = new FG_Color_Test();"),
                 new DynamicallyLoading("js/frame/FG_Filter_Test.js", "frameFilter.filters.push(new FG_Filter_Test());")], function () {
 
                 try {
                     expect(frameFilter.filters.length).toEqual(2);
                     expect(frameFilter.filters[0].filter('foo')).toEqual("x");
                     expect(frameFilter.filters[1].filter('foo')).toEqual("foofoo");
-                    expect(colorScheme.colorFor()).toEqual("rgb(122,122,122)");
+                    expect(loaded2.colorFor()).toEqual("rgb(122,122,122)");
 
                     done();
                 } catch (e) {
@@ -405,22 +472,28 @@ describe("FG", function() {
             jasmine.Ajax.stubRequest("js/color/overlay/FG_Overlay_Test.js").andReturn({
                 responseText: "" +
                     "function FG_Overlay_Test() {}\n" +
-                    "FG_Overlay_Test.prototype.colorFor = function(f, s) {" +
-                    "    return (f.name === 'overlay') ? 'rgb(122,122,122)' : colorScheme.colorFor(f, s);" +
+                    "FG_Overlay_Test.prototype.applyStyle = function(c, f, s) {" +
+                    "    return function(element) {" +
+                    "       element.setAttribute('fill', (f.name === 'overlay') ? 'rgb(123,123,123)' : c.colorFor(f, s));" +
+                    "    }" +
+                    "};"
+            });
+            jasmine.Ajax.stubRequest("js/color/FG_Color_Test.js").andReturn({
+                responseText: "" +
+                    "function FG_Color_Test() {\n" +
+                    "    FG_Color.call(this);\n" +
+                    "}\n" +
+                    "FG_Color_Test.prototype = Object.create(FG_Color.prototype);\n" +
+                    "FG_Color_Test.prototype.constructor = FG_Color_Test;\n" +
+                    "FG_Color_Test.prototype.colorFor = function(f, s) {" +
+                    "    return 'rgb(66,66,66)';" +
                     "}"
             });
             frameFilter.reset();
-            colorScheme = {
-                legend: {},
-                loadedOverlays: {},
-                colorFor: function () {
-                    return 'rgb(0,0,0)';
-                }
-            };
+            fg.context.currentColorScheme = new FG_Color_Black();
         });
 
         afterEach(function () {
-            colorScheme = undefined;
             jasmine.Ajax.uninstall();
         });
 
@@ -430,59 +503,149 @@ describe("FG", function() {
 
             fg.overlayBtn = domElement();
             fg.draw = {
-              redrawFG: function () {
+              reapplyColor: function (c) {
                   redrawn = true;
               }
             };
+            loadedO = {
+                context: new FG_Context()
+            };
+            loadedO.context.setColorScheme(new FG_Color_Black());
 
-            fg.loadOverlay("MyTest", "Test", function () {
+            fg.loadOverlay("MyOTest", "overlay:Test", function () {
 
                 try {
                     var request = jasmine.Ajax.requests.mostRecent();
                     expect(request.url).toBe("js/color/overlay/FG_Overlay_Test.js");
                     expect(request.method).toBe('GET');
-
-                    expect(colorScheme.currentOverlay.colorFor({ name: 'overlay'})).toEqual("rgb(122,122,122)");
-                    expect(colorScheme.currentOverlay.colorFor({ name: 'do not overlay. original color'})).toEqual("rgb(0,0,0)");
-
                     expect(redrawn).toBe(true);
+                    expect(fg.overlayBtn.firstChild.nodeValue).toBe("Reset MyOTest");
 
-                    expect(fg.overlayBtn.firstChild.nodeValue).toBe("Reset MyTest");
+                    var el = domElement();
+                    loadedO.context.currentColorScheme.applyColor({ name: 'overlay'})(el);
+                    expect(el.getAttributeValue("fill")).toEqual("rgb(123,123,123)");
+                    loadedO.context.currentColorScheme.applyColor({ name: 'do not overlay. original color'})(el);
+                    expect(el.getAttributeValue("fill")).toEqual("black");
 
                     done();
                 } catch (e) {
                     done(e);
                 }
-            }, function () {
-                    done.fail("ajax should succeed");
-            });
+            }, "loadedO");
         });
 
+
+        it("should load dynamic color scheme js file as overlay", function (done) {
+            var redrawn = false;
+            var redrawnLegend = false;
+            var redrawnOverlayDropDown = false;
+            var colorSchemeSetup = false;
+            fg.draw = {
+                reapplyColor: function (c) {
+                    redrawn = true;
+                },
+                drawLegend: function (c, old) {
+                    redrawnLegend = true;
+                },
+                drawOverlayDropDown: function (c, btn, old) {
+                    redrawnOverlayDropDown = true;
+                },
+                setColorSchemesAsOverlays: function (c) {
+                    colorSchemeSetup = true;
+                }
+            };
+            loadedC = {
+                context: new FG_Context()
+            };
+            loadedC.context.setColorScheme(new FG_Color_Black());
+
+
+            fg.loadOverlay("MyCTest", "color:Test", function () {
+
+                try {
+                    var request = jasmine.Ajax.requests.mostRecent();
+                    expect(request.url).toBe("js/color/FG_Color_Test.js");
+                    expect(request.method).toBe('GET');
+
+                    var el = domElement();
+                    loadedC.context.currentColorScheme.applyColor({ name: 'x'})(el);
+                    expect(el.getAttributeValue("fill")).toEqual("rgb(66,66,66)");
+
+                    expect(redrawn).toBe(true);
+                    expect(redrawnLegend).toBe(true);
+                    expect(redrawnOverlayDropDown).toBe(true);
+                    expect(colorSchemeSetup).toBe(true);
+
+                    done();
+                } catch (e) {
+                    done(e);
+                }
+            }, "loadedC");
+        });
 
         it("should load already loaded overlay object", function () {
             var redrawn = false;
 
             fg.overlayBtn = domElement();
             fg.draw = {
-                redrawFG: function () {
+                reapplyColor: function (c) {
                     redrawn = true;
                 }
             };
 
-            colorScheme.loadedOverlays["My Test"] = {
-                colorFor: function(f, s) {
-                    return (f.name === 'overlay') ? 'rgb(80,80,80)' : colorScheme.colorFor(f, s);
+            fg.context.overlay["My Test"] = {
+                applyStyle: function(c, f, s) {
+                    return function(element) {
+                        element.setAttribute("fill", (f.name === 'overlay') ?  'rgb(80,80,80)': c.colorFor(f, s));
+                    }
                 }
             };
 
-            fg.loadOverlay("My Test", "Test");
+            fg.loadOverlay("My Test", "overlay:Test");
 
-            expect(colorScheme.currentOverlay.colorFor({ name: 'overlay'})).toEqual("rgb(80,80,80)");
-            expect(colorScheme.currentOverlay.colorFor({ name: 'do not overlay. original color'})).toEqual("rgb(0,0,0)");
+            var el = domElement();
+            fg.context.currentColorScheme.applyColor({ name: 'overlay'})(el);
+            expect(el.getAttributeValue("fill")).toEqual("rgb(80,80,80)");
+            fg.context.currentColorScheme.applyColor({ name: 'do not overlay. original color'})(el);
+            expect(el.getAttributeValue("fill")).toEqual("black");
 
             expect(redrawn).toBe(true);
 
             expect(fg.overlayBtn.firstChild.nodeValue).toBe("Reset My Test");
+        });
+
+        it("should load already loaded color scheme object", function () {
+            var redrawn = false;
+            var redrawnLegend = false;
+            var redrawnOverlayDropDown = false;
+            var colorSchemeSetup = false;
+            fg.draw = {
+                reapplyColor: function (c) {
+                    redrawn = true;
+                },
+                drawLegend: function (c, old) {
+                    redrawnLegend = true;
+                },
+                drawOverlayDropDown: function (c, btn, old) {
+                    redrawnOverlayDropDown = true;
+                },
+                setColorSchemesAsOverlays: function (c) {
+                    colorSchemeSetup = true;
+                }
+            };
+
+            fg.context.color["My Test"] = new MyCustomColorScheme();
+
+            fg.loadOverlay("My Test", "color:Test");
+
+            var el = domElement();
+            fg.context.currentColorScheme.applyColor({ name: 'x'})(el);
+            expect(el.getAttributeValue("fill")).toEqual("orange");
+
+            expect(redrawn).toBe(true);
+            expect(redrawnLegend).toBe(true);
+            expect(redrawnOverlayDropDown).toBe(true);
+            expect(colorSchemeSetup).toBe(true);
         });
     });
 
@@ -664,7 +827,9 @@ describe("FG", function() {
 
         it("should change dimensions based on stack frames", function () {
 
-            colorScheme.legend = { red: 'a', yellow: 'b'};
+            fg.context.currentColorScheme = {
+                legend: { red: 'a', yellow: 'b'}
+            };
             fg.calculateWidth(60, 10, 3);
             fg.calculateHeight(3);
 

@@ -20,7 +20,7 @@
  */
 
 function MultiFG(_w, _prompt) {
-    FG.call(this, "multi", 0, "Flame Graph Diff", 650, _w, _prompt);
+    FG.call(this, "multi", 0, "Flame Graph Compare", 650, _w, _prompt);
     this.fgs = {};
 }
 MultiFG.prototype = Object.create(FG.prototype);
@@ -28,6 +28,7 @@ MultiFG.prototype.constructor = MultiFG;
 
 MultiFG.prototype.registerFG = function(fg) {
     this.fgs[fg.id] = fg;
+    fg.context = this.context;
 };
 
 MultiFG.prototype.setDimensions = function () {

@@ -22,10 +22,6 @@ function FGravDraw(fgrav, _d) {
 
 }
 
-// accessed from eval (yes, I know, see FGrav.js loadDynamicJs())
-// and therefore global to allow dynamic loading
-var colorScheme;
-
 function escText(text) {
     text = text.replace(/&/g, "&amp;");
     text = text.replace(/</g, "&lt;");
@@ -97,11 +93,7 @@ FGravDraw.prototype.rect = function(x, y, width, height, styleFunction) {
     element.setAttribute("y", y);
     element.setAttribute("width", width);
     element.setAttribute("height", height);
-    if (styleFunction) {
-        styleFunction(element);
-    } else {
-        element.setAttribute("fill", "white");
-    }
+    styleFunction(element);
     return element;
 };
 

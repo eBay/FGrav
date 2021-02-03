@@ -14,10 +14,11 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  **************************************************************************/
+
 function CGDraw(cg, _d) {
     FGravDraw.call(this, cg, _d);
     this.cg = cg;
-    colorScheme = new CG_Color_Default();
+    this.colorScheme = new CG_Color_Default();
 }
 
 CGDraw.prototype = Object.create(FGravDraw.prototype);
@@ -34,11 +35,11 @@ CGDraw.prototype.drawCanvas = function() {
         self.svg.appendChild(self.text(day, day, self.cg.margin - 20, self.cg.margin + 7 +( 13 * (i + 1)), 9, "left"));
     });
 
-    this.cg.details = this.d.getElementById("details").firstChild;
+    this.cg.details = this.svg.getElementById("details").firstChild;
 };
 
 CGDraw.prototype.drawLegend = function() {
-    var legendKeys = Object.keys(colorScheme.legend);
+    var legendKeys = Object.keys(this.colorScheme.legend);
     if (legendKeys.length > 0) {
         var g = this.d.createElementNS("http://www.w3.org/2000/svg", "g");
         g.setAttribute("id", "legend");
@@ -48,7 +49,7 @@ CGDraw.prototype.drawLegend = function() {
         var margin = 6;
         $.each(legendKeys, function (i) {
             var color = this;
-            var text = colorScheme.legend[color];
+            var text = draw.colorScheme.legend[color];
             var legendEntry = draw.rect(margin, i * (size + 1) + margin, size, size, function (el) {
                 el.setAttribute("fill", color);
             });
@@ -113,13 +114,13 @@ CGDraw.prototype.drawCG = function(calendarEvents) {
                 });
                 title = title + ", [" + types.join(",") + "], [" + regions.join(",")+"]";
                 var colors = events.map(function (ev) {
-                    return colorScheme.colorFor(ev.type, ev.samples / calendarEvents.maxSamples)
+                    return draw.colorScheme.colorFor(ev.type, ev.samples / calendarEvents.maxSamples)
                 });
                 return box(draw, title, i * 13 + draw.cg.margin, j * 13 + draw.cg.margin + 10, colors, url);
 
             }
         }
-        return box(draw, title, i * 13 + draw.cg.margin, j * 13 + draw.cg.margin + 10, colorScheme.colorFor(color, samples / calendarEvents.maxSamples), url);
+        return box(draw, title, i * 13 + draw.cg.margin, j * 13 + draw.cg.margin + 10, draw.colorScheme.colorFor(color, samples / calendarEvents.maxSamples), url);
 
         function valuesOf(a, prop) {
             var unique = [];
@@ -157,7 +158,7 @@ CGDraw.prototype.drawCG = function(calendarEvents) {
             element.appendChild(boxTitle);
 
             var boxRect = draw.rect(x, y, 12, 12, function (el) {
-                el.setAttribute("fill", Array.isArray(color) ? colorScheme.colorFor(undefined, 0) : color);
+                el.setAttribute("fill", Array.isArray(color) ? draw.colorScheme.colorFor(undefined, 0) : color);
             });
             boxRect.setAttribute("rx", "2");
             boxRect.setAttribute("ry", "2");

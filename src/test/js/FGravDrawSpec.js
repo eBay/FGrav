@@ -12,7 +12,6 @@ describe("FGravDraw", function() {
             }
         };
         t = new FGravDraw(new FGrav(1, 2, 3, 4, "TITLE"), d);
-        colorScheme = undefined;
     });
 
     describe("draw rect", function () {
@@ -31,19 +30,6 @@ describe("FGravDraw", function() {
             expect(r.getAttributeValue("fill")).toEqual("red");
             expect(r.getAttributeValue("style")).toEqual("fill:rgb(0,0,255);stroke-width:3;stroke:rgb(0,0,0)");
         });
-
-        it('should draw rectangle without style function', function () {
-
-            var r = t.rect(17, 19, 23, 29);
-
-            expect(r.getAttributeValue("x")).toEqual(17);
-            expect(r.getAttributeValue("y")).toEqual(19);
-            expect(r.getAttributeValue("width")).toEqual(23);
-            expect(r.getAttributeValue("height")).toEqual(29);
-            expect(r.getAttributeValue("fill")).toEqual("white");
-            expect(r.getAttribute("style")).toBeUndefined();
-        });
-
     });
 
     describe("when colorValueFor invoked", function () {

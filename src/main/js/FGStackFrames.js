@@ -104,7 +104,9 @@ FGStackFrames.prototype.loadCollapsed = function(fg, collapsedUrl, successCallba
             },
             toString: function() {
                 return this.name + ", samples: " + this.samples + ", i:" + this.lastStackIndex + ", x:" + this.x() + ", y:" + this.y() + ", w: " + this.w();
-            }
+            },
+            getName: function () { return this.name },
+            getSamples: function () { return this.samples }
         };
         collapsed.updateFrame(frame, path, col);
         return frame;
@@ -147,6 +149,8 @@ FGStackFrames.prototype.allFrame = function(fg) {
         },
         toString: function() {
             return this.name + ", samples: " + this.samples + ", i:" + this.lastStackIndex + ", x:" + this.x() + ", y:" + this.y() + ", w: " + this.w();
-        }
+        },
+        getName: function () { return this.name },
+        getSamples: function () { return this.samples }
     };
 };

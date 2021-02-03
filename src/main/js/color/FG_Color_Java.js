@@ -24,14 +24,14 @@ function FG_Color_Java() {
         red: 'User'
     };
     this.overlays = {
-        'Blocking' : 'Java_Blocking'
+        'Blocking' : 'overlay:Java_Blocking'
     };
 }
 
 FG_Color_Java.prototype = Object.create(FG_Color.prototype);
 FG_Color_Java.prototype.constructor = FG_Color_Java;
-FG_Color_Java.prototype.colorFor = function(f, samples) {
-    var name = f.name;
+FG_Color_Java.prototype.colorFor = function(f, totalSamples) {
+    var name = f.getName();
     if (name.match(/_\[j\]$/)) {
         return colorValueFor("green", name);
     }

@@ -14,6 +14,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  **************************************************************************/
+
 function FG(id, shiftWidth, defaultTitle, minWidth, _w, _prompt) {
     defaultTitle = (typeof defaultTitle !== 'undefined') ? defaultTitle : "Flame Graph";
     FGrav.call(this, 1200, 2200, 24, 12, defaultTitle, _w);
@@ -36,7 +37,9 @@ function FG(id, shiftWidth, defaultTitle, minWidth, _w, _prompt) {
     this.currentSearchTerm = null;
     this.configUrl = this.getParameter("config", "fgrav.json");
     this.frameFilterNames = this.getParameter("frameFilter", undefined);
-    this.colorSchemeName = this.getParameter("color", undefined);
+    this.colorSchemeUri = this.getParameter("color", undefined);
+    this.config = {};
+    this.context = new FG_Context();
     this.searchTermPromptFunction = (typeof _prompt !== "undefined") ? _prompt :
         function(ic) {
           return prompt("Enter a search term (regexp " +
@@ -44,6 +47,7 @@ function FG(id, shiftWidth, defaultTitle, minWidth, _w, _prompt) {
             + (ic ? ", ignoring case" : "")
             + "\nPress Ctrl-i to toggle case sensitivity", "");
     }
+
 }
 
 FG.prototype = Object.create(FGrav.prototype);
@@ -103,13 +107,35 @@ FG.prototype.setup = function(_w) {
 };
 
 FG.prototype.load = function (successCallback, errorCallback) {
-    this.loadDynamicJs(this.objectsToLoad(), successCallback, errorCallback);
+    var response = new FGravResponse();
+    var configAjax = this. loadConfig(response);
+    this.loadDynamicJs(this.objectsToLoad(), successCallback, errorCallback, [configAjax], response);
 };
 
+FG.prototype.loadConfig = function(response, successCallback, errorCallback) {
+    var fg = this;
+    return $.ajax({
+        type: "GET",
+        url: fg.configUrl,
+        dataType: 'json',
+        success: function (data) {
+            fg.config = data;
+            if (successCallback) {
+                successCallback();
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            response.addError(errorThrown, textStatus);
+            if (errorCallback) {
+                errorCallback();
+            }
+        }
+    });
+};
 
-FGrav.prototype.loadDynamicJs = function(toLoad, successCallback, errorCallback) {
-    var response = new FGravResponse();
-    var ajaxObjs = [];
+FG.prototype.loadDynamicJs = function(toLoad, successCallback, errorCallback, parallelAjaxObjs, response) {
+    response = (response) ? response : new FGravResponse();
+    var ajaxObjs = (typeof parallelAjaxObjs !== "undefined") ? parallelAjaxObjs : [];
     var jsSrc = [];
     $.each(toLoad, function (i, l) {
         var ajax = $.ajax({ type: "GET",
@@ -124,7 +150,7 @@ FGrav.prototype.loadDynamicJs = function(toLoad, successCallback, errorCallback)
                 response.addError(errorThrown, textStatus);
             }
         });
-        ajaxObjs[i] = ajax;
+        ajaxObjs.push(ajax);
     });
 
     this.multipleAjaxCalls(ajaxObjs, response, function () {
@@ -143,9 +169,9 @@ FGrav.prototype.loadDynamicJs = function(toLoad, successCallback, errorCallback)
 FG.prototype.objectsToLoad = function() {
     var toLoad = [];
     var fg = this;
-    if (typeof this.colorSchemeName !== 'undefined') {
-        var obj = fg.generateDynamicallyLoadingObject(this.colorSchemeName, "js/color/FG_Color_", function (objName) {
-            return "colorScheme = new " + objName + "();"
+    if (typeof this.colorSchemeUri !== 'undefined') {
+        var obj = fg.generateDynamicallyLoadingObject(this.colorSchemeUri, "js/color/FG_Color_", function (objName) {
+            return "fg.context.setColorScheme(new " + objName + "());"
         });
         toLoad.push(obj);
     }
@@ -175,24 +201,46 @@ FG.prototype.generateDynamicallyLoadingObject = function(name, conventionPrefix,
     return new DynamicallyLoading(url, generateInstallScript(objName));
 };
 
-FG.prototype.loadOverlay = function(overlayName, overlayUrl, successCallback) {
+FG.prototype.loadOverlay = function(overlayName, overlayUrl, successCallback, globalVarName) {
+    var global = (globalVarName) ? globalVarName : "fg";
     var fg = this;
     this.toggle_overlay();
-    if (colorScheme.loadedOverlays[overlayName]) {
-        colorScheme.currentOverlay = colorScheme.loadedOverlays[overlayName];
-        fg.applyingOverlay(overlayName);
-    } else {
-        this.loadDynamicJs([this.generateDynamicallyLoadingObject(overlayUrl, "js/color/overlay/FG_Overlay_", function (name) {
-                return "colorScheme.currentOverlay = new " + name + "();";
-            })], function () {
-                fg.applyingOverlay(overlayName);
-                if (successCallback) {
-                    successCallback();
+    if (overlayUrl.startsWith("overlay:")) {
+        if (fg.context.overlay[overlayName]) {
+            fg.context.setColorOverlay(fg.context.overlay[overlayName]);
+            fg.applyingOverlay(overlayName);
+        } else {
+            var dynamicallyLoading = this.generateDynamicallyLoadingObject(overlayUrl.substring("overlay:".length), "js/color/overlay/FG_Overlay_", function (name) {
+                return global + ".context.setColorOverlay(new " + name + "());";
+            });
+            this.loadDynamicJs([dynamicallyLoading], function () {
+                    fg.applyingOverlay(overlayName);
+                    if (successCallback) {
+                        successCallback();
+                    }
+                }, function (response) {
+                    log.console("Failed to load " + overlayUrl + ": " + response.errorMessage());
                 }
-            }, function (response) {
-                log.console("Failed to load " + overlayUrl + ": " + response.errorMessage());
-            }
-        );
+            );
+        }
+    } else if (overlayUrl.startsWith("color:")) {
+        if (fg.context.color[overlayName]) {
+            fg.context.setColorScheme(fg.context.color[overlayName]);
+            fg.applyingColor();
+        } else {
+            var dynamicallyLoading = this.generateDynamicallyLoadingObject(overlayUrl.substring("color:".length), "js/color/FG_Color_", function (name) {
+                return global + ".context.setColorScheme(new " + name + "());";
+            });
+            this.loadDynamicJs([dynamicallyLoading], function () {
+                    fg.applyingColor();
+                    if (successCallback) {
+                        successCallback();
+                    }
+                }, function (response) {
+                    log.console("Failed to load " + overlayUrl + ": " + response.errorMessage());
+                }
+            );
+        }
     }
 };
 
@@ -201,11 +249,17 @@ FG.prototype.applyingOverlay = function(overlayName) {
     this.overlayBtn.firstChild.nodeValue = "Reset " + overlayName;
     this.overlayBtn.classList.add("show");
     this.overlaying = true;
-    colorScheme.loadedOverlays[overlayName] = colorScheme.currentOverlay;
+};
+
+FG.prototype.applyingColor = function() {
+    this.redrawFrames();
+    this.draw.setColorSchemesAsOverlays(this.context.currentColorScheme);
+    this.draw.drawLegend(this.context.currentColorScheme, this.legendEl);
+    this.draw.drawOverlayDropDown(this.context.currentColorScheme, this.overlayBtn, this.overlayEl);
 };
 
 FG.prototype.redrawFrames = function () {
-    this.draw.redrawFG();
+    this.draw.reapplyColor(this.context.currentColorScheme);
 };
 
 // accessed from eval (yes, I know, see below)
@@ -247,7 +301,8 @@ FG.prototype.calculateHeight = function (maxLevel) {
             this.textPadding = 8;
         }
         if (!this.forcedHeight) {
-            var additional = (colorScheme && colorScheme.legend) ? Object.keys(colorScheme.legend).length : 0;
+            var additional = (this.context.currentColorScheme && this.context.currentColorScheme.legend) ?
+                Object.keys(this.context.currentColorScheme.legend).length : 0;
             this.height = Math.max(this.minHeight, Math.min(this.height, ((maxLevel + additional + 1) * (this.frameHeight + 2)) + (this.margin * 4)));
         }
     }
@@ -515,7 +570,7 @@ FG.prototype.toggle_overlay = function() {
 
 FG.prototype.reset_overlay = function() {
     this.overlayBtn.firstChild.nodeValue = "Overlay";
-    colorScheme.currentOverlay = undefined;
+    this.context.currentColorScheme.currentOverlay = undefined;
     this.redrawFrames();
     this.overlaying = false;
     this.overlay = true;
@@ -638,6 +693,28 @@ FG.prototype.search = function(topFG) {
     pct = 100 * count / maxwidth;
     if (pct != 100) pct = pct.toFixed(1);
     this.matchedtxt.firstChild.nodeValue = "Matched: " + pct + "%";
+};
+
+function FG_Context() {
+    this.color = {};
+    this.overlay = {};
+}
+FG_Context.prototype.setColorScheme = function(cs) {
+        this.currentColorScheme = cs;
+        var name = cs.constructor.name;
+        name = (name.startsWith("FG_Color_")) ? name.substring("FG_Color_".length) : name;
+        this.color[name] = cs;
+};
+FG_Context.prototype.setColorOverlay = function(overlay) {
+    this.currentColorScheme.currentOverlay = overlay;
+    var name = overlay.constructor.name;
+    name = (name.startsWith("FG_Overlay_")) ? name.substring("FG_Overlay_".length) : name;
+    this.overlay[name] = overlay;
+};
+FG_Context.prototype.optionallySetColorScheme = function(cs) {
+    if (typeof this.currentColorScheme === "undefined") {
+        this.setColorScheme(cs);
+    }
 };
 
 
