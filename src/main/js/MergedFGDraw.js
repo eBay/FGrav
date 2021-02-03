@@ -93,6 +93,11 @@ MergedFGDraw.prototype.drawFrame = function (colorScheme, f) {
     }
 };
 
+MergedFGDraw.prototype.findDrawnRect = function(g) {
+    var children = find_children(g, "rect");
+    if (children.length) return children[1];
+};
+
 function percentage(samples, total) {
     return Math.floor(samples * 10000 / total) / 100;
 }
