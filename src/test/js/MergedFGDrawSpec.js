@@ -100,5 +100,38 @@ describe("MergedFGDraw", function () {
             expect(el.children[1].getAttributeValue("fill")).toEqual("my-black"); // rect
             expect(el.children[2].getAttributeValue("name")).toEqual("a");        // text
         });
+
+        it('should find the diff rectangle when both it and a white frame rect exist', function () {
+            var g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+            g.appendChild(document.createElementNS("http://www.w3.org/2000/svg", "text"));
+            var whiteRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            whiteRect.setAttribute("fill", "white");
+            var drawnRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            drawnRect.setAttribute("fill", "red");
+            g.appendChild(whiteRect);
+            g.appendChild(drawnRect);
+
+            expect(draw.findDrawnRect(g)).toBe(drawnRect);
+        });
+
+        it('should find the diff rectangle when only it is attached', function () {
+            var g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+            g.appendChild(document.createElementNS("http://www.w3.org/2000/svg", "text"));
+            var drawnRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            drawnRect.setAttribute("fill", "red");
+            g.appendChild(drawnRect);
+
+            expect(draw.findDrawnRect(g)).toBe(drawnRect);
+        });
+
+        it('should not find the diff rectangle when only the white rect attached', function () {
+            var g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+            g.appendChild(document.createElementNS("http://www.w3.org/2000/svg", "text"));
+            var whiteRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            whiteRect.setAttribute("fill", "white");
+            g.appendChild(whiteRect);
+
+            expect(draw.findDrawnRect(g)).toBe(undefined);
+        });
     });
 });

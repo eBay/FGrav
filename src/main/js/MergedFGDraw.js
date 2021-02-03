@@ -68,10 +68,16 @@ MergedFGDraw.prototype.drawFrame = function (colorScheme, f) {
         });
 
         var diff =  calculateDiff(f.individualSamples[0], draw.collapsed.totalIndividualSamples[0], f.individualSamples[1], draw.collapsed.totalIndividualSamples[1]);
-        var diffW = w * Math.abs(diff);
-        if (diffW > 1) {
-            var diffX =  (draw.differentSides && diff < 0) ? x + w - diffW : x;
-            var diffRect = drawRect(diffX, y, diffW, colorScheme.applyColor(f, draw.collapsed.totalIndividualSamples));
+        var absDiff = Math.abs(diff);
+        var diffW = w * absDiff;
+        if (diffW > 1 && absDiff > 0.1) {
+            var styleFunc = colorScheme.applyColor(f, draw.collapsed.totalIndividualSamples);
+            if (absDiff < 0.9) {
+                var diffX = (draw.differentSides && diff < 0) ? x + w - diffW : x;
+                var diffRect = drawRect(diffX, y, diffW, styleFunc);
+            } else {
+                styleFunc(frameRect);
+            }
         }
     } else {
         frameRect = drawRect(x, y, w, colorScheme.applyColor(f, draw.collapsed.totalIndividualSamples));
@@ -101,7 +107,9 @@ MergedFGDraw.prototype.drawFrame = function (colorScheme, f) {
 
 MergedFGDraw.prototype.findDrawnRect = function(g) {
     var children = find_children(g, "rect");
-    if (children.length) return children[1];
+    if (children.length && children[children.length - 1].getAttribute("fill") !== "white") {
+            return children[children.length - 1];
+    }
 };
 
 function FG_Color_Diff() {
