@@ -1,5 +1,30 @@
 describe("MergedFGDraw", function () {
 
+    describe("diff", function () {
+
+        using('parameters',[
+                [4,20,2,20,0.5],
+                [3,10,1,10,0.6666],
+                [1,10,3,10,-0.6666],
+                [2,10,2,10,0],
+                [1,20,3,10,-0.8333],
+                [1,10,3,20,-0.3333],
+                [4,20,2,10,0],
+                [1,10,1,1,-0.9]], function(p) {
+            it("diff(" + p[0] + "," + p[1] + "," + p[2] + "," + p[3] + ") == " + p[4], function() {
+                expect(calculateDiff(p[0],p[1],p[2],p[3])).toBeCloseTo(p[4], 2);
+            });
+        });
+
+        function using(name, values, func) {
+            for(var i = 0, count = values.length; i < count; i++) {
+                if(Object.prototype.toString.call(values[i]) !== '[Object Array]') {
+                    values[i] = [values[i]];
+                }
+                func.apply(this,values[i]);
+            }
+        }
+    });
 
     describe("FG_Color_Diff", function () {
 
@@ -48,7 +73,7 @@ describe("MergedFGDraw", function () {
             collapsed = {
                 totalIndividualSamples: 219
             };
-            draw = new MergedFGDraw(fg, collapsed, true, d);
+            draw = new MergedFGDraw(fg, collapsed, true, true, d);
 
             fg.context.currentColorScheme = {
                 applyColor: function(f, s) {

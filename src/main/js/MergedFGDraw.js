@@ -15,9 +15,21 @@
  limitations under the License.
  **************************************************************************/
 
-function MergedFGDraw(fg, collapsed, visualDiff, _d) {
+function percentage(samples, total) {
+    return Math.floor(samples * 10000 / total) / 100;
+}
+
+function calculateDiff(samples0, total0, samples1, total1) {
+    var p0 = percentage(samples0, total0);
+    var p1 = percentage(samples1, total1);
+    var diff =  p0 - p1;
+    return (diff < 0) ? diff / p1 : diff / p0;
+}
+
+function MergedFGDraw(fg, collapsed, visualDiff, differentSides, _d) {
     FGDraw.call(this, fg, _d);
     this.visualDiff = visualDiff;
+    this.differentSides = differentSides;
     this.collapsed = collapsed;
     fg.g_details = function (g) {
         var attr = find_child(g, "text").attributes;
@@ -49,23 +61,17 @@ MergedFGDraw.prototype.drawFrame = function (colorScheme, f) {
     var w = f.w();
     var y = f.y() + draw.fg.shiftHeight;
     var element = draw.d.createElementNS("http://www.w3.org/2000/svg", "g");
-    if (draw.fg.id) {
-        element.setAttribute("id", draw.fg.namePerFG(f.stack));
-    }
-
     var frameRect;
     if (draw.visualDiff) {
-        var p0 = percentage(f.individualSamples[0], draw.collapsed.totalIndividualSamples[0]);
-        var p1 = percentage(f.individualSamples[1], draw.collapsed.totalIndividualSamples[1]);
-
-        var diff =  p0 - p1;
         frameRect = drawRect(x, y, w, function (el) {
             el.setAttribute("fill", "white");
         });
-        if (diff !== 0) {
-            diff = (diff < 0) ? diff / p1 : diff / p0;
-            var diffW = w * Math.abs(diff);
-            var diffRect = drawRect(x, y, diffW, colorScheme.applyColor(f, draw.collapsed.totalIndividualSamples));
+
+        var diff =  calculateDiff(f.individualSamples[0], draw.collapsed.totalIndividualSamples[0], f.individualSamples[1], draw.collapsed.totalIndividualSamples[1]);
+        var diffW = w * Math.abs(diff);
+        if (diffW > 1) {
+            var diffX =  (draw.differentSides && diff < 0) ? x + w - diffW : x;
+            var diffRect = drawRect(diffX, y, diffW, colorScheme.applyColor(f, draw.collapsed.totalIndividualSamples));
         }
     } else {
         frameRect = drawRect(x, y, w, colorScheme.applyColor(f, draw.collapsed.totalIndividualSamples));
@@ -98,10 +104,6 @@ MergedFGDraw.prototype.findDrawnRect = function(g) {
     if (children.length) return children[1];
 };
 
-function percentage(samples, total) {
-    return Math.floor(samples * 10000 / total) / 100;
-}
-
 function FG_Color_Diff() {
     FG_Color.call(this);
     this.colorsAsOverlays = true;
@@ -114,14 +116,11 @@ FG_Color_Diff.prototype = Object.create(FG_Color.prototype);
 FG_Color_Diff.prototype.constructor = FG_Color_Diff;
 
 FG_Color_Diff.prototype.colorFor = function(frame, totalSamples) {
-    var p0 = percentage(frame.individualSamples[0], totalSamples[0]);
-    var p1 = percentage(frame.individualSamples[1], totalSamples[1]);
+    var diff = calculateDiff(frame.individualSamples[0], totalSamples[0], frame.individualSamples[1], totalSamples[1]);
 
-    var diff =  p0 - p1;
     if (diff === 0) {
         return "white";
     }
-    diff = (diff < 0) ? diff / p1 : diff / p0;
     var variance = Math.floor(diff * diff * 255);
     var r;
     var b;
@@ -135,8 +134,4 @@ FG_Color_Diff.prototype.colorFor = function(frame, totalSamples) {
     }
 
     return "rgb(" + r + "," + g + "," + b + ")";
-
-    function percentage(samples, total) {
-        return Math.floor(samples * 10000 / total) / 100;
-    }
 };
