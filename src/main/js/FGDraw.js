@@ -20,7 +20,7 @@ function FGDraw(fg, _d) {
     this.fg = fg;
     this.fg.draw = this;
     this.buttonsMargin = 24;
-    fg.context.setColorScheme(new FG_Color_White());
+    fg.context.optionallySetColorScheme(new FG_Color_White());
 }
 
 FGDraw.prototype = Object.create(FGravDraw.prototype);

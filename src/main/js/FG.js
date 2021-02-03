@@ -711,6 +711,11 @@ FG_Context.prototype.setColorOverlay = function(overlay) {
     name = (name.startsWith("FG_Overlay_")) ? name.substring("FG_Overlay_".length) : name;
     this.overlay[name] = overlay;
 };
+FG_Context.prototype.optionallySetColorScheme = function(cs) {
+    if (typeof this.currentColorScheme === "undefined") {
+        this.setColorScheme(cs);
+    }
+};
 
 
 

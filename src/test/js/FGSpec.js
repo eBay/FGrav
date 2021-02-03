@@ -114,6 +114,32 @@ describe("FG", function() {
             expect(fg.context.currentColorScheme.currentOverlay).toBe(overlay);
             expect(fg.context.overlay["MyCustomColorScheme"]).toBe(overlay);
         });
+
+        it('should set color scheme if none was there before', function () {
+
+            fg.context = new FG_Context();
+            var scheme = new FG_Color_Black();
+
+            fg.context.optionallySetColorScheme(scheme);
+
+            expect(fg.context.currentColorScheme).toBe(scheme);
+            expect(fg.context.color["Black"]).toBe(scheme);
+        });
+
+        it('should NOT set color scheme if one was set before it', function () {
+
+            fg.context = new FG_Context();
+            var firstScheme = new FG_Color_White();
+            fg.context.setColorScheme(firstScheme);
+
+
+            var scheme = new FG_Color_Black();
+
+            fg.context.optionallySetColorScheme(scheme);
+
+            expect(fg.context.currentColorScheme).toBe(firstScheme);
+            expect(fg.context.color["Black"]).toBe(undefined);
+        });
     });
 
     describe('interactivity', function () {
