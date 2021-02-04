@@ -46,7 +46,7 @@ function MergedFGDraw(fg, collapsed, visualDiff, differentSides, _d) {
         details = details + "])";
         return detailsText(escText(details), details);
     };
-    fg.context.setColorScheme(new FG_Color_Diff());
+    fg.context.optionallySetColorScheme(new FG_Color_Diff());
 }
 
 MergedFGDraw.prototype = Object.create(FGDraw.prototype);

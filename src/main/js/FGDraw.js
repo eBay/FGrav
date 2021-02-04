@@ -20,7 +20,7 @@ function FGDraw(fg, _d) {
     this.fg = fg;
     this.fg.draw = this;
     this.buttonsMargin = 24;
-    fg.context.optionallySetColorScheme(new FG_Color_White());
+    fg.context.optionallySetColorScheme(new FG_Color_Clear());
 }
 
 FGDraw.prototype = Object.create(FGravDraw.prototype);
@@ -286,12 +286,12 @@ FGDraw.prototype.frameText = function(draw, text, widthToFit, fontSize) {
     return draw.textToFit(text, widthToFit, fontSize);
 };
 
-function FG_Color_White() {
+function FG_Color_Clear() {
     FG_Color.call(this);
     this.colorsAsOverlays = true;
 }
-FG_Color_White.prototype = Object.create(FG_Color.prototype);
-FG_Color_White.prototype.constructor = FG_Color_White;
-FG_Color_White.prototype.colorFor = function(frame, totalSamples) {
+FG_Color_Clear.prototype = Object.create(FG_Color.prototype);
+FG_Color_Clear.prototype.constructor = FG_Color_Clear;
+FG_Color_Clear.prototype.colorFor = function(frame, totalSamples) {
     return "white";
 };

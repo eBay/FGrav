@@ -700,10 +700,13 @@ function FG_Context() {
     this.overlay = {};
 }
 FG_Context.prototype.setColorScheme = function(cs) {
-        this.currentColorScheme = cs;
-        var name = cs.constructor.name;
-        name = (name.startsWith("FG_Color_")) ? name.substring("FG_Color_".length) : name;
-        this.color[name] = cs;
+    var name = cs.constructor.name;
+    name = (name.startsWith("FG_Color_")) ? name.substring("FG_Color_".length) : name;
+    this.color[name] = cs;
+    if (typeof this.currentColorScheme === "undefined") {
+        this.initialColorSchemeName = name;
+    }
+    this.currentColorScheme = cs;
 };
 FG_Context.prototype.setColorOverlay = function(overlay) {
     this.currentColorScheme.currentOverlay = overlay;

@@ -85,6 +85,15 @@ describe("FG", function() {
             expect(fg.context.color["Black"]).toBe(scheme);
         });
 
+        it('should set first loaded color scheme name to be initial name', function () {
+
+            fg.context = new FG_Context();
+            fg.context.setColorScheme(new FG_Color_Black());
+            fg.context.setColorScheme(new FG_Color_Clear());
+
+            expect(fg.context.initialColorSchemeName).toBe('Black');
+        });
+
         it('should set loaded custom color scheme to both current and by its full name', function () {
 
             var scheme = new MyCustomColorScheme();
@@ -129,7 +138,7 @@ describe("FG", function() {
         it('should NOT set color scheme if one was set before it', function () {
 
             fg.context = new FG_Context();
-            var firstScheme = new FG_Color_White();
+            var firstScheme = new FG_Color_Clear();
             fg.context.setColorScheme(firstScheme);
 
 
