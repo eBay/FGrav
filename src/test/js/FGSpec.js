@@ -559,7 +559,7 @@ describe("FG", function() {
                 drawOverlayDropDown: function (c, btn, old) {
                     redrawnOverlayDropDown = true;
                 },
-                setColorSchemesAsOverlays: function (c) {
+                setOverlaysFor: function (c) {
                     colorSchemeSetup = true;
                 }
             };
@@ -638,7 +638,7 @@ describe("FG", function() {
                 drawOverlayDropDown: function (c, btn, old) {
                     redrawnOverlayDropDown = true;
                 },
-                setColorSchemesAsOverlays: function (c) {
+                setOverlaysFor: function (c) {
                     colorSchemeSetup = true;
                 }
             };

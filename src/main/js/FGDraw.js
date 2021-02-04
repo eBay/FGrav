@@ -49,7 +49,7 @@ FGDraw.prototype.drawCanvas = function() {
     this.svg.appendChild(search);
     this.svg.appendChild(ignorecase);
 
-    this.setColorSchemesAsOverlays(this.fg.context.currentColorScheme);
+    this.setOverlaysFor(this.fg.context.currentColorScheme);
     this.drawLegend(this.fg.context.currentColorScheme);
     this.drawOverlayDropDown(this.fg.context.currentColorScheme);
 
@@ -64,7 +64,7 @@ FGDraw.prototype.drawCanvas = function() {
     }
 };
 
-FGDraw.prototype.setColorSchemesAsOverlays = function(colorScheme) {
+FGDraw.prototype.setOverlaysFor = function(colorScheme) {
     if (colorScheme.colorsAsOverlays) {
 
         $.each(Object.entries(this.fg.config.color), function (i, entry) {

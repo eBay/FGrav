@@ -253,7 +253,7 @@ FG.prototype.applyingOverlay = function(overlayName) {
 
 FG.prototype.applyingColor = function() {
     this.redrawFrames();
-    this.draw.setColorSchemesAsOverlays(this.context.currentColorScheme);
+    this.draw.setOverlaysFor(this.context.currentColorScheme);
     this.draw.drawLegend(this.context.currentColorScheme, this.legendEl);
     this.draw.drawOverlayDropDown(this.context.currentColorScheme, this.overlayBtn, this.overlayEl);
 };
