@@ -49,7 +49,7 @@ FGDraw.prototype.drawCanvas = function() {
     this.svg.appendChild(search);
     this.svg.appendChild(ignorecase);
 
-    this.setOverlaysFor(this.fg.context.currentColorScheme);
+    this.fg.context.init(this.fg.config);
     this.drawLegend(this.fg.context.currentColorScheme);
     this.drawOverlayDropDown(this.fg.context.currentColorScheme);
 
@@ -61,19 +61,6 @@ FGDraw.prototype.drawCanvas = function() {
 
     if (this.d.styleSheets[0]) {
         this.d.styleSheets[0].insertRule("text { font-family:Verdana; font-size:" + this.fg.fontSize + "px; fill:rgb(0,0,0); }", 0);
-    }
-};
-
-FGDraw.prototype.setOverlaysFor = function(colorScheme) {
-    if (colorScheme.colorsAsOverlays) {
-
-        $.each(Object.entries(this.fg.config.color), function (i, entry) {
-            var colorName = entry[0];
-            var uri = entry[1].uri;
-            if (uri) {
-                colorScheme.overlays[colorName] = uri;
-            }
-        });
     }
 };
 

@@ -253,7 +253,6 @@ FG.prototype.applyingOverlay = function(overlayName) {
 
 FG.prototype.applyingColor = function() {
     this.redrawFrames();
-    this.draw.setOverlaysFor(this.context.currentColorScheme);
     this.draw.drawLegend(this.context.currentColorScheme, this.legendEl);
     this.draw.drawOverlayDropDown(this.context.currentColorScheme, this.overlayBtn, this.overlayEl);
 };
@@ -699,25 +698,58 @@ function FG_Context() {
     this.color = {};
     this.overlay = {};
 }
+FG_Context.prototype.init = function(config) {
+    this.config = config;
+    this.fillOverlaysFor(this.currentColorScheme);
+};
 FG_Context.prototype.setColorScheme = function(cs) {
-    var name = cs.constructor.name;
-    name = (name.startsWith("FG_Color_")) ? name.substring("FG_Color_".length) : name;
+    var name = this.nameOf(cs, "FG_Color_");
     this.color[name] = cs;
     if (typeof this.currentColorScheme === "undefined") {
         this.initialColorSchemeName = name;
     }
     this.currentColorScheme = cs;
+    this.fillOverlaysFor(cs);
 };
 FG_Context.prototype.setColorOverlay = function(overlay) {
     this.currentColorScheme.currentOverlay = overlay;
-    var name = overlay.constructor.name;
-    name = (name.startsWith("FG_Overlay_")) ? name.substring("FG_Overlay_".length) : name;
+    var name = this.nameOf(overlay, "FG_Overlay_");
     this.overlay[name] = overlay;
 };
 FG_Context.prototype.optionallySetColorScheme = function(cs) {
     if (typeof this.currentColorScheme === "undefined") {
         this.setColorScheme(cs);
     }
+};
+FG_Context.prototype.fillOverlaysFor = function(cs) {
+    if (this.config && cs) {
+        var config = this.config;
+        var name = this.nameOf(cs, "FG_Color_");
+        if (name !== this.initialColorSchemeName) {
+            cs.overlays[this.initialColorSchemeName] = "color:" + this.initialColorSchemeName;
+        }
+        if (cs.colorsAsOverlays) {
+            $.each(Object.entries(config.color), function (i, entry) {
+                var colorName = entry[0];
+                var uri = entry[1].uri;
+                if (uri) {
+                    cs.overlays[colorName] = uri;
+                }
+            });
+        }
+        if (config.color[name] && config.color[name].overlays) {
+            $.each(config.color[name].overlays, function (i, overlayName) {
+                var uri = config.overlay[overlayName].uri;
+                if (uri) {
+                    cs.overlays[overlayName] = uri;
+                }
+            });
+        }
+    }
+};
+FG_Context.prototype.nameOf = function(obj, prefix) {
+    var name = obj.constructor.name;
+    return (name.startsWith(prefix)) ? name.substring(prefix.length) : name;
 };
 
 
