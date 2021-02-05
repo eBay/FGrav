@@ -86,6 +86,9 @@ MergedCollapsed.prototype.updateFrame = function (frame, path, ptr) {
     frame.individualSamples = (typeof frame.individualSamples !== 'undefined') ?
             increment(frame.individualSamples, path.individualSamples) : path.individualSamples.slice();
     frame.lastStackIndex = ptr;
+    frame.getDifferentialSamples = function (i) {
+        return this.individualSamples[i];
+    };
 };
 
 function increment(array1, array2) {

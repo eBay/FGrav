@@ -28,30 +28,38 @@ describe("MergedFGDraw", function () {
 
     describe("FG_Color_Diff", function () {
 
+        var frame = function(samplesArray) {
+            return {
+                getDifferentialSamples: function (i) {
+                    return samplesArray[i];
+                }
+            }
+        };
+
 
         it("frame color should be red for growth", function () {
-            expect(new FG_Color_Diff().colorFor({individualSamples: [50, 80]}, [100, 100])).toEqual('rgb(255,220,220)');
+            expect(new FG_Color_Diff().colorFor(frame([50, 80]), [100, 100])).toEqual('rgb(255,220,220)');
         });
 
         it("frame color should be blue for reduction", function () {
-            expect(new FG_Color_Diff().colorFor({individualSamples: [80, 50]}, [100, 100])).toEqual('rgb(220,220,255)');
+            expect(new FG_Color_Diff().colorFor(frame([80, 50]), [100, 100])).toEqual('rgb(220,220,255)');
         });
 
         it("frame color should be vary relative to change", function () {
             var diff = new FG_Color_Diff();
-            expect(diff.colorFor({individualSamples: [100, 50]}, [100, 100])).toEqual('rgb(192,192,255)');
-            expect(diff.colorFor({individualSamples: [80, 50]}, [100, 100])).toEqual('rgb(220,220,255)');
-            expect(diff.colorFor({individualSamples: [75, 50]}, [100, 100])).toEqual('rgb(227,227,255)');
-            expect(diff.colorFor({individualSamples: [55, 50]}, [100, 100])).toEqual('rgb(253,253,255)');
-            expect(diff.colorFor({individualSamples: [50, 100]}, [100, 100])).toEqual('rgb(255,192,192)');
-            expect(diff.colorFor({individualSamples: [50, 80]}, [100, 100])).toEqual('rgb(255,220,220)');
-            expect(diff.colorFor({individualSamples: [50, 75]}, [100, 100])).toEqual('rgb(255,227,227)');
-            expect(diff.colorFor({individualSamples: [50, 55]}, [100, 100])).toEqual('rgb(255,253,253)');
+            expect(diff.colorFor(frame([100, 50]), [100, 100])).toEqual('rgb(192,192,255)');
+            expect(diff.colorFor(frame([80, 50]), [100, 100])).toEqual('rgb(220,220,255)');
+            expect(diff.colorFor(frame([75, 50]), [100, 100])).toEqual('rgb(227,227,255)');
+            expect(diff.colorFor(frame([55, 50]), [100, 100])).toEqual('rgb(253,253,255)');
+            expect(diff.colorFor(frame([50, 100]), [100, 100])).toEqual('rgb(255,192,192)');
+            expect(diff.colorFor(frame([50, 80]), [100, 100])).toEqual('rgb(255,220,220)');
+            expect(diff.colorFor(frame([50, 75]), [100, 100])).toEqual('rgb(255,227,227)');
+            expect(diff.colorFor(frame([50, 55]), [100, 100])).toEqual('rgb(255,253,253)');
         });
 
         it("frame color should be white for no change", function () {
 
-            expect(new FG_Color_Diff().colorFor({individualSamples: [50, 50]}, [100, 100])).toEqual('white');
+            expect(new FG_Color_Diff().colorFor(frame([50, 50]), [100, 100])).toEqual('white');
         });
     });
 

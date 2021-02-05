@@ -196,7 +196,7 @@ FGDraw.prototype.redrawFG = function() {
 FGDraw.prototype.reapplyColor = function(colorScheme) {
     var g = this.svg.getElementById(this.fg.namePerFG("frames"));
     var c = find_children(g, "g");
-    var f = frameFlyweight();
+    var f = this.frameFlyweight();
     for(var i=0; i<c.length; i++) {
         var r = this.findDrawnRect(c[i]);
         if (r) {
@@ -206,20 +206,20 @@ FGDraw.prototype.reapplyColor = function(colorScheme) {
             styleFunction(r);
         }
     }
-
-    function frameFlyweight() {
-        return {
-            e: undefined,
-            getName: function () { return this.e.getAttribute("name") },
-            getSamples: function () { return parseInt(this.e.getAttribute("samples")) }
-        };
-    }
 };
 
 FGDraw.prototype.findDrawnRect = function(g) {
     return find_child(g, "rect");
 };
 
+
+FGDraw.prototype.frameFlyweight = function() {
+    return {
+        e: undefined,
+        getName: function () { return this.e.getAttribute("name") },
+        getSamples: function () { return parseInt(this.e.getAttribute("samples")) }
+    };
+};
 
 FGDraw.prototype.generateFramesCells = function(colorScheme) {
     var stackFrames = this.currentDrawnFrames;
