@@ -85,6 +85,15 @@ describe("FG", function() {
             expect(fg.context.color["Black"]).toBe(scheme);
         });
 
+        it('should set first loaded color scheme name to be initial name', function () {
+
+            fg.context = new FG_Context();
+            fg.context.setColorScheme(new FG_Color_Black());
+            fg.context.setColorScheme(new FG_Color_Clear());
+
+            expect(fg.context.initialColorSchemeName).toBe('Black');
+        });
+
         it('should set loaded custom color scheme to both current and by its full name', function () {
 
             var scheme = new MyCustomColorScheme();
@@ -129,7 +138,7 @@ describe("FG", function() {
         it('should NOT set color scheme if one was set before it', function () {
 
             fg.context = new FG_Context();
-            var firstScheme = new FG_Color_White();
+            var firstScheme = new FG_Color_Clear();
             fg.context.setColorScheme(firstScheme);
 
 
@@ -139,6 +148,87 @@ describe("FG", function() {
 
             expect(fg.context.currentColorScheme).toBe(firstScheme);
             expect(fg.context.color["Black"]).toBe(undefined);
+        });
+
+        it('should fill all overlays for current color scheme on init', function () {
+            var config = {
+                color: {
+                    Clear: {
+                        uri: "color:Clear",
+                        overlays: [ "A", "B" ]
+                    },
+                    C: {
+                        uri: "color:C"
+                    }
+                },
+                overlay: {
+                    A: {
+                        uri: "overlay:A"
+                    },
+                    B: {
+                        uri: "overlay:B"
+                    }
+                }
+            };
+            fg.context = new FG_Context();
+            var clear = new FG_Color_Clear();
+            fg.context.setColorScheme(clear);
+
+            fg.context.init(config);
+
+            expect(fg.context.currentColorScheme).toBe(clear);
+            expect(Object.keys(clear.overlays).length).toBe(4);
+            expect(clear.overlays["A"]).toBe("overlay:A");
+            expect(clear.overlays["B"]).toBe("overlay:B");
+            expect(clear.overlays["C"]).toBe("color:C");
+            expect(clear.overlays["Clear"]).toBe("color:Clear");
+        });
+
+        it('should fill all overlays for current color scheme on setting if config exist', function () {
+            var config = {
+                color: {
+                    Clear: {
+                        uri: "color:Clear",
+                        overlays: [ "A", "B" ]
+                    },
+                    C: {
+                        uri: "color:C"
+                    }
+                },
+                overlay: {
+                    A: {
+                        uri: "overlay:A"
+                    },
+                    B: {
+                        uri: "overlay:B"
+                    }
+                }
+            };
+            fg.context = new FG_Context();
+            fg.context.init(config);
+
+
+            var clear = new FG_Color_Clear();
+            fg.context.setColorScheme(clear);
+
+
+            expect(fg.context.currentColorScheme).toBe(clear);
+            expect(Object.keys(clear.overlays).length).toBe(4);
+            expect(clear.overlays["A"]).toBe("overlay:A");
+            expect(clear.overlays["B"]).toBe("overlay:B");
+            expect(clear.overlays["C"]).toBe("color:C");
+            expect(clear.overlays["Clear"]).toBe("color:Clear");
+        });
+
+
+        it('should not fill overlays if config does not exist', function () {
+            fg.context = new FG_Context();
+            var clear = new FG_Color_Clear();
+            fg.context.setColorScheme(clear);
+
+
+            expect(fg.context.currentColorScheme).toBe(clear);
+            expect(Object.keys(clear.overlays).length).toBe(0);
         });
     });
 
@@ -539,7 +629,6 @@ describe("FG", function() {
             var redrawn = false;
             var redrawnLegend = false;
             var redrawnOverlayDropDown = false;
-            var colorSchemeSetup = false;
             fg.draw = {
                 reapplyColor: function (c) {
                     redrawn = true;
@@ -549,9 +638,6 @@ describe("FG", function() {
                 },
                 drawOverlayDropDown: function (c, btn, old) {
                     redrawnOverlayDropDown = true;
-                },
-                setColorSchemesAsOverlays: function (c) {
-                    colorSchemeSetup = true;
                 }
             };
             loadedC = {
@@ -574,7 +660,6 @@ describe("FG", function() {
                     expect(redrawn).toBe(true);
                     expect(redrawnLegend).toBe(true);
                     expect(redrawnOverlayDropDown).toBe(true);
-                    expect(colorSchemeSetup).toBe(true);
 
                     done();
                 } catch (e) {
@@ -618,7 +703,6 @@ describe("FG", function() {
             var redrawn = false;
             var redrawnLegend = false;
             var redrawnOverlayDropDown = false;
-            var colorSchemeSetup = false;
             fg.draw = {
                 reapplyColor: function (c) {
                     redrawn = true;
@@ -628,9 +712,6 @@ describe("FG", function() {
                 },
                 drawOverlayDropDown: function (c, btn, old) {
                     redrawnOverlayDropDown = true;
-                },
-                setColorSchemesAsOverlays: function (c) {
-                    colorSchemeSetup = true;
                 }
             };
 
@@ -645,7 +726,6 @@ describe("FG", function() {
             expect(redrawn).toBe(true);
             expect(redrawnLegend).toBe(true);
             expect(redrawnOverlayDropDown).toBe(true);
-            expect(colorSchemeSetup).toBe(true);
         });
     });
 

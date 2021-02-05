@@ -238,7 +238,8 @@ describe("FGDraw", function () {
                 legend: {
                     black: 'A',
                     red: 'B'
-                }
+                },
+                overlays: {}
             };
 
             draw.drawCanvas();
@@ -261,7 +262,8 @@ describe("FGDraw", function () {
                 legend: {
                     black: 'A',
                     red: 'B'
-                }
+                },
+                overlays: {}
             };
 
             draw.drawCanvas();
@@ -293,7 +295,8 @@ describe("FGDraw", function () {
                 legend: {
                     black: 'A',
                     red: 'B'
-                }
+                },
+                overlays: {}
             };
 
             draw.drawCanvas();
@@ -325,11 +328,13 @@ describe("FGDraw", function () {
             draw.drawCanvas();
 
             expect(fg.overlayEl.localName).toEqual("g");
-            expect(fg.overlayEl.children.length).toEqual(4);
+            expect(fg.overlayEl.children.length).toEqual(6);
             expect(fg.overlayEl.children[1].onclick.toString()).toEqual('function onclick(evt) {\n' +
                 'fg.loadOverlay("a", "A");\n}');
             expect(fg.overlayEl.children[3].onclick.toString()).toEqual('function onclick(evt) {\n' +
                 'fg.loadOverlay("b", "B");\n}');
+            expect(fg.overlayEl.children[5].onclick.toString()).toEqual('function onclick(evt) {\n' +
+                'fg.loadOverlay("Clear", "color:Clear");\n}');
         });
 
         it('should redraw overlay drop down', function () {
