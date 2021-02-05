@@ -27,7 +27,7 @@ function calculateDiff(samples0, total0, samples1, total1) {
 }
 
 function MergedFGDraw(fg, collapsed, visualDiff, differentSides, _d) {
-    FGDraw.call(this, fg, _d);
+    FGDraw.call(this, fg, new FG_Color_Diff(), _d);
     this.visualDiff = visualDiff;
     this.differentSides = differentSides;
     this.collapsed = collapsed;
@@ -46,7 +46,6 @@ function MergedFGDraw(fg, collapsed, visualDiff, differentSides, _d) {
         details = details + "])";
         return detailsText(escText(details), details);
     };
-    fg.context.optionallySetColorScheme(new FG_Color_Diff());
 }
 
 MergedFGDraw.prototype = Object.create(FGDraw.prototype);

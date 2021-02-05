@@ -15,12 +15,13 @@
  limitations under the License.
  **************************************************************************/
 
-function FGDraw(fg, _d) {
+function FGDraw(fg, cs, _d) {
     FGravDraw.call(this, fg, _d);
     this.fg = fg;
     this.fg.draw = this;
     this.buttonsMargin = 24;
-    fg.context.optionallySetColorScheme(new FG_Color_Clear());
+    var colorScheme = (typeof cs !== 'undefined') ? cs : new FG_Color_Clear();
+    fg.context.optionallySetColorScheme(colorScheme);
 }
 
 FGDraw.prototype = Object.create(FGravDraw.prototype);
@@ -201,7 +202,7 @@ FGDraw.prototype.reapplyColor = function(colorScheme) {
         if (r) {
             r.removeAttribute("style");
             f.e = find_child(c[i], "text");
-            var styleFunction = colorScheme.applyColor(f);
+            var styleFunction = colorScheme.applyColor(f, this.fg.totalSamples);
             styleFunction(r);
         }
     }
