@@ -195,7 +195,7 @@ describe("MergedFGDraw", function () {
                     expect([].slice.call(draw.svg.children[0].children).filter(c => c.children.length === 3).map(c => c.children[2].innerHTML).join(",")).toEqual("b,x,c,d");
                     expect([].slice.call(draw.svg.children[0].children).map(c => c.children[0].getAttribute("width").toString()).join(",")).toEqual("155,155,98.6364,56.3636,42.2727,56.3636,42.2727,14.0909");
                     expect([].slice.call(draw.svg.children[0].children).map(c => c.children[0].getAttribute("fill").toString()).join(",")).toEqual('white,white,white,white,white,white,rgb(0,0,255),rgb(255,0,0)');
-                    expect([].slice.call(draw.svg.children[0].children).filter(c => c.children.length === 3).map(c => c.children[1].getAttribute("fill").toString()).join(",")).toEqual("rgb(255,220,220),rgb(164,164,255),rgb(255,169,169),rgb(255,248,248)    ");
+                    expect([].slice.call(draw.svg.children[0].children).filter(c => c.children.length === 3).map(c => c.children[1].getAttribute("fill").toString()).join(",")).toEqual("rgb(255,220,220),rgb(164,164,255),rgb(255,169,169),rgb(255,248,248)");
 
                     expect(draw.svg.children[0].children[0].children[1].innerHTML.toString()).toEqual("all");
                     expect(draw.svg.children[0].children[0].children[0].getAttribute('fill').toString()).toEqual("white");
