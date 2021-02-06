@@ -105,10 +105,14 @@ MergedFGDraw.prototype.drawFrame = function (colorScheme, f) {
 };
 
 MergedFGDraw.prototype.frameFlyweight = function() {
+    var draw = this;
     var f = FGDraw.prototype.frameFlyweight();
     f.getDifferentialSamples = function (i) {
         var samplesArray = this.e.getAttribute("samples").split(",");
         return parseInt(samplesArray[i]);
+    };
+    f.getTotalSamples = function () {
+        return draw.collapsed.totalIndividualSamples;
     };
     return f;
 };

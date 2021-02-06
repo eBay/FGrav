@@ -202,7 +202,7 @@ FGDraw.prototype.reapplyColor = function(colorScheme) {
         if (r) {
             r.removeAttribute("style");
             f.e = find_child(c[i], "text");
-            var styleFunction = colorScheme.applyColor(f, this.fg.totalSamples);
+            var styleFunction = colorScheme.applyColor(f, f.getTotalSamples());
             styleFunction(r);
         }
     }
@@ -214,7 +214,9 @@ FGDraw.prototype.findDrawnRect = function(g) {
 
 
 FGDraw.prototype.frameFlyweight = function() {
+    var fg = this.fg;
     return {
+        getTotalSamples: function() { return fg.totalSamples },
         e: undefined,
         getName: function () { return this.e.getAttribute("name") },
         getSamples: function () { return parseInt(this.e.getAttribute("samples")) }
