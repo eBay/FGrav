@@ -15,12 +15,13 @@
  limitations under the License.
  **************************************************************************/
 
-function FGDraw(fg, _d) {
+function FGDraw(fg, cs, _d) {
     FGravDraw.call(this, fg, _d);
     this.fg = fg;
     this.fg.draw = this;
     this.buttonsMargin = 24;
-    fg.context.optionallySetColorScheme(new FG_Color_Clear());
+    var colorScheme = (typeof cs !== 'undefined') ? cs : new FG_Color_Clear();
+    fg.context.optionallySetColorScheme(colorScheme);
 }
 
 FGDraw.prototype = Object.create(FGravDraw.prototype);
@@ -195,23 +196,15 @@ FGDraw.prototype.redrawFG = function() {
 FGDraw.prototype.reapplyColor = function(colorScheme) {
     var g = this.svg.getElementById(this.fg.namePerFG("frames"));
     var c = find_children(g, "g");
-    var f = frameFlyweight();
+    var f = this.frameFlyweight();
     for(var i=0; i<c.length; i++) {
         var r = this.findDrawnRect(c[i]);
         if (r) {
             r.removeAttribute("style");
             f.e = find_child(c[i], "text");
-            var styleFunction = colorScheme.applyColor(f);
+            var styleFunction = colorScheme.applyColor(f, f.getTotalSamples());
             styleFunction(r);
         }
-    }
-
-    function frameFlyweight() {
-        return {
-            e: undefined,
-            getName: function () { return this.e.getAttribute("name") },
-            getSamples: function () { return parseInt(this.e.getAttribute("samples")) }
-        };
     }
 };
 
@@ -219,6 +212,16 @@ FGDraw.prototype.findDrawnRect = function(g) {
     return find_child(g, "rect");
 };
 
+
+FGDraw.prototype.frameFlyweight = function() {
+    var fg = this.fg;
+    return {
+        getTotalSamples: function() { return fg.totalSamples },
+        e: undefined,
+        getName: function () { return this.e.getAttribute("name") },
+        getSamples: function () { return parseInt(this.e.getAttribute("samples")) }
+    };
+};
 
 FGDraw.prototype.generateFramesCells = function(colorScheme) {
     var stackFrames = this.currentDrawnFrames;

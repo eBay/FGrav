@@ -27,7 +27,7 @@ function calculateDiff(samples0, total0, samples1, total1) {
 }
 
 function MergedFGDraw(fg, collapsed, visualDiff, differentSides, _d) {
-    FGDraw.call(this, fg, _d);
+    FGDraw.call(this, fg, new FG_Color_Diff(), _d);
     this.visualDiff = visualDiff;
     this.differentSides = differentSides;
     this.collapsed = collapsed;
@@ -46,7 +46,6 @@ function MergedFGDraw(fg, collapsed, visualDiff, differentSides, _d) {
         details = details + "])";
         return detailsText(escText(details), details);
     };
-    fg.context.optionallySetColorScheme(new FG_Color_Diff());
 }
 
 MergedFGDraw.prototype = Object.create(FGDraw.prototype);
@@ -105,6 +104,19 @@ MergedFGDraw.prototype.drawFrame = function (colorScheme, f) {
     }
 };
 
+MergedFGDraw.prototype.frameFlyweight = function() {
+    var draw = this;
+    var f = FGDraw.prototype.frameFlyweight();
+    f.getDifferentialSamples = function (i) {
+        var samplesArray = this.e.getAttribute("samples").split(",");
+        return parseInt(samplesArray[i]);
+    };
+    f.getTotalSamples = function () {
+        return draw.collapsed.totalIndividualSamples;
+    };
+    return f;
+};
+
 MergedFGDraw.prototype.findDrawnRect = function(g) {
     var children = find_children(g, "rect");
     if (children.length && children[children.length - 1].getAttribute("fill") !== "white") {
@@ -124,7 +136,7 @@ FG_Color_Diff.prototype = Object.create(FG_Color.prototype);
 FG_Color_Diff.prototype.constructor = FG_Color_Diff;
 
 FG_Color_Diff.prototype.colorFor = function(frame, totalSamples) {
-    var diff = calculateDiff(frame.individualSamples[0], totalSamples[0], frame.individualSamples[1], totalSamples[1]);
+    var diff = calculateDiff(frame.getDifferentialSamples(0), totalSamples[0], frame.getDifferentialSamples(1), totalSamples[1]);
 
     if (diff === 0) {
         return "white";

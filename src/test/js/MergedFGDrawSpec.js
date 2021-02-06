@@ -28,30 +28,38 @@ describe("MergedFGDraw", function () {
 
     describe("FG_Color_Diff", function () {
 
+        var frame = function(samplesArray) {
+            return {
+                getDifferentialSamples: function (i) {
+                    return samplesArray[i];
+                }
+            }
+        };
+
 
         it("frame color should be red for growth", function () {
-            expect(new FG_Color_Diff().colorFor({individualSamples: [50, 80]}, [100, 100])).toEqual('rgb(255,220,220)');
+            expect(new FG_Color_Diff().colorFor(frame([50, 80]), [100, 100])).toEqual('rgb(255,220,220)');
         });
 
         it("frame color should be blue for reduction", function () {
-            expect(new FG_Color_Diff().colorFor({individualSamples: [80, 50]}, [100, 100])).toEqual('rgb(220,220,255)');
+            expect(new FG_Color_Diff().colorFor(frame([80, 50]), [100, 100])).toEqual('rgb(220,220,255)');
         });
 
         it("frame color should be vary relative to change", function () {
             var diff = new FG_Color_Diff();
-            expect(diff.colorFor({individualSamples: [100, 50]}, [100, 100])).toEqual('rgb(192,192,255)');
-            expect(diff.colorFor({individualSamples: [80, 50]}, [100, 100])).toEqual('rgb(220,220,255)');
-            expect(diff.colorFor({individualSamples: [75, 50]}, [100, 100])).toEqual('rgb(227,227,255)');
-            expect(diff.colorFor({individualSamples: [55, 50]}, [100, 100])).toEqual('rgb(253,253,255)');
-            expect(diff.colorFor({individualSamples: [50, 100]}, [100, 100])).toEqual('rgb(255,192,192)');
-            expect(diff.colorFor({individualSamples: [50, 80]}, [100, 100])).toEqual('rgb(255,220,220)');
-            expect(diff.colorFor({individualSamples: [50, 75]}, [100, 100])).toEqual('rgb(255,227,227)');
-            expect(diff.colorFor({individualSamples: [50, 55]}, [100, 100])).toEqual('rgb(255,253,253)');
+            expect(diff.colorFor(frame([100, 50]), [100, 100])).toEqual('rgb(192,192,255)');
+            expect(diff.colorFor(frame([80, 50]), [100, 100])).toEqual('rgb(220,220,255)');
+            expect(diff.colorFor(frame([75, 50]), [100, 100])).toEqual('rgb(227,227,255)');
+            expect(diff.colorFor(frame([55, 50]), [100, 100])).toEqual('rgb(253,253,255)');
+            expect(diff.colorFor(frame([50, 100]), [100, 100])).toEqual('rgb(255,192,192)');
+            expect(diff.colorFor(frame([50, 80]), [100, 100])).toEqual('rgb(255,220,220)');
+            expect(diff.colorFor(frame([50, 75]), [100, 100])).toEqual('rgb(255,227,227)');
+            expect(diff.colorFor(frame([50, 55]), [100, 100])).toEqual('rgb(255,253,253)');
         });
 
         it("frame color should be white for no change", function () {
 
-            expect(new FG_Color_Diff().colorFor({individualSamples: [50, 50]}, [100, 100])).toEqual('white');
+            expect(new FG_Color_Diff().colorFor(frame([50, 50]), [100, 100])).toEqual('white');
         });
     });
 
@@ -134,4 +142,150 @@ describe("MergedFGDraw", function () {
             expect(draw.findDrawnRect(g)).toBe(undefined);
         });
     });
+
+
+    describe("FG", function () {
+
+        var draw;
+        var fg;
+        var collapsed;
+
+        beforeEach(function() {
+            fg = new FG("my-fg", 13, "title", "179");
+            fg.svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+
+            collapsed = new MergedCollapsed(2);
+            draw = new MergedFGDraw(fg, collapsed, true, true);
+
+            jasmine.Ajax.install();
+            jasmine.Ajax.stubRequest("diff.collapsed").andReturn({
+                responseText:
+                    "a;b;c 1 2\n" +
+                    "a;b;d 2 2\n" +
+                    "a;x;d 3 0\n" +
+                    "a;x;y 0 1\n"
+            });
+            frameFilter.reset();
+            fg.margin = 12;
+            fg.frameHeight = 7;
+        });
+
+        afterEach(function() {
+            jasmine.Ajax.uninstall();
+            frameFilter.reset();
+        });
+
+        it('should draw FG', function (done) {
+
+            var stackFrames = new FGStackFrames();
+            stackFrames.loadCollapsed(fg, "diff.collapsed", function () {
+
+                try {
+                    var request = jasmine.Ajax.requests.mostRecent();
+                    expect(request.url).toBe("diff.collapsed");
+                    expect(request.method).toBe('GET');
+
+                    draw.drawFG(stackFrames);
+
+                    expect(fg.totalSamples).toEqual(11); // 1 + 2 + 3 + 2 + 2 + 1
+                    expect(draw.svg.children[0].localName).toEqual("g");
+                    expect(draw.svg.children[0].getAttribute("id").toString()).toEqual("my-fgframes");
+                    expect(draw.svg.children[0].children.length).toEqual(8); // all, a, b, x, c, d (above b), d (above x), y
+                    expect([].slice.call(draw.svg.children[0].children).filter(c => c.children.length === 2).map(c => c.children[1].innerHTML).join(",")).toEqual("all,a,d,");
+                    expect([].slice.call(draw.svg.children[0].children).filter(c => c.children.length === 3).map(c => c.children[2].innerHTML).join(",")).toEqual("b,x,c,d");
+                    expect([].slice.call(draw.svg.children[0].children).map(c => c.children[0].getAttribute("width").toString()).join(",")).toEqual("155,155,98.6364,56.3636,42.2727,56.3636,42.2727,14.0909");
+                    expect([].slice.call(draw.svg.children[0].children).map(c => c.children[0].getAttribute("fill").toString()).join(",")).toEqual('white,white,white,white,white,white,rgb(0,0,255),rgb(255,0,0)');
+                    expect([].slice.call(draw.svg.children[0].children).filter(c => c.children.length === 3).map(c => c.children[1].getAttribute("fill").toString()).join(",")).toEqual("rgb(255,220,220),rgb(164,164,255),rgb(255,169,169),rgb(255,248,248)");
+
+                    expect(draw.svg.children[0].children[0].children[1].innerHTML.toString()).toEqual("all");
+                    expect(draw.svg.children[0].children[0].children[0].getAttribute('fill').toString()).toEqual("white");
+                    expect(draw.svg.children[0].children[2].children[0].getAttribute('fill').toString()).toEqual("white");
+                    expect(draw.svg.children[0].children[2].children[1].getAttribute('fill').toString()).toEqual("rgb(255,220,220)");
+
+                    done();
+                } catch (e) {
+                    done(e);
+                }
+            }, function () {
+                done.fail("ajax should succeed");
+            }, collapsed);
+        });
+
+        it('should redraw FG', function (done) {
+
+            var stackFrames = new FGStackFrames();
+
+            stackFrames.loadCollapsed(fg, "diff.collapsed", function () {
+
+                try {
+                    var request = jasmine.Ajax.requests.mostRecent();
+                    expect(request.url).toBe("diff.collapsed");
+                    expect(request.method).toBe('GET');
+
+                    draw.drawFG(stackFrames);
+
+                    expect(draw.svg.children[0].children[1].children[1].getAttribute('name').toString()).toEqual("a");
+
+                    stackFrames.stackFrameRows[0][0].name = 'replaced';
+
+                    draw.redrawFG();
+
+                    expect(draw.svg.children[0].children[1].children[1].getAttribute('name').toString()).toEqual("replaced");
+
+                    done();
+                } catch (e) {
+                    done(e);
+                }
+            }, function () {
+                done.fail("ajax should succeed");
+            }, collapsed);
+        });
+
+        it('should reapply color', function (done) {
+            var stackFrames = new FGStackFrames();
+
+            stackFrames.loadCollapsed(fg, "diff.collapsed", function () {
+
+                try {
+                    var request = jasmine.Ajax.requests.mostRecent();
+                    expect(request.url).toBe("diff.collapsed");
+                    expect(request.method).toBe('GET');
+
+                    draw.drawFG(stackFrames);
+
+                    expect(draw.svg.children[0].children[0].children[1].innerHTML.toString()).toEqual("all");
+                    expect(draw.svg.children[0].children[0].children[0].getAttribute('fill').toString()).toEqual("white");
+                    expect(draw.svg.children[0].children[2].children[0].getAttribute('fill').toString()).toEqual("white");
+                    expect(draw.svg.children[0].children[2].children[1].getAttribute('fill').toString()).toEqual("rgb(255,220,220)");
+
+                    fg.context.currentColorScheme = {
+                        applyColor: function() {
+                            return function (el) {
+                                el.setAttribute("fill", "black2");
+                            }
+                        },
+                        legend: {}
+                    };
+                    draw.svg.getElementById = function(id) {
+                        return draw.svg.children[0];
+                    };
+
+                    draw.reapplyColor(fg.context.currentColorScheme);
+
+                    expect(draw.svg.children[0].children[0].children[0].getAttribute('fill').toString()).toEqual("white");
+                    expect(draw.svg.children[0].children[2].children[0].getAttribute('fill').toString()).toEqual("white");
+                    expect(draw.svg.children[0].children[2].children[1].getAttribute('fill').toString()).toEqual("black2");
+
+                    done();
+                } catch (e) {
+                    done(e);
+                }
+            }, function () {
+                done.fail("ajax should succeed");
+            }, collapsed);
+
+        });
+
+    });
+
 });
