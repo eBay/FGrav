@@ -102,7 +102,7 @@ FG.prototype.setup = function(_w) {
         }
     }, false);
 
-    frameFilter.reset();
+    fg.context.frameFilter.reset();
     return fg;
 };
 
@@ -178,7 +178,7 @@ FG.prototype.objectsToLoad = function() {
     if (typeof this.frameFilterNames !== 'undefined') {
         $.each(this.frameFilterNames.split(",").map(function (n) {
             return fg.generateDynamicallyLoadingObject(n, "js/frame/FG_Filter_", function (objName) {
-                return "frameFilter.filters.push(new "+ objName +"());";
+                return "fg.context.frameFilter.filters.push(new "+ objName +"());";
             });
         }), function () {
             toLoad.push(this);
@@ -259,15 +259,6 @@ FG.prototype.applyingColor = function() {
 
 FG.prototype.redrawFrames = function () {
     this.draw.reapplyColor(this.context.currentColorScheme);
-};
-
-// accessed from eval (yes, I know, see below)
-// and global to the window
-var frameFilter = {
-    filters: [],
-    reset: function() {
-        this.filters = [];
-    }
 };
 
 FG.prototype.namePerFG = function(name) {
@@ -697,6 +688,12 @@ FG.prototype.search = function(topFG) {
 function FG_Context() {
     this.color = {};
     this.overlay = {};
+    this.frameFilter = {
+        filters: [],
+        reset: function() {
+            this.filters = [];
+        }
+    };
 }
 FG_Context.prototype.init = function(config) {
     this.config = config;

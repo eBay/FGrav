@@ -20,14 +20,12 @@ describe("FGDraw", function () {
                     "a;b;d 2\n" +
                     "a;x;d 3\n"
             });
-            frameFilter.reset();
             fg.margin = 12;
             fg.frameHeight = 7;
         });
 
         afterEach(function() {
             jasmine.Ajax.uninstall();
-            frameFilter.reset();
         });
 
         it('should draw FG', function (done) {

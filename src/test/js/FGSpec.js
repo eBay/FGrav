@@ -1,5 +1,6 @@
 var loaded1;
 var loaded2;
+var loadedF = { filters: [] };
 var loadedO;
 var loadedC;
 
@@ -422,7 +423,7 @@ describe("FG", function() {
             expect(objs[0].getUrl()).toEqual("js/color/FG_Color_ColorScheme.js");
             expect(objs[0].appendInstallScript("")).toEqual("\nfg.context.setColorScheme(new FG_Color_ColorScheme());");
             expect(objs[1].getUrl()).toEqual("js/frame/FG_Filter_FrameFilter.js");
-            expect(objs[1].appendInstallScript("")).toEqual("\nframeFilter.filters.push(new FG_Filter_FrameFilter());");
+            expect(objs[1].appendInstallScript("")).toEqual("\nfg.context.frameFilter.filters.push(new FG_Filter_FrameFilter());");
 
         });
 
@@ -436,7 +437,7 @@ describe("FG", function() {
             expect(objs[0].getUrl()).toEqual("/js/MyCustomColorScheme.js");
             expect(objs[0].appendInstallScript("")).toEqual("\nfg.context.setColorScheme(new MyCustomColorScheme());");
             expect(objs[1].getUrl()).toEqual("/js/fgrav/custom/MyFrameFilter.js");
-            expect(objs[1].appendInstallScript("")).toEqual("\nframeFilter.filters.push(new MyFrameFilter());");
+            expect(objs[1].appendInstallScript("")).toEqual("\nfg.context.frameFilter.filters.push(new MyFrameFilter());");
 
         });
 
@@ -450,11 +451,11 @@ describe("FG", function() {
             expect(objs[0].getUrl()).toEqual("js/color/FG_Color_ColorScheme.js");
             expect(objs[0].appendInstallScript("")).toEqual("\nfg.context.setColorScheme(new FG_Color_ColorScheme());");
             expect(objs[1].getUrl()).toEqual("js/frame/FG_Filter_FrameFilter1.js");
-            expect(objs[1].appendInstallScript("")).toEqual("\nframeFilter.filters.push(new FG_Filter_FrameFilter1());");
+            expect(objs[1].appendInstallScript("")).toEqual("\nfg.context.frameFilter.filters.push(new FG_Filter_FrameFilter1());");
             expect(objs[2].getUrl()).toEqual("js/frame/FG_Filter_FrameFilter2.js");
-            expect(objs[2].appendInstallScript("")).toEqual("\nframeFilter.filters.push(new FG_Filter_FrameFilter2());");
+            expect(objs[2].appendInstallScript("")).toEqual("\nfg.context.frameFilter.filters.push(new FG_Filter_FrameFilter2());");
             expect(objs[3].getUrl()).toEqual("/js/MyCustomFilter.js");
-            expect(objs[3].appendInstallScript("")).toEqual("\nframeFilter.filters.push(new MyCustomFilter());");
+            expect(objs[3].appendInstallScript("")).toEqual("\nfg.context.frameFilter.filters.push(new MyCustomFilter());");
 
         });
     });
@@ -487,23 +488,24 @@ describe("FG", function() {
                     "    return 'rgb(122,122,122)';" +
                     "}"
             });
-            frameFilter.reset();
+            loadedF.filters = [];
         });
 
         afterEach(function () {
+            loadedF.filters = [];
             jasmine.Ajax.uninstall();
         });
 
 
         it("should load dynamic js file", function (done) {
-            fg.loadDynamicJs([new DynamicallyLoading("js/frame/FG_Filter_Test.js", "frameFilter.filters.push(new FG_Filter_Test());")], function () {
+            fg.loadDynamicJs([new DynamicallyLoading("js/frame/FG_Filter_Test.js", "loadedF.filters.push(new FG_Filter_Test());")], function () {
 
                 try {
                     var request = jasmine.Ajax.requests.mostRecent();
                     expect(request.url).toBe("js/frame/FG_Filter_Test.js");
                     expect(request.method).toBe('GET');
 
-                    expect(frameFilter.filters[0].filter('foo')).toEqual("foofoo");
+                    expect(loadedF.filters[0].filter('foo')).toEqual("foofoo");
 
                     done();
                 } catch (e) {
@@ -535,14 +537,14 @@ describe("FG", function() {
 
         it("should load multiple dynamic js filters and colors", function (done) {
             fg.loadDynamicJs([
-                new DynamicallyLoading("js/frame/FG_Filter_Other.js", "frameFilter.filters.push(new FG_Filter_Other());"),
+                new DynamicallyLoading("js/frame/FG_Filter_Other.js", "loadedF.filters.push(new FG_Filter_Other());"),
                 new DynamicallyLoading("js/color/FG_Color_Test.js", "loaded2 = new FG_Color_Test();"),
-                new DynamicallyLoading("js/frame/FG_Filter_Test.js", "frameFilter.filters.push(new FG_Filter_Test());")], function () {
+                new DynamicallyLoading("js/frame/FG_Filter_Test.js", "loadedF.filters.push(new FG_Filter_Test());")], function () {
 
                 try {
-                    expect(frameFilter.filters.length).toEqual(2);
-                    expect(frameFilter.filters[0].filter('foo')).toEqual("x");
-                    expect(frameFilter.filters[1].filter('foo')).toEqual("foofoo");
+                    expect(loadedF.filters.length).toEqual(2);
+                    expect(loadedF.filters[0].filter('foo')).toEqual("x");
+                    expect(loadedF.filters[1].filter('foo')).toEqual("foofoo");
                     expect(loaded2.colorFor()).toEqual("rgb(122,122,122)");
 
                     done();
@@ -579,7 +581,7 @@ describe("FG", function() {
                     "    return 'rgb(66,66,66)';" +
                     "}"
             });
-            frameFilter.reset();
+            fg.context.frameFilter.reset();
             fg.context.currentColorScheme = new FG_Color_Black();
         });
 

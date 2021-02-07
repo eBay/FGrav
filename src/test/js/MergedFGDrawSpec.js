@@ -165,14 +165,12 @@ describe("MergedFGDraw", function () {
                     "a;x;d 3 0\n" +
                     "a;x;y 0 1\n"
             });
-            frameFilter.reset();
             fg.margin = 12;
             fg.frameHeight = 7;
         });
 
         afterEach(function() {
             jasmine.Ajax.uninstall();
-            frameFilter.reset();
         });
 
         it('should draw FG', function (done) {

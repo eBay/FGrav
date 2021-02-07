@@ -27,12 +27,10 @@ describe("FGStackFrames", function() {
                     "a;b;d 2\n" +
                     "a;x;d 3\n"
             });
-            frameFilter.reset();
         });
 
         afterEach(function() {
             jasmine.Ajax.uninstall();
-            frameFilter.reset();
         });
 
         it("should load collapsed file", function (done) {
@@ -95,13 +93,14 @@ describe("FGStackFrames", function() {
         });
 
         it("should filter frames according to provided filters", function (done) {
-            frameFilter.filters.push({
+            var fg = new FG();
+            fg.context.frameFilter.filters.push({
                 filter: function (path) {
                     return (path.includes("x")) ? null : path;
                 }
             });
 
-            stackFrames.loadCollapsed(new FG(), "test.collapsed", function () {
+            stackFrames.loadCollapsed(fg, "test.collapsed", function () {
 
                 try {
                     var request = jasmine.Ajax.requests.mostRecent();
@@ -158,11 +157,9 @@ describe("FGStackFrames", function() {
             fg.context.currentColorScheme = {
                 legend: {}
             };
-            frameFilter.reset();
         });
 
         afterEach(function() {
-            frameFilter.reset();
             jasmine.Ajax.uninstall();
         });
 
