@@ -32,13 +32,18 @@ function FG(id, shiftWidth, defaultTitle, minWidth, _w, _prompt) {
     this.searching = false;
     this.ignorecase = 0;
     this.legend = 0;
+    this.filter = 0;
     this.overlay = 0;
     this.overlaying = false;
     this.currentSearchTerm = null;
     this.configUrl = this.getParameter("config", "fgrav.json");
     this.frameFilterNames = this.getParameter("frameFilter", undefined);
     this.colorSchemeUri = this.getParameter("color", undefined);
-    this.config = {};
+    this.config = {
+        color: {},
+        overlay: {},
+        filter: {}
+    };
     this.context = new FG_Context();
     this.searchTermPromptFunction = (typeof _prompt !== "undefined") ? _prompt :
         function(ic) {
@@ -70,6 +75,7 @@ FG.prototype.setup = function(_w) {
         else if (e.target.id === "search") fg.search_prompt();
         else if (e.target.id === "legendBtn") fg.toggle_legend();
         else if (e.target.id === "overlayBtn") fg.toggle_overlay();
+        else if (e.target.id === "filterBtn") fg.toggle_filter();
         else if (e.target.id === "ignorecase") fg.toggle_ignorecase();
     }, false);
 
@@ -178,7 +184,7 @@ FG.prototype.objectsToLoad = function() {
     if (typeof this.frameFilterNames !== 'undefined') {
         $.each(this.frameFilterNames.split(",").map(function (n) {
             return fg.generateDynamicallyLoadingObject(n, "js/frame/FG_Filter_", function (objName) {
-                return "fg.context.frameFilter.filters.push(new "+ objName +"());";
+                return "fg.context.addFrameFilter(new "+ objName +"());";
             });
         }), function () {
             toLoad.push(this);
@@ -255,6 +261,43 @@ FG.prototype.applyingColor = function() {
     this.redrawFrames();
     this.draw.drawLegend(this.context.currentColorScheme, this.legendEl);
     this.draw.drawOverlayDropDown(this.context.currentColorScheme, this.overlayBtn, this.overlayEl);
+};
+
+FG.prototype.loadFilter = function(filterName, filterUrl, successCallback, globalVarName) {
+    var global = (globalVarName) ? globalVarName : "fg";
+    this.toggle_filter();
+    var fg = this;
+    if (fg.context.frameFilter[filterName]) {
+        if (fg.context.frameFilter.filters.includes(fg.context.frameFilter[filterName])) {
+            fg.context.removeFrameFilter(fg.context.frameFilter[filterName]);
+        } else {
+            fg.context.addFrameFilter(fg.context.frameFilter[filterName]);
+        }
+        fg.applyingFilter();
+    } else {
+        var dynamicallyLoading = this.generateDynamicallyLoadingObject(filterUrl.substring("filter:".length), "js/frame/FG_Filter_", function (name) {
+            return global + ".context.addFrameFilter(new "+ name +"());";
+        });
+        this.loadDynamicJs([dynamicallyLoading], function () {
+                fg.applyingFilter();
+                if (successCallback) {
+                    successCallback();
+                }
+            }, function (response) {
+                log.console("Failed to load " + filterUrl + ": " + response.errorMessage());
+            }
+        );
+    }
+};
+
+FG.prototype.applyingFilter = function() {
+    var selected = this.context.frameFilter.filters.map(o => this.context.nameOf(o, "FG_Filter_"));
+    var children = find_children(this.filterEl, "rect");
+    for(var i=0; i<children.length; i++) {
+        var name = children[i].getAttribute("id");
+        this.draw.drawFilterSelection(children[i], name, selected);
+    }
+    // TODO this.draw.redrawFG();
 };
 
 FG.prototype.redrawFrames = function () {
@@ -529,16 +572,7 @@ FG.prototype.unzoom = function(topFG) {
 
 // legend
 FG.prototype.toggle_legend = function() {
-    if (this.legendEl) {
-        this.legend = !this.legend;
-        if (this.legend) {
-            this.legendBtn.classList.add("show");
-            this.legendEl.classList.remove("hide");
-        } else {
-            this.legendBtn.classList.remove("show");
-            this.legendEl.classList.add("hide");
-        }
-    }
+    this.legend = this.toggle_menuitem(this.legend, this.legendEl, this.legendBtn);
 };
 
 // overlay
@@ -546,16 +580,26 @@ FG.prototype.toggle_overlay = function() {
     if (this.overlaying) {
         this.reset_overlay();
     }
-    if (this.overlayEl) {
-        this.overlay = !this.overlay;
-        if (this.overlay) {
-            this.overlayBtn.classList.add("show");
-            this.overlayEl.classList.remove("hide");
+    this.overlay = this.toggle_menuitem(this.overlay, this.overlayEl, this.overlayBtn);
+};
+
+// filter
+FG.prototype.toggle_filter = function() {
+    this.filter = this.toggle_menuitem(this.filter, this.filterEl, this.filterBtn);
+};
+
+FG.prototype.toggle_menuitem = function(flag, el, btn) {
+    if (el) {
+        flag = !flag;
+        if (flag) {
+            btn.classList.add("show");
+            el.classList.remove("hide");
         } else {
-            this.overlayBtn.classList.remove("show");
-            this.overlayEl.classList.add("hide");
+            btn.classList.remove("show");
+            el.classList.add("hide");
         }
     }
+    return flag;
 };
 
 FG.prototype.reset_overlay = function() {
@@ -717,6 +761,16 @@ FG_Context.prototype.optionallySetColorScheme = function(cs) {
     if (typeof this.currentColorScheme === "undefined") {
         this.setColorScheme(cs);
     }
+};
+FG_Context.prototype.addFrameFilter = function(frameFilter) {
+    this.frameFilter.filters.push(frameFilter);
+    var name = this.nameOf(frameFilter, "FG_Filter_");
+    this.frameFilter[name] = frameFilter;
+};
+FG_Context.prototype.removeFrameFilter = function(frameFilter) {
+    this.frameFilter.filters = this.frameFilter.filters.filter(function (f) {
+        return f !== frameFilter
+    });
 };
 FG_Context.prototype.fillOverlaysFor = function(cs) {
     if (this.config && cs) {

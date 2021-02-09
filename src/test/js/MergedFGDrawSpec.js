@@ -209,36 +209,6 @@ describe("MergedFGDraw", function () {
             }, collapsed);
         });
 
-        it('should redraw FG', function (done) {
-
-            var stackFrames = new FGStackFrames();
-
-            stackFrames.loadCollapsed(fg, "diff.collapsed", function () {
-
-                try {
-                    var request = jasmine.Ajax.requests.mostRecent();
-                    expect(request.url).toBe("diff.collapsed");
-                    expect(request.method).toBe('GET');
-
-                    draw.drawFG(stackFrames);
-
-                    expect(draw.svg.children[0].children[1].children[1].getAttribute('name').toString()).toEqual("a");
-
-                    stackFrames.stackFrameRows[0][0].name = 'replaced';
-
-                    draw.redrawFG();
-
-                    expect(draw.svg.children[0].children[1].children[1].getAttribute('name').toString()).toEqual("replaced");
-
-                    done();
-                } catch (e) {
-                    done(e);
-                }
-            }, function () {
-                done.fail("ajax should succeed");
-            }, collapsed);
-        });
-
         it('should reapply color', function (done) {
             var stackFrames = new FGStackFrames();
 

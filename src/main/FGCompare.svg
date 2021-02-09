@@ -30,9 +30,9 @@
 <style type="text/css">
 	rect.tooltip, rect.overlay { opacity:0.8 }
 	text.tooltip { fill:rgb(255,255,255); font-size:12px }
-	text.overlay { fill:blue; font-size:12px; text-decoration: underline; cursor:pointer }
-	#search, #ignorecase, #legendBtn, #overlayBtn { opacity:0.1; cursor:pointer; font-size:12px }
-	#search:hover, #search.show, #ignorecase:hover, #ignorecase.show, #legendBtn:hover, #legendBtn.show,  #overlayBtn:hover, #overlayBtn.show { opacity:1; }
+    text.overlay, text.filter { fill:blue; font-size:12px; text-decoration: underline; cursor:pointer }
+    #search, #ignorecase, #legendBtn, #overlayBtn, #filterBtn { opacity:0.1; cursor:pointer; font-size:12px }
+    #search:hover, #search.show, #ignorecase:hover, #ignorecase.show, #legendBtn:hover, #legendBtn.show,  #overlayBtn:hover, #overlayBtn.show,  #filterBtn:hover, #filterBtn.show { opacity:1; }
 	#subtitle { text-anchor:middle; font-color:rgb(160,160,160); }
 	#title { text-anchor:middle; font-size:17px}
 	#unzoom { cursor:pointer; font-size:12px }

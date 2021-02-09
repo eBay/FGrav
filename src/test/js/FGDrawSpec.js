@@ -55,36 +55,6 @@ describe("FGDraw", function () {
             });
         });
 
-        it('should redraw FG', function (done) {
-
-            var stackFrames = new FGStackFrames();
-
-            stackFrames.loadCollapsed(fg, "test.collapsed", function () {
-
-                try {
-                    var request = jasmine.Ajax.requests.mostRecent();
-                    expect(request.url).toBe("test.collapsed");
-                    expect(request.method).toBe('GET');
-
-                    draw.drawFG(stackFrames);
-
-                    expect(draw.svg.children[0].children[1].children[1].getAttribute('name').toString()).toEqual("a");
-
-                    stackFrames.stackFrameRows[0][0].name = 'replaced';
-
-                    draw.redrawFG();
-
-                    expect(draw.svg.children[0].children[1].children[1].getAttribute('name').toString()).toEqual("replaced");
-
-                    done();
-                } catch (e) {
-                    done(e);
-                }
-            }, function () {
-                done.fail("ajax should succeed");
-            });
-        });
-
         it('should reapply color', function (done) {
             var stackFrames = new FGStackFrames();
 
@@ -194,12 +164,6 @@ describe("FGDraw", function () {
     });
 
     describe("canvas", function () {
-
-        beforeEach(function () {
-            fg.config = {
-                color: {}
-            };
-        });
 
         it('should draw canvas', function () {
 
@@ -326,12 +290,12 @@ describe("FGDraw", function () {
             draw.drawCanvas();
 
             expect(fg.overlayEl.localName).toEqual("g");
-            expect(fg.overlayEl.children.length).toEqual(6);
-            expect(fg.overlayEl.children[1].onclick.toString()).toEqual('function onclick(evt) {\n' +
+            expect(fg.overlayEl.children.length).toEqual(3);
+            expect(fg.overlayEl.children[0].onclick.toString()).toEqual('function onclick(evt) {\n' +
                 'fg.loadOverlay("a", "A");\n}');
-            expect(fg.overlayEl.children[3].onclick.toString()).toEqual('function onclick(evt) {\n' +
+            expect(fg.overlayEl.children[1].onclick.toString()).toEqual('function onclick(evt) {\n' +
                 'fg.loadOverlay("b", "B");\n}');
-            expect(fg.overlayEl.children[5].onclick.toString()).toEqual('function onclick(evt) {\n' +
+            expect(fg.overlayEl.children[2].onclick.toString()).toEqual('function onclick(evt) {\n' +
                 'fg.loadOverlay("Clear", "color:Clear");\n}');
         });
 
@@ -363,10 +327,10 @@ describe("FGDraw", function () {
             draw.drawOverlayDropDown(newScheme, fg.overlayBtn, fg.overlayEl);
 
             expect(fg.overlayEl.localName).toEqual("g");
-            expect(fg.overlayEl.children.length).toEqual(4);
-            expect(fg.overlayEl.children[1].onclick.toString()).toEqual('function onclick(evt) {\n' +
+            expect(fg.overlayEl.children.length).toEqual(2);
+            expect(fg.overlayEl.children[0].onclick.toString()).toEqual('function onclick(evt) {\n' +
                 'fg.loadOverlay("c", "C");\n}');
-            expect(fg.overlayEl.children[3].onclick.toString()).toEqual('function onclick(evt) {\n' +
+            expect(fg.overlayEl.children[1].onclick.toString()).toEqual('function onclick(evt) {\n' +
                 'fg.loadOverlay("d", "D");\n}');
             expect(fg.overlayBtn.firstChild.nodeValue).toEqual('Overlays');
         });

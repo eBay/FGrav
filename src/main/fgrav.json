@@ -18,6 +18,17 @@
     "Reflection": {
       "uri": "overlay:Java_Reflection"
     }
+  },
+  "filter": {
+    "Java8": {
+      "uri": "filter:Java8"
+    },
+    "RemoveJavaGCThreads": {
+      "uri": "filter:RemoveJavaGCThreads"
+    },
+    "RemoveThreadFrame": {
+      "uri": "filter:RemoveThreadFrame"
+    }
   }
 }
 
