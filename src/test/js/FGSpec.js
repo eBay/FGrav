@@ -511,6 +511,66 @@ describe("FG", function() {
         });
     });
 
+    describe("loading config", function () {
+
+        beforeEach(function () {
+            jasmine.Ajax.install();
+            jasmine.Ajax.stubRequest("fgrav.json").andReturn({
+                responseText: '{\n' +
+                    '  "color": {\n' +
+                    '    "Flames": {\n' +
+                    '      "uri": "color:URL"\n' +
+                    '    }\n' +
+                    '  }\n' +
+                    '}'
+            });
+
+            jasmine.Ajax.stubRequest("error.json").andReturn({
+                status: 500,
+                statusText: 'HTTP/1.1 500 Internal Error'
+            });
+        });
+
+        afterEach(function () {
+            jasmine.Ajax.uninstall();
+        });
+
+        it('should load config', function (done) {
+
+
+            fg.load(function () {
+                try {
+                    var request = jasmine.Ajax.requests.mostRecent();
+
+                    expect(request.url).toEqual("fgrav.json");
+
+                    expect(fg.config.color.Flames.uri).toEqual("color:URL");
+
+                    done();
+                } catch (e) {
+                    done(e);
+                }
+            }, function () {
+                done.fail("ajax should succeed");
+            });
+
+
+        });
+
+        it('should draw error message on error', function (done) {
+            fg.configUrl = 'error.json';
+            fg.load(function () {
+                fail("expected error")
+            });
+
+            var request = jasmine.Ajax.requests.mostRecent();
+
+            expect(request.status).toBe(500);
+
+            done();
+        });
+    });
+
 
     describe("when loadDynamicJs invoked ", function () {
 

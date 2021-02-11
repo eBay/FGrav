@@ -117,8 +117,12 @@ FG.prototype.collapsedUrlFrom = function(param, _loc) {
 };
 
 FG.prototype.load = function (successCallback, errorCallback) {
+    var fg = this;
+    errorCallback = (errorCallback) ? errorCallback : function(response) {
+        fg.draw.drawError("Failed to load: " + response.errorMessage());
+    };
     var response = new FGravResponse();
-    var configAjax = this. loadConfig(response);
+    var configAjax = this.loadConfig(response);
     this.loadDynamicJs(this.objectsToLoad(), successCallback, errorCallback, [configAjax], response);
 };
 

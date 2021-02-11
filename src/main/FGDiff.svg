@@ -72,8 +72,6 @@
 				draw.drawError("Failed to load collapsed file " + fg.collapsedUrl + ": " + response.errorMessage());
 			},
 			collapsed);
-		}, function(response) {
-			draw.drawError("Failed to load: " + response.errorMessage());
 		});
 	}
 ]]>

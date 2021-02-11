@@ -66,29 +66,27 @@
 	function init(evt) {
 	    fg.load(function() {
 				var leftFG = new FG("l", 0).collapsedUrlFrom("left");
+				var drawLeft = new FGDraw(leftFG);
 				fg.registerFG(leftFG);
 				var stackFramesLeft = new FGStackFrames();
 				stackFramesLeft.loadCollapsed(leftFG, function() {
-					var rightFG = new FG("r", leftFG.width + fg.margin);
+					var rightFG = new FG("r", leftFG.width + fg.margin).collapsedUrlFrom("right");
+					var drawRight = new FGDraw(rightFG);
 					fg.registerFG(rightFG);
 					var stackFramesRight = new FGStackFrames();
 					stackFramesRight.loadCollapsed(rightFG, function() {
 						fg.setDimensions();
 						draw.drawCanvas();
-						var drawLeft = new FGDraw(leftFG);
 						drawLeft.drawFG(stackFramesLeft);
 						drawLeft.drawInfoElements();
-						var drawRight = new FGDraw(rightFG);
 						drawRight.drawFG(stackFramesRight);
 						drawRight.drawInfoElements();
 					}, function(response) {
-						draw.drawError("Failed to load collapsed file " + rightFG.collapsedUrl + ": " + response.errorMessage());
+						drawRight.drawError("Failed to load collapsed file " + rightFG.collapsedUrl + ": " + response.errorMessage());
 					});
 				}, function(response) {
-					draw.drawError("Failed to load collapsed file " + leftFG.collapsedUrl + ": " + response.errorMessage());
+					drawLeft.drawError("Failed to load collapsed file " + leftFG.collapsedUrl + ": " + response.errorMessage());
 				});
-		}, function(response) {
-			draw.drawError("Failed to load: " + response.errorMessage());
 		});
 	}
 ]]>

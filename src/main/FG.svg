@@ -68,8 +68,6 @@
 			}, function(response) {
 				draw.drawError("Failed to load collapsed file " + fg.collapsedUrl + ": " + response.errorMessage());
 			});
-		}, function(response) {
-			draw.drawError("Failed to load: " + response.errorMessage());
 		});
 	}
 ]]>
