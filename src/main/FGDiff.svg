@@ -57,20 +57,19 @@
 <![CDATA[
 	"use strict";
 
-	var fg = new FG(undefined, undefined, "Differential Flame Graph", 700).setup();
+	var fg = new FG(undefined, undefined, "Differential Flame Graph", 700).setup().collapsedUrlFrom("url");
 	var collapsed = new MergedCollapsed(2);
 	var draw = new MergedFGDraw(fg, collapsed, fg.getParameter("visual-diff") !== "false", fg.getParameter("different-sides") !== "false");
-	var url = fg.getRequiredParameter("url");
 
 	function init(evt) {
 	   	fg.load(function() {
 			var stackFrames = new FGStackFrames();
-			stackFrames.loadCollapsed(fg, url, function() {
+			stackFrames.loadCollapsed(fg, function() {
 				draw.drawCanvas();
 				draw.drawFG(stackFrames);
 				draw.drawInfoElements();
 			}, function(response) {
-				draw.drawError("Failed to load collapsed file " + url + ": " + response.errorMessage());
+				draw.drawError("Failed to load collapsed file " + fg.collapsedUrl + ": " + response.errorMessage());
 			},
 			collapsed);
 		}, function(response) {

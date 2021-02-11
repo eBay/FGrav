@@ -435,6 +435,11 @@ describe("FG", function() {
         expect(myWindow.events[4]).toBe("keydown");
     });
 
+    it('should set collapsed url to param value', function () {
+            fg.collapsedUrlFrom("param", "?param=VALUE");
+            expect(fg.collapsedUrl).toEqual("VALUE");
+    });
+
 
     describe("when loading", function() {
 

@@ -51,16 +51,15 @@ Java8 filter:
 <![CDATA[
 	"use strict";
 	console.time("setup");
-	var fg = new FG().setup();
+	var fg = new FG().setup().collapsedUrlFrom("url");
 	var draw = new FGDraw(fg);
-	var url = fg.getRequiredParameter("url");
 
 	function init(evt) {
 	   	fg.load(function() {
 	   		console.timeEnd("setup");
 			console.time("loadCollapsed");
 			var stackFrames = new FGStackFrames();
-			stackFrames.loadCollapsed(fg, url, function() {
+			stackFrames.loadCollapsed(fg, function() {
 				console.timeEnd("loadCollapsed");
             	draw.drawCanvas();
 				console.time("drawFG");
@@ -68,7 +67,7 @@ Java8 filter:
 				console.timeEnd("drawFG");
                 draw.drawInfoElements();
 			}, function(response) {
-				draw.drawError("Failed to load collapsed file " + url + ": " + response.errorMessage());
+				draw.drawError("Failed to load collapsed file " + fg.collapsedUrl + ": " + response.errorMessage());
 			});
 		}, function(response) {
 			draw.drawError("Failed to load: " + response.errorMessage());

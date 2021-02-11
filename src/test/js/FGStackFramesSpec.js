@@ -35,9 +35,10 @@ describe("FGStackFrames", function() {
 
         it("should load collapsed file", function (done) {
             var fg = new FG();
+            fg.collapsedUrl = "test.collapsed";
             fg.margin = 12;
             fg.frameHeight = 7;
-            stackFrames.loadCollapsed(fg, "test.collapsed", function () {
+            stackFrames.loadCollapsed(fg, function () {
 
                 try {
                     var request = jasmine.Ajax.requests.mostRecent();
@@ -71,10 +72,11 @@ describe("FGStackFrames", function() {
 
         it("should generate all frame with total samples as its samples count", function (done) {
             var fg = new FG();
+            fg.collapsedUrl = "test.collapsed";
             fg.margin = 12;
             fg.frameHeight = 7;
 
-            stackFrames.loadCollapsed(fg, "test.collapsed", function () {
+            stackFrames.loadCollapsed(fg, function () {
                 try {
                     var all = stackFrames.allFrame(fg);
 
@@ -94,13 +96,14 @@ describe("FGStackFrames", function() {
 
         it("should filter frames according to provided filters", function (done) {
             var fg = new FG();
+            fg.collapsedUrl = "test.collapsed";
             fg.context.frameFilter.filters.push({
                 filter: function (path) {
                     return (path.includes("x")) ? null : path;
                 }
             });
 
-            stackFrames.loadCollapsed(fg, "test.collapsed", function () {
+            stackFrames.loadCollapsed(fg, function () {
 
                 try {
                     var request = jasmine.Ajax.requests.mostRecent();
@@ -165,8 +168,9 @@ describe("FGStackFrames", function() {
 
         it("should keep default dimensions when freezeDimensions is true", function (done) {
             fg.freezeDimensions = true;
+            fg.collapsedUrl = "test.collapsed";
 
-            stackFrames.loadCollapsed(fg, "test.collapsed", function() {
+            stackFrames.loadCollapsed(fg, function() {
                 try {
                     expect(fg.width).toEqual(1200);
                     expect(fg.height).toEqual(2200);
@@ -188,7 +192,9 @@ describe("FGStackFrames", function() {
                 red: 'items',
                 blue: 'more items'
             };
-            stackFrames.loadCollapsed(fg, "test.collapsed", function() {
+            fg.collapsedUrl = "test.collapsed";
+
+            stackFrames.loadCollapsed(fg, function() {
                 try {
                     expect(fg.width).toEqual((2 * 24) + (60 * 14));
                     expect(fg.height).toEqual((3 + 2 + 1) * (15 + 2) + (24 * 4)); // 3 = maxLevel, 2 = legend size
@@ -203,7 +209,8 @@ describe("FGStackFrames", function() {
         });
 
         it("should modify margin and font when width is tight", function (done) {
-            stackFrames.loadCollapsed(fg, "test_many_samples_with_small_minimum.collapsed", function() {
+            fg.collapsedUrl = "test_many_samples_with_small_minimum.collapsed";
+            stackFrames.loadCollapsed(fg, function() {
                 try {
                     expect(fg.width).toEqual(1200);
                     expect(fg.margin).toEqual(8);
@@ -218,7 +225,8 @@ describe("FGStackFrames", function() {
         });
 
         it("should modify frame height font and text padding when height is tight", function (done) {
-            stackFrames.loadCollapsed(fg, "test_large_path.collapsed", function() {
+            fg.collapsedUrl = "test_large_path.collapsed";
+            stackFrames.loadCollapsed(fg, function() {
                 try {
                     expect(fg.frameHeight).toEqual(14);
                     expect(fg.fontSize).toEqual(8);

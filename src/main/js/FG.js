@@ -111,6 +111,10 @@ FG.prototype.setup = function(_w) {
     fg.context.frameFilter.reset();
     return fg;
 };
+FG.prototype.collapsedUrlFrom = function(param, _loc) {
+    this.collapsedUrl = this.getRequiredParameter(param, _loc);
+    return this;
+};
 
 FG.prototype.load = function (successCallback, errorCallback) {
     var response = new FGravResponse();
@@ -297,8 +301,21 @@ FG.prototype.applyingFilter = function() {
         var name = children[i].getAttribute("id");
         this.draw.drawFilterSelection(children[i], name, selected);
     }
-    // TODO this.draw.redrawFG();
+    // this.reload();
 };
+
+// FG.prototype.reload = function () {
+//     this.freezeDimensions = true;
+//     var stackFrames = new FGStackFrames();
+//     var fg = this;
+//     // TODO fg.collapsedUrl
+//     stackFrames.loadCollapsed(fg, function() {
+//         draw.xxxxxredrawFG(stackFrames);
+//     }, function(response) {
+//         draw.drawError("Failed to load collapsed file " + fg.collapsedUrl + ": " + response.errorMessage());
+//     }, xxxxxcollapsed);
+// };
+
 
 FG.prototype.redrawFrames = function () {
     this.draw.reapplyColor(this.context.currentColorScheme);

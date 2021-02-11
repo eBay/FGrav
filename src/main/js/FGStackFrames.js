@@ -20,13 +20,13 @@ function FGStackFrames() {
 }
 
 
-FGStackFrames.prototype.loadCollapsed = function(fg, collapsedUrl, successCallback, errorCallback, collapsed) {
+FGStackFrames.prototype.loadCollapsed = function(fg, successCallback, errorCallback, collapsed) {
     collapsed = (typeof collapsed !== 'undefined') ? collapsed : new Collapsed();
     var response = new FGravResponse();
     var stackFrames = this;
     $.ajax({
         type: "GET",
-        url: collapsedUrl,
+        url: fg.collapsedUrl,
         dataType: "text",
         processData: false,
         success : function(data) {

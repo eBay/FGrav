@@ -55,19 +55,18 @@
 <![CDATA[
 	"use strict";
 
-	var fg = new FG().setup();
+	var fg = new FG().setup().collapsedUrlFrom("url");
 	var draw = new FGDraw(fg);
-	var url = fg.getRequiredParameter("url");
 
 	function init(evt) {
 	   	fg.load(function() {
 			var stackFrames = new FGStackFrames();
-			stackFrames.loadCollapsed(fg, url, function() {
+			stackFrames.loadCollapsed(fg, function() {
 				draw.drawCanvas();
 				draw.drawFG(stackFrames);
 				draw.drawInfoElements();
 			}, function(response) {
-				draw.drawError("Failed to load collapsed file " + url + ": " + response.errorMessage());
+				draw.drawError("Failed to load collapsed file " + fg.collapsedUrl + ": " + response.errorMessage());
 			});
 		}, function(response) {
 			draw.drawError("Failed to load: " + response.errorMessage());
