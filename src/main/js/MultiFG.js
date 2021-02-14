@@ -149,13 +149,17 @@ MultiFG.prototype.find_group = function(node) {
     return this.find_group(parent);
 };
 
-//overlay
 MultiFG.prototype.redrawFrames = function () {
     this.onAllFGs(function (fg) {
-        fg.redrawFrames(fg);
+        fg.redrawFrames();
     });
 };
 
+MultiFG.prototype.reload = function (successCallback, collapsed, errorCallback) {
+    this.onAllFGs(function (fg) {
+        fg.reload(successCallback, undefined, errorCallback);
+    });
+};
 
 // zoom
 MultiFG.prototype.zoom = function(node) {

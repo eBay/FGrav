@@ -41,4 +41,19 @@ describe("MergedCollapsed", function() {
             expect(f.individualSamples[1]).toEqual(8);
         });
     });
+
+    it('should clear state', function () {
+        collapsed.parseCollapsed(["a;b;c 1 0","a;b;d 0 2","a;x;d 3 4"]);
+
+        expect(collapsed.merged).toEqual(2);
+        expect(collapsed.totalSamples).toEqual(10);
+
+        collapsed.clear();
+
+        expect(collapsed.merged).toEqual(2);
+        expect(collapsed.totalSamples).toEqual(0);
+        expect(collapsed.paths.length).toEqual(0);
+        expect(collapsed.totalIndividualSamples).toBe(undefined);
+
+    });
 });

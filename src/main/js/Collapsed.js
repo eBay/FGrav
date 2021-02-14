@@ -15,17 +15,21 @@
  limitations under the License.
  **************************************************************************/
 function Collapsed() {
-    this.paths = [];
-    this.totalSamples = 0;
-    this.minSample = Number.MAX_VALUE;
-    this.maxLevel = 0;
-    this.offset = [];
+    this.clear();
 }
 
 Collapsed.prototype.push = function(path) {
     this.paths.push(path);
     this.totalSamples += path.samples;
     this.minSample = Math.min(this.minSample, path.samples);
+};
+
+Collapsed.prototype.clear = function() {
+    this.paths = [];
+    this.totalSamples = 0;
+    this.minSample = Number.MAX_VALUE;
+    this.maxLevel = 0;
+    this.offset = [];
 };
 
 Collapsed.prototype.parseCollapsed = function(codePaths) {

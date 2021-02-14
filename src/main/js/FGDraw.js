@@ -43,6 +43,7 @@ FGDraw.prototype.drawCanvas = function() {
 
     var ignorecase = this.text("IC", "ignorecase", this.fg.width - this.buttonsMargin - 12, this.buttonsMargin);
     var search = this.text("Search", "search", this.fg.width - this.buttonsMargin - 12 - 90, this.buttonsMargin);
+    this.filters = this.text("Filters", "filterBtn", this.fg.width - this.buttonsMargin - 12 - 90 - 60, this.buttonsMargin);
 
     this.svg.appendChild(background);
     this.svg.appendChild(title);
@@ -53,6 +54,7 @@ FGDraw.prototype.drawCanvas = function() {
     this.fg.context.init(this.fg.config);
     this.drawLegend(this.fg.context.currentColorScheme);
     this.drawOverlayDropDown(this.fg.context.currentColorScheme);
+    this.drawFilterDropDown(this.fg.config.filter, this.fg.context.frameFilter.filters.map(o => this.fg.context.nameOf(o, "FG_Filter_")));
 
     this.fg.searchbtn = this.d.getElementById("search");
     this.fg.ignorecaseBtn = this.d.getElementById("ignorecase");
@@ -113,17 +115,10 @@ FGDraw.prototype.drawOverlayDropDown = function(colorScheme, btn, old) {
         var xText = parseInt(x) + 4;
         $.each(overlayKeys, function (i) {
             var uri = colorScheme.overlays[this];
-            var y = (i + 1) * (h + draw.buttonsMargin);
-            var overlayEntry = draw.rect(x, y, 90, 20, function (el) {
-                el.setAttribute("fill", "rgb(90,90,90)");
-            });
-            overlayEntry.setAttribute("rx", "2");
-            overlayEntry.setAttribute("ry", "2");
-            overlayEntry.setAttribute("class", "overlay");
-            var overlayEntryText = draw.text(this, "", xText, y + draw.fg.textPadding + 4);
+            var y = (i + 1) * h + draw.buttonsMargin;
+            var overlayEntryText = draw.text(this, "", xText, y + draw.fg.textPadding);
             overlayEntryText.setAttribute("class", "overlay");
             overlayEntryText.setAttribute("onclick", "fg.loadOverlay(\""+ this +"\", \"" + uri + "\");");
-            g.appendChild(overlayEntry);
             g.appendChild(overlayEntryText);
 
         });
@@ -142,6 +137,50 @@ FGDraw.prototype.drawOverlayDropDown = function(colorScheme, btn, old) {
     } else if (old) {
         this.svg.removeChild(old);
         this.fg.overlayEl = undefined;
+    }
+};
+
+FGDraw.prototype.drawFilterDropDown = function(availableFilters, selected, old) {
+    var filterNames = Object.keys(availableFilters);
+    if (filterNames.length > 0) {
+        var g = this.d.createElementNS("http://www.w3.org/2000/svg", "g");
+        g.setAttribute("id", "filter");
+        g.classList.add("hide");
+        var draw = this;
+        var h = draw.fg.frameHeight;
+        var x = this.filters.getAttribute("x");
+        var xText = parseInt(x) + 18;
+        var size = h - 1;
+        $.each(filterNames, function (i) {
+            var uri = availableFilters[this].uri;
+            var y = (i + 1) * h + draw.buttonsMargin;
+            var name = this;
+            var filterEntry = draw.rect(x, y, size, size, function () {});
+            filterEntry.setAttribute("id", name.toString());
+            draw.drawFilterSelection(filterEntry, name.toString(), selected);
+            var filterEntryText = draw.text(name, "", xText, y + draw.fg.textPadding);
+            filterEntry.setAttribute("rx", "2");
+            filterEntry.setAttribute("ry", "2");
+            filterEntry.setAttribute("class", "filter");
+            filterEntryText.setAttribute("class", "filter");
+            filterEntry.setAttribute("onclick", "fg.loadFilter(\""+ this +"\", \"" + uri + "\");");
+            filterEntryText.setAttribute("onclick", "fg.loadFilter(\""+ this +"\", \"" + uri + "\");");
+            g.appendChild(filterEntry);
+            g.appendChild(filterEntryText);
+
+        });
+        this.svg.appendChild(g);
+        this.svg.appendChild(this.filters);
+        this.fg.filterBtn = this.d.getElementById("filterBtn");
+        this.fg.filterBtn.firstChild.nodeValue = "Filters";
+        this.fg.filterEl = g;
+    }
+};
+FGDraw.prototype.drawFilterSelection = function(el, name, selected) {
+    if (selected.includes(name)) {
+        el.setAttribute("fill-opacity", "1.0");
+    } else {
+        el.setAttribute("fill-opacity", "0.1");
     }
 };
 
@@ -180,17 +219,34 @@ FGDraw.prototype.drawInfoElements = function() {
     }
 };
 
-FGDraw.prototype.drawFG = function(stackFrames) {
-    this.currentDrawnFrames = stackFrames;
+FGDraw.prototype.drawFG = function(stackFrames, old) {
     this.fg.totalSamples = stackFrames.totalSamples;
-    var g = this.generateFramesCells(this.fg.context.currentColorScheme);
-    this.svg.appendChild(g);
+    var g = generateFramesCells(this, stackFrames, this.fg.context.currentColorScheme);
+    if (old) {
+        this.svg.replaceChild(g, old);
+    }
+    else {
+        this.svg.appendChild(g);
+    }
+
+    function generateFramesCells(draw, stackFrames, colorScheme) {
+        var g = draw.d.createElementNS("http://www.w3.org/2000/svg", "g");
+        g.setAttribute("id", draw.fg.namePerFG("frames"));
+        g.appendChild(draw.drawFrame(colorScheme, stackFrames.allFrame(draw.fg)));
+        $.each(stackFrames.stackFrameRows, function() {
+            $.each(this, function() {
+                if (this.samples >= draw.fg.minDisplaySample) {
+                    g.appendChild(draw.drawFrame(colorScheme, this));
+                }
+            });
+        });
+        return g;
+    }
 };
 
-FGDraw.prototype.redrawFG = function() {
+FGDraw.prototype.redrawFG = function(stackFrames) {
     var old = this.svg.getElementById(this.fg.namePerFG("frames"));
-    var g = this.generateFramesCells(this.fg.context.currentColorScheme);
-    this.svg.replaceChild(g, old);
+    this.drawFG(stackFrames, old);
 };
 
 FGDraw.prototype.reapplyColor = function(colorScheme) {
@@ -221,22 +277,6 @@ FGDraw.prototype.frameFlyweight = function() {
         getName: function () { return this.e.getAttribute("name") },
         getSamples: function () { return parseInt(this.e.getAttribute("samples")) }
     };
-};
-
-FGDraw.prototype.generateFramesCells = function(colorScheme) {
-    var stackFrames = this.currentDrawnFrames;
-    var g = this.d.createElementNS("http://www.w3.org/2000/svg", "g");
-    g.setAttribute("id", this.fg.namePerFG("frames"));
-    var draw = this;
-    g.appendChild(draw.drawFrame(colorScheme, stackFrames.allFrame(draw.fg)));
-    $.each(stackFrames.stackFrameRows, function() {
-        $.each(this, function() {
-            if (this.samples >= draw.fg.minDisplaySample) {
-                g.appendChild(draw.drawFrame(colorScheme, this));
-            }
-        });
-    });
-    return g;
 };
 
 

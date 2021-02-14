@@ -32,13 +32,18 @@ function FG(id, shiftWidth, defaultTitle, minWidth, _w, _prompt) {
     this.searching = false;
     this.ignorecase = 0;
     this.legend = 0;
+    this.filter = 0;
     this.overlay = 0;
     this.overlaying = false;
     this.currentSearchTerm = null;
     this.configUrl = this.getParameter("config", "fgrav.json");
     this.frameFilterNames = this.getParameter("frameFilter", undefined);
     this.colorSchemeUri = this.getParameter("color", undefined);
-    this.config = {};
+    this.config = {
+        color: {},
+        overlay: {},
+        filter: {}
+    };
     this.context = new FG_Context();
     this.searchTermPromptFunction = (typeof _prompt !== "undefined") ? _prompt :
         function(ic) {
@@ -70,6 +75,7 @@ FG.prototype.setup = function(_w) {
         else if (e.target.id === "search") fg.search_prompt();
         else if (e.target.id === "legendBtn") fg.toggle_legend();
         else if (e.target.id === "overlayBtn") fg.toggle_overlay();
+        else if (e.target.id === "filterBtn") fg.toggle_filter();
         else if (e.target.id === "ignorecase") fg.toggle_ignorecase();
     }, false);
 
@@ -102,17 +108,43 @@ FG.prototype.setup = function(_w) {
         }
     }, false);
 
-    frameFilter.reset();
+    fg.context.frameFilter.reset();
     return fg;
+};
+FG.prototype.collapsedUrlFrom = function(param, _loc) {
+    this.collapsedUrl = this.getRequiredParameter(param, _loc);
+    return this;
+};
+
+FG.prototype.loadCollapsed = function(successCallback, collapsed,  errorCallback) {
+    var fg = this;
+    fg.collapsed = collapsed;
+    var stackFrames = new FGStackFrames();
+    stackFrames.loadCollapsed(fg, function () {
+        successCallback(stackFrames);
+    }, function (response) {
+        fg.draw.drawError("Failed to load collapsed file " + fg.collapsedUrl + ": " + response.errorMessage());
+        if (errorCallback) {
+            errorCallback(response);
+        }
+    }, collapsed);
 };
 
 FG.prototype.load = function (successCallback, errorCallback) {
+    var fg = this;
     var response = new FGravResponse();
-    var configAjax = this. loadConfig(response);
-    this.loadDynamicJs(this.objectsToLoad(), successCallback, errorCallback, [configAjax], response);
+    var configAjax = this.loadConfig(response);
+    this.loadDynamicJs(this.objectsToLoad(),
+                        successCallback,
+                        function() {
+                            fg.draw.drawError("Failed to load: " + response.errorMessage());
+                            if (errorCallback) {
+                                errorCallback(response);
+                            }
+                        }, [configAjax], response);
 };
 
-FG.prototype.loadConfig = function(response, successCallback, errorCallback) {
+FG.prototype.loadConfig = function(response) {
     var fg = this;
     return $.ajax({
         type: "GET",
@@ -120,15 +152,9 @@ FG.prototype.loadConfig = function(response, successCallback, errorCallback) {
         dataType: 'json',
         success: function (data) {
             fg.config = data;
-            if (successCallback) {
-                successCallback();
-            }
         },
         error: function (jqXHR, textStatus, errorThrown) {
             response.addError(errorThrown, textStatus);
-            if (errorCallback) {
-                errorCallback();
-            }
         }
     });
 };
@@ -153,17 +179,20 @@ FG.prototype.loadDynamicJs = function(toLoad, successCallback, errorCallback, pa
         ajaxObjs.push(ajax);
     });
 
-    this.multipleAjaxCalls(ajaxObjs, response, function () {
-        // TODO DOES NOT WORK. HAD TO RESORT TO EVAL!!!
-        // var loadedScript = document.createElement('script');
-        // loadedScript.type = "text/javascript";
-        // loadedScript.innerHTML = data;
-        // loadedScript.text = data;
-        //
-        // svg.children[1].parentNode.insertBefore(loadedScript, svg.children[1].nextSibling);
-        eval(jsSrc.join("\n"));
-        successCallback(response);
-    }, errorCallback);
+    $.when.apply($, ajaxObjs).then(
+        function () {
+            // TODO DOES NOT WORK. HAD TO RESORT TO EVAL!!!
+            // var loadedScript = document.createElement('script');
+            // loadedScript.type = "text/javascript";
+            // loadedScript.innerHTML = data;
+            // loadedScript.text = data;
+            //
+            // svg.children[1].parentNode.insertBefore(loadedScript, svg.children[1].nextSibling);
+            eval(jsSrc.join("\n"));
+            successCallback(response);
+    }, function () {
+            errorCallback(response);
+    });
 };
 
 FG.prototype.objectsToLoad = function() {
@@ -178,7 +207,7 @@ FG.prototype.objectsToLoad = function() {
     if (typeof this.frameFilterNames !== 'undefined') {
         $.each(this.frameFilterNames.split(",").map(function (n) {
             return fg.generateDynamicallyLoadingObject(n, "js/frame/FG_Filter_", function (objName) {
-                return "frameFilter.filters.push(new "+ objName +"());";
+                return "fg.context.addFrameFilter(new "+ objName +"());";
             });
         }), function () {
             toLoad.push(this);
@@ -257,17 +286,60 @@ FG.prototype.applyingColor = function() {
     this.draw.drawOverlayDropDown(this.context.currentColorScheme, this.overlayBtn, this.overlayEl);
 };
 
-FG.prototype.redrawFrames = function () {
-    this.draw.reapplyColor(this.context.currentColorScheme);
+FG.prototype.loadFilter = function(filterName, filterUrl, successCallback, globalVarName) {
+    var global = (globalVarName) ? globalVarName : "fg";
+    this.toggle_filter();
+    var fg = this;
+    if (fg.context.frameFilter[filterName]) {
+        if (fg.context.frameFilter.filters.includes(fg.context.frameFilter[filterName])) {
+            fg.context.removeFrameFilter(fg.context.frameFilter[filterName]);
+        } else {
+            fg.context.addFrameFilter(fg.context.frameFilter[filterName]);
+        }
+        fg.applyingFilter();
+    } else {
+        var dynamicallyLoading = this.generateDynamicallyLoadingObject(filterUrl.substring("filter:".length), "js/frame/FG_Filter_", function (name) {
+            return global + ".context.addFrameFilter(new "+ name +"());";
+        });
+        this.loadDynamicJs([dynamicallyLoading], function () {
+                fg.applyingFilter();
+                if (successCallback) {
+                    successCallback();
+                }
+            }, function (response) {
+                log.console("Failed to load " + filterUrl + ": " + response.errorMessage());
+            }
+        );
+    }
 };
 
-// accessed from eval (yes, I know, see below)
-// and global to the window
-var frameFilter = {
-    filters: [],
-    reset: function() {
-        this.filters = [];
+FG.prototype.applyingFilter = function() {
+    var selected = this.context.frameFilter.filters.map(o => this.context.nameOf(o, "FG_Filter_"));
+    var children = find_children(this.filterEl, "rect");
+    for(var i=0; i<children.length; i++) {
+        var name = children[i].getAttribute("id");
+        this.draw.drawFilterSelection(children[i], name, selected);
     }
+    this.reload(undefined, this.collapsed);
+};
+
+FG.prototype.reload = function (successCallback, collapsed, errorCallback) {
+    var fg = this;
+    fg.freezeDimensions = true;
+    if (collapsed) {
+        collapsed.clear();
+    }
+
+    fg.loadCollapsed(function(stackFrames) {
+        fg.draw.redrawFG(stackFrames);
+        if (successCallback) {
+            successCallback(stackFrames);
+        }
+    }, collapsed, errorCallback);
+};
+
+FG.prototype.redrawFrames = function () {
+    this.draw.reapplyColor(this.context.currentColorScheme);
 };
 
 FG.prototype.namePerFG = function(name) {
@@ -538,16 +610,7 @@ FG.prototype.unzoom = function(topFG) {
 
 // legend
 FG.prototype.toggle_legend = function() {
-    if (this.legendEl) {
-        this.legend = !this.legend;
-        if (this.legend) {
-            this.legendBtn.classList.add("show");
-            this.legendEl.classList.remove("hide");
-        } else {
-            this.legendBtn.classList.remove("show");
-            this.legendEl.classList.add("hide");
-        }
-    }
+    this.legend = this.toggle_menuitem(this.legend, this.legendEl, this.legendBtn);
 };
 
 // overlay
@@ -555,16 +618,26 @@ FG.prototype.toggle_overlay = function() {
     if (this.overlaying) {
         this.reset_overlay();
     }
-    if (this.overlayEl) {
-        this.overlay = !this.overlay;
-        if (this.overlay) {
-            this.overlayBtn.classList.add("show");
-            this.overlayEl.classList.remove("hide");
+    this.overlay = this.toggle_menuitem(this.overlay, this.overlayEl, this.overlayBtn);
+};
+
+// filter
+FG.prototype.toggle_filter = function() {
+    this.filter = this.toggle_menuitem(this.filter, this.filterEl, this.filterBtn);
+};
+
+FG.prototype.toggle_menuitem = function(flag, el, btn) {
+    if (el) {
+        flag = !flag;
+        if (flag) {
+            btn.classList.add("show");
+            el.classList.remove("hide");
         } else {
-            this.overlayBtn.classList.remove("show");
-            this.overlayEl.classList.add("hide");
+            btn.classList.remove("show");
+            el.classList.add("hide");
         }
     }
+    return flag;
 };
 
 FG.prototype.reset_overlay = function() {
@@ -697,6 +770,12 @@ FG.prototype.search = function(topFG) {
 function FG_Context() {
     this.color = {};
     this.overlay = {};
+    this.frameFilter = {
+        filters: [],
+        reset: function() {
+            this.filters = [];
+        }
+    };
 }
 FG_Context.prototype.init = function(config) {
     this.config = config;
@@ -720,6 +799,16 @@ FG_Context.prototype.optionallySetColorScheme = function(cs) {
     if (typeof this.currentColorScheme === "undefined") {
         this.setColorScheme(cs);
     }
+};
+FG_Context.prototype.addFrameFilter = function(frameFilter) {
+    this.frameFilter.filters.push(frameFilter);
+    var name = this.nameOf(frameFilter, "FG_Filter_");
+    this.frameFilter[name] = frameFilter;
+};
+FG_Context.prototype.removeFrameFilter = function(frameFilter) {
+    this.frameFilter.filters = this.frameFilter.filters.filter(function (f) {
+        return f !== frameFilter
+    });
 };
 FG_Context.prototype.fillOverlaysFor = function(cs) {
     if (this.config && cs) {
