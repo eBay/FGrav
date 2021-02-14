@@ -20,20 +20,20 @@ function FGStackFrames() {
 }
 
 
-FGStackFrames.prototype.loadCollapsed = function(fg, successCallback, errorCallback, collapsed) {
+FGStackFrames.prototype.loadCollapsed = function(fg, collapsedUrl, successCallback, errorCallback, collapsed) {
     collapsed = (typeof collapsed !== 'undefined') ? collapsed : new Collapsed();
     var response = new FGravResponse();
     var stackFrames = this;
     $.ajax({
         type: "GET",
-        url: fg.collapsedUrl,
+        url: collapsedUrl,
         dataType: "text",
         processData: false,
         success : function(data) {
             var rows = [];
             // var framesMap = {};
             var codePaths = data.split("\n");
-            $.each(fg.context.frameFilter.filters, function () {
+            $.each(frameFilter.filters, function () {
                 codePaths = codePaths.map(this.filter).filter(ignoreNull);
             });
             codePaths = codePaths.sort();

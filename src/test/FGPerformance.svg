@@ -27,9 +27,8 @@ Java8 filter:
 <style type="text/css">
 	rect.tooltip { opacity:0.8 }
 	text.tooltip { fill:rgb(255,255,255); font-size:12px }
-	text.overlay, text.filter { fill:blue; font-size:12px; text-decoration: underline; cursor:pointer }
-	#search, #ignorecase, #legendBtn, #overlayBtn, #filterBtn { opacity:0.1; cursor:pointer; font-size:12px }
-	#search:hover, #search.show, #ignorecase:hover, #ignorecase.show, #legendBtn:hover, #legendBtn.show,  #overlayBtn:hover, #overlayBtn.show,  #filterBtn:hover, #filterBtn.show { opacity:1; }
+	#search, #ignorecase, #legendBtn, #overlayBtn { opacity:0.1; cursor:pointer; font-size:12px }
+	#search:hover, #search.show, #ignorecase:hover, #ignorecase.show, #legendBtn:hover, #legendBtn.show,  #overlayBtn:hover, #overlayBtn.show { opacity:1; }
 	#subtitle { text-anchor:middle; font-color:rgb(160,160,160); }
 	#title { text-anchor:middle; font-size:17px}
 	#unzoom { cursor:pointer; font-size:12px }
@@ -51,21 +50,27 @@ Java8 filter:
 <![CDATA[
 	"use strict";
 	console.time("setup");
-	var fg = new FG().setup().collapsedUrlFrom("url");
+	var fg = new FG().setup();
 	var draw = new FGDraw(fg);
+	var url = fg.getRequiredParameter("url");
 
 	function init(evt) {
 	   	fg.load(function() {
 	   		console.timeEnd("setup");
 			console.time("loadCollapsed");
-			fg.loadCollapsed(fg, function(stackFrames) {
+			var stackFrames = new FGStackFrames();
+			stackFrames.loadCollapsed(fg, url, function() {
 				console.timeEnd("loadCollapsed");
             	draw.drawCanvas();
 				console.time("drawFG");
                 draw.drawFG(stackFrames);
 				console.timeEnd("drawFG");
                 draw.drawInfoElements();
+			}, function(response) {
+				draw.drawError("Failed to load collapsed file " + url + ": " + response.errorMessage());
 			});
+		}, function(response) {
+			draw.drawError("Failed to load: " + response.errorMessage());
 		});
 	}
 ]]>

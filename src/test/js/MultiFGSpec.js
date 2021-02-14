@@ -167,24 +167,6 @@ describe("MultiFG", function () {
             expect(multiFg.searchbtn.classList.class.length).toEqual(0);
             expect(multiFg.searching).toBe(false);
         });
-
-        it('should delegate redrawFrames to all FGs', function () {
-
-            multiFg.redrawFrames();
-
-            expect(fg1.actions[0]).toEqual("redrawFrames");
-            expect(fg2.actions[0]).toEqual("redrawFrames");
-
-        });
-
-        it('should delegate reload to all FGs', function () {
-
-            multiFg.reload();
-
-            expect(fg1.actions[0]).toEqual("reload");
-            expect(fg2.actions[0]).toEqual("reload");
-
-        });
     });
 
     function stubFG(id) {
@@ -202,12 +184,6 @@ describe("MultiFG", function () {
             },
             reset_search: function() {
                 this.actions.push("reset_search");
-            },
-            reload: function() {
-                this.actions.push("reload");
-            },
-            redrawFrames: function() {
-                this.actions.push("redrawFrames");
             },
             svg: {
                 getElementById: function(id) {

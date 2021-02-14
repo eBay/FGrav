@@ -30,9 +30,9 @@
 <style type="text/css">
 	rect.tooltip, rect.overlay { opacity:0.8 }
 	text.tooltip { fill:rgb(255,255,255); font-size:12px }
-	text.overlay text.filter { fill:blue; font-size:12px; text-decoration: underline; cursor:pointer }
-	#search, #ignorecase, #legendBtn, #overlayBtn, #filterBtn { opacity:0.1; cursor:pointer; font-size:12px }
-	#search:hover, #search.show, #ignorecase:hover, #ignorecase.show, #legendBtn:hover, #legendBtn.show,  #overlayBtn:hover, #overlayBtn.show,  #filterBtn:hover, #filterBtn.show { opacity:1; }
+	text.overlay { fill:blue; font-size:12px; text-decoration: underline; cursor:pointer }
+	#search, #ignorecase, #legendBtn, #overlayBtn { opacity:0.1; cursor:pointer; font-size:12px }
+	#search:hover, #search.show, #ignorecase:hover, #ignorecase.show, #legendBtn:hover, #legendBtn.show,  #overlayBtn:hover, #overlayBtn.show { opacity:1; }
 	#subtitle { text-anchor:middle; font-color:rgb(160,160,160); }
 	#title { text-anchor:middle; font-size:17px}
 	#unzoom { cursor:pointer; font-size:12px }
@@ -57,17 +57,24 @@
 <![CDATA[
 	"use strict";
 
-	var fg = new FG(undefined, undefined, "Differential Flame Graph", 700).setup().collapsedUrlFrom("url");
+	var fg = new FG(undefined, undefined, "Differential Flame Graph", 700).setup();
 	var collapsed = new MergedCollapsed(2);
 	var draw = new MergedFGDraw(fg, collapsed, fg.getParameter("visual-diff") !== "false", fg.getParameter("different-sides") !== "false");
+	var url = fg.getRequiredParameter("url");
 
 	function init(evt) {
 	   	fg.load(function() {
-			fg.loadCollapsed(function(stackFrames) {
+			var stackFrames = new FGStackFrames();
+			stackFrames.loadCollapsed(fg, url, function() {
 				draw.drawCanvas();
 				draw.drawFG(stackFrames);
 				draw.drawInfoElements();
-			}, collapsed);
+			}, function(response) {
+				draw.drawError("Failed to load collapsed file " + url + ": " + response.errorMessage());
+			},
+			collapsed);
+		}, function(response) {
+			draw.drawError("Failed to load: " + response.errorMessage());
 		});
 	}
 ]]>

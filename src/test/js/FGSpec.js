@@ -1,6 +1,5 @@
 var loaded1;
 var loaded2;
-var loadedF = { filters: [] };
 var loadedO;
 var loadedC;
 
@@ -75,27 +74,6 @@ describe("FG", function() {
     });
 
     describe('context', function () {
-
-        it('should add frame filter to both list of currenrt filters and filters obj', function () {
-
-            var f = new FG_Filter_RemoveThreadFrame();
-
-            fg.context.addFrameFilter(f);
-
-            expect(fg.context.frameFilter.filters.includes(f)).toBe(true);
-            expect(fg.context.frameFilter["RemoveThreadFrame"]).toBe(f);
-        });
-
-        it('should remove frame filter from list of current filters but not from storage', function () {
-            var f = new FG_Filter_RemoveThreadFrame();
-
-            fg.context.addFrameFilter(f);
-
-            fg.context.removeFrameFilter(f);
-
-            expect(fg.context.frameFilter.filters.includes(f)).toBe(false);
-            expect(fg.context.frameFilter["RemoveThreadFrame"]).toBe(f);
-        });
 
         it('should set loaded color scheme to both current and by its name', function () {
 
@@ -258,13 +236,11 @@ describe("FG", function() {
 
         beforeEach(function () {
             fg.legendEl = domElement();
-            fg.filterEl = domElement();
             fg.overlayEl = domElement();
             fg.ignorecaseBtn = domElement();
             fg.searchbtn = domElement();
             fg.matchedtxt = domElement();
             fg.legendBtn = domElement();
-            fg.filterBtn = domElement();
             fg.overlayBtn = domElement();
 
             fg.svg = { // disable search
@@ -272,29 +248,6 @@ describe("FG", function() {
                     return [];
                 }
             }
-        });
-
-        it('should toggle filter on', function () {
-            fg.filter = false;
-            fg.filterEl.classList.add("hide");
-
-            fg.toggle_filter();
-
-            expect(fg.filterBtn.classList.class[0]).toEqual("show");
-            expect(fg.filterEl.classList.class.length).toEqual(0);
-            expect(fg.filter).toBe(true);
-        });
-
-
-        it('should toggle filter off', function () {
-            fg.filter = true;
-            fg.filterBtn.classList.add("show");
-
-            fg.toggle_filter();
-
-            expect(fg.filterEl.classList.class[0]).toEqual("hide");
-            expect(fg.filterBtn.classList.class.length).toEqual(0);
-            expect(fg.filter).toBe(false);
         });
 
         it('should toggle legend on', function () {
@@ -435,107 +388,6 @@ describe("FG", function() {
         expect(myWindow.events[4]).toBe("keydown");
     });
 
-    it('should set collapsed url to param value', function () {
-            fg.collapsedUrlFrom("param", "?param=VALUE");
-            expect(fg.collapsedUrl).toEqual("VALUE");
-    });
-
-    describe("loading collapsed", function () {
-
-        beforeEach(function () {
-            jasmine.Ajax.install();
-            jasmine.Ajax.stubRequest("fg.collapsed").andReturn({
-                responseText:
-                    "a;b;c 1\n" +
-                    "a;b;d 2\n" +
-                    "a;x;d 3\n"
-            });
-
-            jasmine.Ajax.stubRequest("error.collapsed").andReturn({
-                status: 500,
-                statusText: 'HTTP/1.1 500 Internal Error'
-            });
-        });
-
-        afterEach(function () {
-            jasmine.Ajax.uninstall();
-        });
-
-        it('should load collapsed', function (done) {
-            fg.collapsedUrlFrom("url", "?url=fg.collapsed");
-            fg.loadCollapsed(function (stackFrames) {
-                try {
-                    var request = jasmine.Ajax.requests.mostRecent();
-
-                    expect(request.url).toEqual("fg.collapsed");
-                    expect(stackFrames.totalSamples).toEqual(6);
-
-                    done();
-                } catch (e) {
-                    done(e);
-                }
-            },
-            undefined,
-            function () {
-                done.fail("ajax should succeed");
-            });
-        });
-
-        it('should reload collapsed', function (done) {
-            fg.collapsedUrlFrom("url", "?url=fg.collapsed");
-            var redrawn = false;
-
-            fg.draw = {
-                redrawFG: function(stackFrames) {
-                    redrawn = true;
-                }
-            };
-
-            fg.reload(function (stackFrames) {
-                    try {
-                        var request = jasmine.Ajax.requests.mostRecent();
-
-                        expect(request.url).toEqual("fg.collapsed");
-                        expect(stackFrames.totalSamples).toEqual(6);
-                        expect(fg.freezeDimensions).toEqual(true);
-                        expect(redrawn).toEqual(true);
-
-                        done();
-                    } catch (e) {
-                        done(e);
-                    }
-                },
-                undefined,
-                function () {
-                    done.fail("ajax should succeed");
-                });
-        });
-
-        it('should draw error message on error', function (done) {
-            fg.collapsedUrl = 'error.collapsed';
-            var drawn = false;
-
-            fg.draw = {
-                drawError: function (c) {
-                    drawn = true;
-                }
-            };
-            fg.loadCollapsed(function () {
-                done.fail("expected error")
-            }, undefined, function (r) {
-                try {
-                    var request = jasmine.Ajax.requests.mostRecent();
-
-                    expect(request.status).toBe(500);
-                    expect(drawn).toBe(true);
-
-                    done();
-                } catch (e) {
-                    done(e);
-                }
-            });
-        });
-    });
 
     describe("when loading", function() {
 
@@ -570,7 +422,7 @@ describe("FG", function() {
             expect(objs[0].getUrl()).toEqual("js/color/FG_Color_ColorScheme.js");
             expect(objs[0].appendInstallScript("")).toEqual("\nfg.context.setColorScheme(new FG_Color_ColorScheme());");
             expect(objs[1].getUrl()).toEqual("js/frame/FG_Filter_FrameFilter.js");
-            expect(objs[1].appendInstallScript("")).toEqual("\nfg.context.addFrameFilter(new FG_Filter_FrameFilter());");
+            expect(objs[1].appendInstallScript("")).toEqual("\nframeFilter.filters.push(new FG_Filter_FrameFilter());");
 
         });
 
@@ -584,7 +436,7 @@ describe("FG", function() {
             expect(objs[0].getUrl()).toEqual("/js/MyCustomColorScheme.js");
             expect(objs[0].appendInstallScript("")).toEqual("\nfg.context.setColorScheme(new MyCustomColorScheme());");
             expect(objs[1].getUrl()).toEqual("/js/fgrav/custom/MyFrameFilter.js");
-            expect(objs[1].appendInstallScript("")).toEqual("\nfg.context.addFrameFilter(new MyFrameFilter());");
+            expect(objs[1].appendInstallScript("")).toEqual("\nframeFilter.filters.push(new MyFrameFilter());");
 
         });
 
@@ -598,81 +450,12 @@ describe("FG", function() {
             expect(objs[0].getUrl()).toEqual("js/color/FG_Color_ColorScheme.js");
             expect(objs[0].appendInstallScript("")).toEqual("\nfg.context.setColorScheme(new FG_Color_ColorScheme());");
             expect(objs[1].getUrl()).toEqual("js/frame/FG_Filter_FrameFilter1.js");
-            expect(objs[1].appendInstallScript("")).toEqual("\nfg.context.addFrameFilter(new FG_Filter_FrameFilter1());");
+            expect(objs[1].appendInstallScript("")).toEqual("\nframeFilter.filters.push(new FG_Filter_FrameFilter1());");
             expect(objs[2].getUrl()).toEqual("js/frame/FG_Filter_FrameFilter2.js");
-            expect(objs[2].appendInstallScript("")).toEqual("\nfg.context.addFrameFilter(new FG_Filter_FrameFilter2());");
+            expect(objs[2].appendInstallScript("")).toEqual("\nframeFilter.filters.push(new FG_Filter_FrameFilter2());");
             expect(objs[3].getUrl()).toEqual("/js/MyCustomFilter.js");
-            expect(objs[3].appendInstallScript("")).toEqual("\nfg.context.addFrameFilter(new MyCustomFilter());");
+            expect(objs[3].appendInstallScript("")).toEqual("\nframeFilter.filters.push(new MyCustomFilter());");
 
-        });
-    });
-
-    describe("loading config", function () {
-
-        beforeEach(function () {
-            jasmine.Ajax.install();
-            jasmine.Ajax.stubRequest("fgrav.json").andReturn({
-                responseText: '{\n' +
-                    '  "color": {\n' +
-                    '    "Flames": {\n' +
-                    '      "uri": "color:URL"\n' +
-                    '    }\n' +
-                    '  }\n' +
-                    '}'
-            });
-
-            jasmine.Ajax.stubRequest("error.json").andReturn({
-                status: 500,
-                statusText: 'HTTP/1.1 500 Internal Error'
-            });
-        });
-
-        afterEach(function () {
-            jasmine.Ajax.uninstall();
-        });
-
-        it('should load config', function (done) {
-
-            fg.load(function () {
-                try {
-                    var request = jasmine.Ajax.requests.mostRecent();
-
-                    expect(request.url).toEqual("fgrav.json");
-
-                    expect(fg.config.color.Flames.uri).toEqual("color:URL");
-
-                    done();
-                } catch (e) {
-                    done(e);
-                }
-            }, function () {
-                done.fail("ajax should succeed");
-            });
-        });
-
-        it('should draw error message on error', function (done) {
-            fg.configUrl = 'error.json';
-            var drawn = false;
-
-            fg.draw = {
-                drawError: function (c) {
-                    drawn = true;
-                }
-            };
-            fg.load(function () {
-                done.fail("expected error")
-            }, function (r) {
-                try {
-                    var request = jasmine.Ajax.requests.mostRecent();
-
-                    expect(request.status).toBe(500);
-                    expect(drawn).toBe(true);
-                    done();
-                } catch (e) {
-                    console.log(e);
-                    done(e);
-                }
-            });
         });
     });
 
@@ -704,24 +487,23 @@ describe("FG", function() {
                     "    return 'rgb(122,122,122)';" +
                     "}"
             });
-            loadedF.filters = [];
+            frameFilter.reset();
         });
 
         afterEach(function () {
-            loadedF.filters = [];
             jasmine.Ajax.uninstall();
         });
 
 
         it("should load dynamic js file", function (done) {
-            fg.loadDynamicJs([new DynamicallyLoading("js/frame/FG_Filter_Test.js", "loadedF.filters.push(new FG_Filter_Test());")], function () {
+            fg.loadDynamicJs([new DynamicallyLoading("js/frame/FG_Filter_Test.js", "frameFilter.filters.push(new FG_Filter_Test());")], function () {
 
                 try {
                     var request = jasmine.Ajax.requests.mostRecent();
                     expect(request.url).toBe("js/frame/FG_Filter_Test.js");
                     expect(request.method).toBe('GET');
 
-                    expect(loadedF.filters[0].filter('foo')).toEqual("foofoo");
+                    expect(frameFilter.filters[0].filter('foo')).toEqual("foofoo");
 
                     done();
                 } catch (e) {
@@ -753,14 +535,14 @@ describe("FG", function() {
 
         it("should load multiple dynamic js filters and colors", function (done) {
             fg.loadDynamicJs([
-                new DynamicallyLoading("js/frame/FG_Filter_Other.js", "loadedF.filters.push(new FG_Filter_Other());"),
+                new DynamicallyLoading("js/frame/FG_Filter_Other.js", "frameFilter.filters.push(new FG_Filter_Other());"),
                 new DynamicallyLoading("js/color/FG_Color_Test.js", "loaded2 = new FG_Color_Test();"),
-                new DynamicallyLoading("js/frame/FG_Filter_Test.js", "loadedF.filters.push(new FG_Filter_Test());")], function () {
+                new DynamicallyLoading("js/frame/FG_Filter_Test.js", "frameFilter.filters.push(new FG_Filter_Test());")], function () {
 
                 try {
-                    expect(loadedF.filters.length).toEqual(2);
-                    expect(loadedF.filters[0].filter('foo')).toEqual("x");
-                    expect(loadedF.filters[1].filter('foo')).toEqual("foofoo");
+                    expect(frameFilter.filters.length).toEqual(2);
+                    expect(frameFilter.filters[0].filter('foo')).toEqual("x");
+                    expect(frameFilter.filters[1].filter('foo')).toEqual("foofoo");
                     expect(loaded2.colorFor()).toEqual("rgb(122,122,122)");
 
                     done();
@@ -773,7 +555,7 @@ describe("FG", function() {
         });
     });
 
-    describe("when loading ", function () {
+    describe("when loading overlay ", function () {
 
         beforeEach(function () {
             jasmine.Ajax.install();
@@ -797,84 +579,14 @@ describe("FG", function() {
                     "    return 'rgb(66,66,66)';" +
                     "}"
             });
-            jasmine.Ajax.stubRequest("js/frame/FG_Filter_Test.js").andReturn({
-                responseText: "function FG_Filter_Test() {}\n" +
-                    " FG_Filter_Test.prototype.filter = function(name) {" +
-                    "    return name + name;" +
-                    "}"
-            });
-            fg.context.frameFilter.reset();
+            frameFilter.reset();
             fg.context.currentColorScheme = new FG_Color_Black();
-
-            fg.filterEl = domGroupElement("filter");
-            fg.filterBtn = domElement("btn");
         });
 
         afterEach(function () {
             jasmine.Ajax.uninstall();
         });
 
-        it('should load dynamic frame filter js file', function (done) {
-            var redrawn = false;
-            fg.draw = {
-                drawFilterSelection: function (c) {
-                    redrawn = true;
-                }
-            };
-            loadedF = {
-                context: new FG_Context()
-            };
-
-            fg.loadFilter("MyFTest", "filter:Test", function () {
-
-                try {
-                    var request = jasmine.Ajax.requests.first();
-                    expect(request.url).toBe("js/frame/FG_Filter_Test.js");
-                    expect(request.method).toBe('GET');
-
-                    expect(loadedF.context.frameFilter.filters.length).toEqual(1);
-                    expect(loadedF.context.frameFilter.filters[0].filter("x")).toEqual("xx");
-                    expect(redrawn).toBe(true);
-
-                    done();
-                } catch (e) {
-                    done(e);
-                }
-            }, "loadedF");
-        });
-
-
-        it('should only apply dynamic frame filter js file that was already loaded', function () {
-            var redrawn = false;
-            fg.draw = {
-                drawFilterSelection: function (c) {
-                    redrawn = true;
-                }
-            };
-            fg.context.frameFilter["Dup"] =new FG_Filter_Duplicate();
-
-            fg.loadFilter("Dup", "filter:Dup");
-
-            expect(fg.context.frameFilter.filters.length).toEqual(1);
-            expect(fg.context.frameFilter.filters[0].filter("x")).toEqual("xx");
-            expect(redrawn).toBe(true);
-        });
-
-
-        it('should remove dynamic frame filter js file that was already loaded and in current list', function () {
-            var redrawn = false;
-            fg.draw = {
-                drawFilterSelection: function (c) {
-                    redrawn = true;
-                }
-            };
-            fg.context.addFrameFilter(new FG_Filter_RemoveJavaGCThreads());
-
-            fg.loadFilter("RemoveJavaGCThreads", "filter:RemoveJavaGCThreads");
-
-            expect(fg.context.frameFilter.filters.length).toEqual(0);
-            expect(redrawn).toBe(true);
-        });
 
         it("should load dynamic overlay js file", function (done) {
             var redrawn = false;
