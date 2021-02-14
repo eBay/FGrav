@@ -118,3 +118,10 @@ MyCustomColorScheme.prototype.constructor = MyCustomColorScheme;
 MyCustomColorScheme.prototype.colorFor = function(frame, totalSamples) {
     return "orange";
 };
+
+function FG_Filter_Duplicate() {}
+
+FG_Filter_Duplicate.prototype.filter = function(x) {
+    return x + x;
+};
+

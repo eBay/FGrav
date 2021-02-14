@@ -43,17 +43,6 @@ function FGrav(w, h, margin, fontSize, title, _w) {
 
 }
 
-FGrav.prototype.multipleAjaxCalls = function(ajaxObjs, response, successCallback, errorCallback) {
-    $.when.apply($, ajaxObjs)
-        .then(function () {
-            if (response.isSuccess()) {
-                successCallback(response);
-            } else {
-                errorCallback(response);
-            }
-        });
-};
-
 FGrav.prototype.getParameter = function(parameterName, defaultValue, _loc) {
     _loc = (typeof _loc !== 'undefined') ? _loc : location.search;
     var result = defaultValue,

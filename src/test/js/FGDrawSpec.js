@@ -20,20 +20,25 @@ describe("FGDraw", function () {
                     "a;b;d 2\n" +
                     "a;x;d 3\n"
             });
-            frameFilter.reset();
+            jasmine.Ajax.stubRequest("test2.collapsed").andReturn({
+                responseText:
+                    "a;b;c 2\n" +
+                    "a;b;d 4\n" +
+                    "a;x;d 6\n"
+            });
             fg.margin = 12;
             fg.frameHeight = 7;
         });
 
         afterEach(function() {
             jasmine.Ajax.uninstall();
-            frameFilter.reset();
         });
 
         it('should draw FG', function (done) {
 
             var stackFrames = new FGStackFrames();
-            stackFrames.loadCollapsed(fg, "test.collapsed", function () {
+            fg.collapsedUrl = "test.collapsed";
+            stackFrames.loadCollapsed(fg, function () {
 
                 try {
                     var request = jasmine.Ajax.requests.mostRecent();
@@ -43,6 +48,7 @@ describe("FGDraw", function () {
                     draw.drawFG(stackFrames);
 
                     expect(fg.totalSamples).toEqual(6); // 1 + 2 + 3
+                    expect(draw.svg.children.length).toEqual(1);
                     expect(draw.svg.children[0].localName).toEqual("g");
                     expect(draw.svg.children[0].getAttribute("id").toString()).toEqual("my-fgframes");
                     expect(draw.svg.children[0].children.length).toEqual(7); // all, a, b, x, c, d (above b), d (above x)
@@ -60,8 +66,8 @@ describe("FGDraw", function () {
         it('should redraw FG', function (done) {
 
             var stackFrames = new FGStackFrames();
-
-            stackFrames.loadCollapsed(fg, "test.collapsed", function () {
+            fg.collapsedUrl = "test.collapsed";
+            stackFrames.loadCollapsed(fg, function () {
 
                 try {
                     var request = jasmine.Ajax.requests.mostRecent();
@@ -70,15 +76,27 @@ describe("FGDraw", function () {
 
                     draw.drawFG(stackFrames);
 
-                    expect(draw.svg.children[0].children[1].children[1].getAttribute('name').toString()).toEqual("a");
+                    expect(fg.totalSamples).toEqual(6); // 1 + 2 + 3
+                    expect(draw.svg.children.length).toEqual(1);
 
-                    stackFrames.stackFrameRows[0][0].name = 'replaced';
+                    stackFrames = new FGStackFrames();
+                    fg.collapsedUrl = "test2.collapsed";
+                    stackFrames.loadCollapsed(fg, function () {
+                        try {
+                            draw.redrawFG(stackFrames);
 
-                    draw.redrawFG();
+                            expect(fg.totalSamples).toEqual(12); // 2 + 4 + 6
+                            expect(draw.svg.children.length).toEqual(1);
+                            expect(draw.svg.children[0].localName).toEqual("g");
+                            expect(draw.svg.children[0].getAttribute("id").toString()).toEqual("my-fgframes");
+                            done();
+                        } catch (e) {
+                            done(e);
+                        }
 
-                    expect(draw.svg.children[0].children[1].children[1].getAttribute('name').toString()).toEqual("replaced");
-
-                    done();
+                    }, function () {
+                        done.fail("ajax should succeed");
+                    });
                 } catch (e) {
                     done(e);
                 }
@@ -99,7 +117,8 @@ describe("FGDraw", function () {
                 legend: {}
             };
 
-            stackFrames.loadCollapsed(fg, "test.collapsed", function () {
+            fg.collapsedUrl = "test.collapsed";
+            stackFrames.loadCollapsed(fg, function () {
 
                 try {
                     var request = jasmine.Ajax.requests.mostRecent();
@@ -196,12 +215,6 @@ describe("FGDraw", function () {
     });
 
     describe("canvas", function () {
-
-        beforeEach(function () {
-            fg.config = {
-                color: {}
-            };
-        });
 
         it('should draw canvas', function () {
 
@@ -328,12 +341,12 @@ describe("FGDraw", function () {
             draw.drawCanvas();
 
             expect(fg.overlayEl.localName).toEqual("g");
-            expect(fg.overlayEl.children.length).toEqual(6);
-            expect(fg.overlayEl.children[1].onclick.toString()).toEqual('function onclick(evt) {\n' +
+            expect(fg.overlayEl.children.length).toEqual(3);
+            expect(fg.overlayEl.children[0].onclick.toString()).toEqual('function onclick(evt) {\n' +
                 'fg.loadOverlay("a", "A");\n}');
-            expect(fg.overlayEl.children[3].onclick.toString()).toEqual('function onclick(evt) {\n' +
+            expect(fg.overlayEl.children[1].onclick.toString()).toEqual('function onclick(evt) {\n' +
                 'fg.loadOverlay("b", "B");\n}');
-            expect(fg.overlayEl.children[5].onclick.toString()).toEqual('function onclick(evt) {\n' +
+            expect(fg.overlayEl.children[2].onclick.toString()).toEqual('function onclick(evt) {\n' +
                 'fg.loadOverlay("Clear", "color:Clear");\n}');
         });
 
@@ -365,10 +378,10 @@ describe("FGDraw", function () {
             draw.drawOverlayDropDown(newScheme, fg.overlayBtn, fg.overlayEl);
 
             expect(fg.overlayEl.localName).toEqual("g");
-            expect(fg.overlayEl.children.length).toEqual(4);
-            expect(fg.overlayEl.children[1].onclick.toString()).toEqual('function onclick(evt) {\n' +
+            expect(fg.overlayEl.children.length).toEqual(2);
+            expect(fg.overlayEl.children[0].onclick.toString()).toEqual('function onclick(evt) {\n' +
                 'fg.loadOverlay("c", "C");\n}');
-            expect(fg.overlayEl.children[3].onclick.toString()).toEqual('function onclick(evt) {\n' +
+            expect(fg.overlayEl.children[1].onclick.toString()).toEqual('function onclick(evt) {\n' +
                 'fg.loadOverlay("d", "D");\n}');
             expect(fg.overlayBtn.firstChild.nodeValue).toEqual('Overlays');
         });
