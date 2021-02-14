@@ -20,6 +20,12 @@ describe("FGDraw", function () {
                     "a;b;d 2\n" +
                     "a;x;d 3\n"
             });
+            jasmine.Ajax.stubRequest("test2.collapsed").andReturn({
+                responseText:
+                    "a;b;c 2\n" +
+                    "a;b;d 4\n" +
+                    "a;x;d 6\n"
+            });
             fg.margin = 12;
             fg.frameHeight = 7;
         });
@@ -42,12 +48,55 @@ describe("FGDraw", function () {
                     draw.drawFG(stackFrames);
 
                     expect(fg.totalSamples).toEqual(6); // 1 + 2 + 3
+                    expect(draw.svg.children.length).toEqual(1);
                     expect(draw.svg.children[0].localName).toEqual("g");
                     expect(draw.svg.children[0].getAttribute("id").toString()).toEqual("my-fgframes");
                     expect(draw.svg.children[0].children.length).toEqual(7); // all, a, b, x, c, d (above b), d (above x)
                     expect([].slice.call(draw.svg.children[0].children).map(c => c.children[1].innerHTML).join(",")).toEqual("all,a,b,x,c,d,d");
                     expect([].slice.call(draw.svg.children[0].children).map(c => c.children[0].getAttribute("width").toString()).join(",")).toEqual("155,155,77.5,77.5,25.8333,51.6667,77.5");
                     done();
+                } catch (e) {
+                    done(e);
+                }
+            }, function () {
+                done.fail("ajax should succeed");
+            });
+        });
+
+        it('should redraw FG', function (done) {
+
+            var stackFrames = new FGStackFrames();
+            fg.collapsedUrl = "test.collapsed";
+            stackFrames.loadCollapsed(fg, function () {
+
+                try {
+                    var request = jasmine.Ajax.requests.mostRecent();
+                    expect(request.url).toBe("test.collapsed");
+                    expect(request.method).toBe('GET');
+
+                    draw.drawFG(stackFrames);
+
+                    expect(fg.totalSamples).toEqual(6); // 1 + 2 + 3
+                    expect(draw.svg.children.length).toEqual(1);
+
+                    stackFrames = new FGStackFrames();
+                    fg.collapsedUrl = "test2.collapsed";
+                    stackFrames.loadCollapsed(fg, function () {
+                        try {
+                            draw.redrawFG(stackFrames);
+
+                            expect(fg.totalSamples).toEqual(12); // 2 + 4 + 6
+                            expect(draw.svg.children.length).toEqual(1);
+                            expect(draw.svg.children[0].localName).toEqual("g");
+                            expect(draw.svg.children[0].getAttribute("id").toString()).toEqual("my-fgframes");
+                            done();
+                        } catch (e) {
+                            done(e);
+                        }
+
+                    }, function () {
+                        done.fail("ajax should succeed");
+                    });
                 } catch (e) {
                     done(e);
                 }

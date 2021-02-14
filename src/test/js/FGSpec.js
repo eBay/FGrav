@@ -481,6 +481,36 @@ describe("FG", function() {
             });
         });
 
+        it('should reload collapsed', function (done) {
+            fg.collapsedUrlFrom("url", "?url=fg.collapsed");
+            var redrawn = false;
+
+            fg.draw = {
+                redrawFG: function(stackFrames) {
+                    redrawn = true;
+                }
+            };
+
+            fg.reload(function (stackFrames) {
+                    try {
+                        var request = jasmine.Ajax.requests.mostRecent();
+
+                        expect(request.url).toEqual("fg.collapsed");
+                        expect(stackFrames.totalSamples).toEqual(6);
+                        expect(fg.freezeDimensions).toEqual(true);
+                        expect(redrawn).toEqual(true);
+
+                        done();
+                    } catch (e) {
+                        done(e);
+                    }
+                },
+                undefined,
+                function () {
+                    done.fail("ajax should succeed");
+                });
+        });
+
         it('should draw error message on error', function (done) {
             fg.collapsedUrl = 'error.collapsed';
             var drawn = false;
@@ -798,7 +828,7 @@ describe("FG", function() {
             fg.loadFilter("MyFTest", "filter:Test", function () {
 
                 try {
-                    var request = jasmine.Ajax.requests.mostRecent();
+                    var request = jasmine.Ajax.requests.first();
                     expect(request.url).toBe("js/frame/FG_Filter_Test.js");
                     expect(request.method).toBe('GET');
 

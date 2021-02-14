@@ -19,8 +19,6 @@ describe("Collapsed", function() {
         });
     });
 
-
-
     describe("when calculating offsets ", function () {
 
         it("should caculate offsets", function () {
@@ -42,5 +40,17 @@ describe("Collapsed", function() {
 
             expect(collapsed.maxLevel).toEqual(3);
         });
+    });
+
+    it('should clear state', function () {
+        collapsed.parseCollapsed(["a;b;c 1","a;b;d 2","a;x;d 3"]);
+
+        expect(collapsed.totalSamples).toEqual(6);
+
+        collapsed.clear();
+
+        expect(collapsed.totalSamples).toEqual(0);
+        expect(collapsed.paths.length).toEqual(0);
+
     });
 });

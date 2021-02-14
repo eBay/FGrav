@@ -31,6 +31,11 @@ MergedCollapsed.prototype.push = function(path) {
     this.minSample = Math.min(this.minSample, path.samples);
 };
 
+MergedCollapsed.prototype.clear = function() {
+    Collapsed.prototype.clear.call(this);
+    this.totalIndividualSamples = undefined;
+};
+
 MergedCollapsed.prototype.parseCollapsed = function(codePaths) {
     var collapsed = this;
     $.each(codePaths, function() {
@@ -81,7 +86,6 @@ MergedCollapsed.prototype.parseCollapsed = function(codePaths) {
 };
 
 MergedCollapsed.prototype.updateFrame = function (frame, path, ptr) {
-    var collapsed = this;
     frame.samples += path.samples;
     frame.individualSamples = (typeof frame.individualSamples !== 'undefined') ?
             increment(frame.individualSamples, path.individualSamples) : path.individualSamples.slice();

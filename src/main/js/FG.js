@@ -118,6 +118,7 @@ FG.prototype.collapsedUrlFrom = function(param, _loc) {
 
 FG.prototype.loadCollapsed = function(successCallback, collapsed,  errorCallback) {
     var fg = this;
+    fg.collapsed = collapsed;
     var stackFrames = new FGStackFrames();
     stackFrames.loadCollapsed(fg, function () {
         successCallback(stackFrames);
@@ -319,16 +320,23 @@ FG.prototype.applyingFilter = function() {
         var name = children[i].getAttribute("id");
         this.draw.drawFilterSelection(children[i], name, selected);
     }
-    // this.reload();
+    this.reload(undefined, this.collapsed);
 };
 
-// FG.prototype.reload = function (collapsed) {
-//     this.freezeDimensions = true;
-//     this.loadCollapsed(function(stackFrames) {
-//         draw.xxxxxredrawFG(stackFrames);
-//     }, collapsed);
-// };
+FG.prototype.reload = function (successCallback, collapsed, errorCallback) {
+    var fg = this;
+    fg.freezeDimensions = true;
+    if (collapsed) {
+        collapsed.clear();
+    }
 
+    fg.loadCollapsed(function(stackFrames) {
+        fg.draw.redrawFG(stackFrames);
+        if (successCallback) {
+            successCallback(stackFrames);
+        }
+    }, collapsed, errorCallback);
+};
 
 FG.prototype.redrawFrames = function () {
     this.draw.reapplyColor(this.context.currentColorScheme);

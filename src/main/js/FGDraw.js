@@ -219,10 +219,15 @@ FGDraw.prototype.drawInfoElements = function() {
     }
 };
 
-FGDraw.prototype.drawFG = function(stackFrames) {
+FGDraw.prototype.drawFG = function(stackFrames, old) {
     this.fg.totalSamples = stackFrames.totalSamples;
     var g = generateFramesCells(this, stackFrames, this.fg.context.currentColorScheme);
-    this.svg.appendChild(g);
+    if (old) {
+        this.svg.replaceChild(g, old);
+    }
+    else {
+        this.svg.appendChild(g);
+    }
 
     function generateFramesCells(draw, stackFrames, colorScheme) {
         var g = draw.d.createElementNS("http://www.w3.org/2000/svg", "g");
@@ -237,6 +242,11 @@ FGDraw.prototype.drawFG = function(stackFrames) {
         });
         return g;
     }
+};
+
+FGDraw.prototype.redrawFG = function(stackFrames) {
+    var old = this.svg.getElementById(this.fg.namePerFG("frames"));
+    this.drawFG(stackFrames, old);
 };
 
 FGDraw.prototype.reapplyColor = function(colorScheme) {
