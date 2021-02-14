@@ -440,6 +440,72 @@ describe("FG", function() {
             expect(fg.collapsedUrl).toEqual("VALUE");
     });
 
+    describe("loading collapsed", function () {
+
+        beforeEach(function () {
+            jasmine.Ajax.install();
+            jasmine.Ajax.stubRequest("fg.collapsed").andReturn({
+                responseText:
+                    "a;b;c 1\n" +
+                    "a;b;d 2\n" +
+                    "a;x;d 3\n"
+            });
+
+            jasmine.Ajax.stubRequest("error.collapsed").andReturn({
+                status: 500,
+                statusText: 'HTTP/1.1 500 Internal Error'
+            });
+        });
+
+        afterEach(function () {
+            jasmine.Ajax.uninstall();
+        });
+
+        it('should load collapsed', function (done) {
+            fg.collapsedUrlFrom("url", "?url=fg.collapsed");
+            fg.loadCollapsed(function (stackFrames) {
+                try {
+                    var request = jasmine.Ajax.requests.mostRecent();
+
+                    expect(request.url).toEqual("fg.collapsed");
+                    expect(stackFrames.totalSamples).toEqual(6);
+
+                    done();
+                } catch (e) {
+                    done(e);
+                }
+            },
+            undefined,
+            function () {
+                done.fail("ajax should succeed");
+            });
+        });
+
+        it('should draw error message on error', function (done) {
+            fg.collapsedUrl = 'error.collapsed';
+            var drawn = false;
+
+            fg.draw = {
+                drawError: function (c) {
+                    drawn = true;
+                }
+            };
+            fg.loadCollapsed(function () {
+                done.fail("expected error")
+            }, undefined, function (r) {
+                try {
+                    var request = jasmine.Ajax.requests.mostRecent();
+
+                    expect(request.status).toBe(500);
+                    expect(drawn).toBe(true);
+
+                    done();
+                } catch (e) {
+                    done(e);
+                }
+            });
+        });
+    });
 
     describe("when loading", function() {
 
@@ -537,7 +603,6 @@ describe("FG", function() {
 
         it('should load config', function (done) {
 
-
             fg.load(function () {
                 try {
                     var request = jasmine.Ajax.requests.mostRecent();
@@ -553,21 +618,31 @@ describe("FG", function() {
             }, function () {
                 done.fail("ajax should succeed");
             });
-
-
         });
 
         it('should draw error message on error', function (done) {
             fg.configUrl = 'error.json';
+            var drawn = false;
+
+            fg.draw = {
+                drawError: function (c) {
+                    drawn = true;
+                }
+            };
             fg.load(function () {
-                fail("expected error")
+                done.fail("expected error")
+            }, function (r) {
+                try {
+                    var request = jasmine.Ajax.requests.mostRecent();
+
+                    expect(request.status).toBe(500);
+                    expect(drawn).toBe(true);
+                    done();
+                } catch (e) {
+                    console.log(e);
+                    done(e);
+                }
             });
-
-            var request = jasmine.Ajax.requests.mostRecent();
-
-            expect(request.status).toBe(500);
-
-            done();
         });
     });
 

@@ -60,13 +60,10 @@
 
 	function init(evt) {
 	   	fg.load(function() {
-			var stackFrames = new FGStackFrames();
-			stackFrames.loadCollapsed(fg, function() {
+			fg.loadCollapsed(function(stackFrames) {
 				draw.drawCanvas();
 				draw.drawFG(stackFrames);
 				draw.drawInfoElements();
-			}, function(response) {
-				draw.drawError("Failed to load collapsed file " + fg.collapsedUrl + ": " + response.errorMessage());
 			});
 		});
 	}

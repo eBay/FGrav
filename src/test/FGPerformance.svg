@@ -58,19 +58,14 @@ Java8 filter:
 	   	fg.load(function() {
 	   		console.timeEnd("setup");
 			console.time("loadCollapsed");
-			var stackFrames = new FGStackFrames();
-			stackFrames.loadCollapsed(fg, function() {
+			fg.loadCollapsed(fg, function(stackFrames) {
 				console.timeEnd("loadCollapsed");
             	draw.drawCanvas();
 				console.time("drawFG");
                 draw.drawFG(stackFrames);
 				console.timeEnd("drawFG");
                 draw.drawInfoElements();
-			}, function(response) {
-				draw.drawError("Failed to load collapsed file " + fg.collapsedUrl + ": " + response.errorMessage());
 			});
-		}, function(response) {
-			draw.drawError("Failed to load: " + response.errorMessage());
 		});
 	}
 ]]>

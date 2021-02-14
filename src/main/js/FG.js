@@ -116,17 +116,34 @@ FG.prototype.collapsedUrlFrom = function(param, _loc) {
     return this;
 };
 
-FG.prototype.load = function (successCallback, errorCallback) {
+FG.prototype.loadCollapsed = function(successCallback, collapsed,  errorCallback) {
     var fg = this;
-    errorCallback = (errorCallback) ? errorCallback : function(response) {
-        fg.draw.drawError("Failed to load: " + response.errorMessage());
-    };
-    var response = new FGravResponse();
-    var configAjax = this.loadConfig(response);
-    this.loadDynamicJs(this.objectsToLoad(), successCallback, errorCallback, [configAjax], response);
+    var stackFrames = new FGStackFrames();
+    stackFrames.loadCollapsed(fg, function () {
+        successCallback(stackFrames);
+    }, function (response) {
+        fg.draw.drawError("Failed to load collapsed file " + fg.collapsedUrl + ": " + response.errorMessage());
+        if (errorCallback) {
+            errorCallback(response);
+        }
+    }, collapsed);
 };
 
-FG.prototype.loadConfig = function(response, successCallback, errorCallback) {
+FG.prototype.load = function (successCallback, errorCallback) {
+    var fg = this;
+    var response = new FGravResponse();
+    var configAjax = this.loadConfig(response);
+    this.loadDynamicJs(this.objectsToLoad(),
+                        successCallback,
+                        function() {
+                            fg.draw.drawError("Failed to load: " + response.errorMessage());
+                            if (errorCallback) {
+                                errorCallback(response);
+                            }
+                        }, [configAjax], response);
+};
+
+FG.prototype.loadConfig = function(response) {
     var fg = this;
     return $.ajax({
         type: "GET",
@@ -134,15 +151,9 @@ FG.prototype.loadConfig = function(response, successCallback, errorCallback) {
         dataType: 'json',
         success: function (data) {
             fg.config = data;
-            if (successCallback) {
-                successCallback();
-            }
         },
         error: function (jqXHR, textStatus, errorThrown) {
             response.addError(errorThrown, textStatus);
-            if (errorCallback) {
-                errorCallback();
-            }
         }
     });
 };
@@ -167,17 +178,20 @@ FG.prototype.loadDynamicJs = function(toLoad, successCallback, errorCallback, pa
         ajaxObjs.push(ajax);
     });
 
-    this.multipleAjaxCalls(ajaxObjs, response, function () {
-        // TODO DOES NOT WORK. HAD TO RESORT TO EVAL!!!
-        // var loadedScript = document.createElement('script');
-        // loadedScript.type = "text/javascript";
-        // loadedScript.innerHTML = data;
-        // loadedScript.text = data;
-        //
-        // svg.children[1].parentNode.insertBefore(loadedScript, svg.children[1].nextSibling);
-        eval(jsSrc.join("\n"));
-        successCallback(response);
-    }, errorCallback);
+    $.when.apply($, ajaxObjs).then(
+        function () {
+            // TODO DOES NOT WORK. HAD TO RESORT TO EVAL!!!
+            // var loadedScript = document.createElement('script');
+            // loadedScript.type = "text/javascript";
+            // loadedScript.innerHTML = data;
+            // loadedScript.text = data;
+            //
+            // svg.children[1].parentNode.insertBefore(loadedScript, svg.children[1].nextSibling);
+            eval(jsSrc.join("\n"));
+            successCallback(response);
+    }, function () {
+            errorCallback(response);
+    });
 };
 
 FG.prototype.objectsToLoad = function() {
@@ -308,16 +322,11 @@ FG.prototype.applyingFilter = function() {
     // this.reload();
 };
 
-// FG.prototype.reload = function () {
+// FG.prototype.reload = function (collapsed) {
 //     this.freezeDimensions = true;
-//     var stackFrames = new FGStackFrames();
-//     var fg = this;
-//     // TODO fg.collapsedUrl
-//     stackFrames.loadCollapsed(fg, function() {
+//     this.loadCollapsed(function(stackFrames) {
 //         draw.xxxxxredrawFG(stackFrames);
-//     }, function(response) {
-//         draw.drawError("Failed to load collapsed file " + fg.collapsedUrl + ": " + response.errorMessage());
-//     }, xxxxxcollapsed);
+//     }, collapsed);
 // };
 
 
