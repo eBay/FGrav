@@ -63,13 +63,13 @@ Showing FlameGraph is done by requesting [FG.svg](./src/main/FG.svg).
 | width      | set width for this visualization in pixels        | no |
 | height     | set height for this visualization in pixels       | no |
 
-![FlameGraph Example](img/FG.png "FlameGraph Example")
+![FlameGraph Example](img/FG.png? "FlameGraph Example")
 
 ## FlameGraph Compare
 
 A view of Two FlameGraphs, left and right where the hovering, search and zoom capabilities are linked to both and allow the viewer to compare the two side by side.
 
-![FlameGraph Compare Detail Example](img/FGCompareDetail.png "FlameGraph Compare Detail Example")
+![FlameGraph Compare Detail Example](img/FGCompareDetail.png? "FlameGraph Compare Detail Example")
 
 Showing FlameGraph Comparison is done by requesting [FGCompare.svg](./src/main/FGCompare.svg).
 
@@ -83,7 +83,7 @@ Showing FlameGraph Comparison is done by requesting [FGCompare.svg](./src/main/F
 | width      | set width for this visualization in pixels              | no |
 | height     | set height for this visualization in pixels             | no |
 
-![FlameGraph Compare Example](img/FGCompare.png "FlameGraph Compare Example")
+![FlameGraph Compare Example](img/FGCompare.png? "FlameGraph Compare Example")
 
 ## FlameGraph Diff
 
@@ -101,7 +101,7 @@ This allows us to:
 1. See the difference between the two measurements visually.
 1. Avoid having the blind spot of a frame which existed in the first measurement but was not measured at all in the second.
 
-![FlameGraph Diff Detail Example](img/FGDiffDetail.png "FlameGraph Diff Detail Example")
+![FlameGraph Diff Detail Example](img/FGDiffDetail.png? "FlameGraph Diff Detail Example")
 
 Showing Differential FlameGraph is done by requesting [FGDiff.svg](./src/main/FGDiff.svg).
 
@@ -116,11 +116,11 @@ Showing Differential FlameGraph is done by requesting [FGDiff.svg](./src/main/FG
 | visual-diff    | if set to true, only relative part of frame is painted (default = true)| no |
 | different-sides| if set to true (and visual-diff = true), paints relative growth from the right and relative reduction from the left (default = false)| no |
 
-![FlameGraph Diff Example](img/FGDiff.png "FlameGraph Example")
+![FlameGraph Diff Example](img/FGDiff.png? "FlameGraph Example")
 
 The dynamic nature of the FGrav library also allows us to switch with one click between the "diff" color scheme and any other color scheme, for example:
 
-![FlameGraph Diff Example](img/FGDiff_other_color_scheme.png "FlameGraph Example")
+![FlameGraph Diff Example](img/FGDiff_other_color_scheme.png? "FlameGraph Example")
 
 
 ## Calendar View 
@@ -194,7 +194,7 @@ Loading the color scheme JS file can be done by either:
 1. name your JS file using the following convention pattern used for built-in functions (i.e. `js/color/FG_Color_${my_color}.js`) then dynamically request the `FG*.svg` file with parameter `color=${my_color}`.
 1. name your JS file to any name you want and request the `FG*.svg` file with parameter `color=/${my_color}` (where `/${my_color}` is the path to your file) Note `/` at start of parameter value.
 
-![Color scheme Example](img/ColorScheme_choose.png "Color scheme Example")
+![Color scheme Example](img/ColorScheme_choose.png? "Color scheme Example")
 
 
 #### Legend
@@ -217,7 +217,7 @@ See [Java](./src/main/js/color/FG_Color_Java.js) color scheme for an example.
 
 The legend is hidden by default but can be toggled by clicking on the **legend** button.
 
-![Java Legend Example](img/Legend.png "Java Legend Example")
+![Java Legend Example](img/Legend.png? "Java Legend Example")
 
 #### Overlays
 
@@ -237,10 +237,10 @@ If we allow other color schemes to overlay on top of our current scheme, the men
 See [Java_Blocking](./src/main/js/color/overlay/FG_Overlay_Java_Blocking.js) overlay as an example for an overlay to highlight Java blocking code.
 
 Choose an overlay from a drop down menu by clicking on the `Color Schemes` / `Overlays` button:
-![Java Blocking Overlay Choose Example](img/Overlay_choose.png "Java Blocking Overlay Choose Example")
+![Java Blocking Overlay Choose Example](img/Overlay_choose.png? "Java Blocking Overlay Choose Example")
 
 Overlay applied:
-![Java Blocking Overlay Example](img/Overlay_applied.png "Java Blocking Overlay Example")
+![Java Blocking Overlay Example](img/Overlay_applied.png? "Java Blocking Overlay Example")
 
 ### Frame Filter
 
@@ -267,7 +267,7 @@ Loading the filter JS file can be done by either:
 1. Use the convention pattern used for built-in functions (i.e. `js/frame/FG_Filter_${my_filter}.js`).
 1. Name your JS file to any name you want and request the `FG*.svg` file with parameter `frameFilter=/${my_filter_path}` (where `/${my_filter_path}` is the path to your JS file with an object with the same name and a function `filter`) **Note `/` at start of parameter value**.
 
-![FrameFilter Example](img/FrameFilter.png "FrameFilters Example")
+![FrameFilter Example](img/FrameFilter.png? "FrameFilters Example")
 
 
 ### Configuration
@@ -292,7 +292,7 @@ You can use [FGrav playground page](http://localhost:9090/index.html) to constru
 
 FGrav playground page is the default root page. `http://${host}:${port}/`
 
-![Playground Example](img/playground.png "Playground Example")
+![Playground Example](img/playground.png? "Playground Example")
 
 FGrav playground page helps you build FGrav visualizations. 
 
