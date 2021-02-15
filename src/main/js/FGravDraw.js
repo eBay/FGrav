@@ -97,35 +97,6 @@ FGravDraw.prototype.rect = function(x, y, width, height, styleFunction) {
     return element;
 };
 
-FGravDraw.prototype.animateWidth = function(from, to, start, duration) {
-    var element = this.d.createElementNS("http://www.w3.org/2000/svg", "animate");
-    element.setAttribute("attributeType", "XML");
-    element.setAttribute("attributeName", "width");
-    element.setAttribute("from", from);
-    element.setAttribute("to", (to - from));
-    element.setAttribute("begin", start);
-    element.setAttribute("dur", duration);
-    element.setAttribute("fill", "freeze");
-    element.setAttribute("additive", "sum");
-    return element;
-};
-
-FGravDraw.prototype.animatePosition = function(x, newX, y, newY) {
-    y = (y) ? y : 0;
-    newY = (newY) ? newY : 0;
-    var to = "" + (newX - x) + " " + (newY - y);
-    var element = this.d.createElementNS("http://www.w3.org/2000/svg", "animateTransform");
-    element.setAttribute("type", "translate");
-    element.setAttribute("attributeName", "transform");
-    element.setAttribute("from", "0 0");
-    element.setAttribute("to", to);
-    element.setAttribute("begin", "0.5s");
-    element.setAttribute("dur", "10s");
-    element.setAttribute("fill", "freeze");
-    element.setAttribute("additive", "sum");
-    return element;
-};
-
 FGravDraw.prototype.text = function(text, id, x, y, fontSize, anchor, fill) {
     var element = this.textBox(id, x, y, fontSize, anchor, fill);
     element.innerHTML = escText(text);
