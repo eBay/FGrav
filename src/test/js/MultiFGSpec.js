@@ -4,6 +4,7 @@ describe("MultiFG", function () {
     var fg1, fg2;
     var multiFg;
     var searchTerm;
+    var draw, draw1, draw2;
 
     describe("set dimensions", function () {
 
@@ -68,6 +69,116 @@ describe("MultiFG", function () {
 
             expect(fg1.shiftHeight).toBe(0);
             expect(fg2.shiftHeight).toBe(300);
+        });
+    });
+
+    describe("compare FGs", function () {
+
+        beforeEach(function() {
+            multiFg = new MultiFG();
+            fg1 = new FG('1', 2, "TITLE1");
+            fg2 = new FG('2', 2, "TITLE2");
+            multiFg.registerFG(fg1);
+            multiFg.registerFG(fg2);
+            fg1.collapsedUrl = "1.collapsed";
+            fg2.collapsedUrl = "2.collapsed";
+            var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            multiFg.svg = svg;
+            fg1.svg = svg;
+            fg2.svg = svg;
+            draw = new FGDraw(multiFg);
+            draw1 = new FGDraw(fg1);
+            draw2 = new FGDraw(fg2);
+
+
+            jasmine.Ajax.install();
+            jasmine.Ajax.stubRequest("1.collapsed").andReturn({
+                responseText:
+                    "a;b;c 1\n" +
+                    "a;b;d 3\n"
+            });
+            jasmine.Ajax.stubRequest("2.collapsed").andReturn({
+                responseText:
+                    "a;b;c 2\n" +
+                    "a;b;d 4\n"
+            });
+        });
+
+        afterEach(function() {
+            jasmine.Ajax.uninstall();
+        });
+
+        it('should show details on same node from both FGs and highlight other', function (done) {
+            fg1.loadCollapsed(function (frames1) {
+                fg2.loadCollapsed(function (frames2) {
+                    try {
+                        multiFg.setDimensions();
+                        draw.drawCanvas();
+                        draw1.drawFG(frames1);
+                        draw1.drawInfoElements();
+                        draw2.drawFG(frames2);
+                        draw2.drawInfoElements();
+
+                        var all1 = draw.svg.getElementById("1;all");
+                        var all2 = draw.svg.getElementById("2;all");
+
+                        multiFg.showDetails(all1);
+
+                        expect(fg1.details.nodeValue).toEqual("all (4 samples, 100%)");
+                        expect(fg2.details.nodeValue).toEqual("all (6 samples, 100%)");
+                        expect(all2.getAttribute("class")).toEqual("highlight_g");
+
+                        done();
+                    } catch (e) {
+                        done(e);
+                    }
+                },
+                undefined,
+                function () {
+                    done.fail("ajax should succeed");
+                });
+            },
+            undefined,
+            function () {
+                done.fail("ajax should succeed");
+            });
+        });
+
+        it('should clear details on same node from both FGs', function (done) {
+            fg1.loadCollapsed(function (frames1) {
+                    fg2.loadCollapsed(function (frames2) {
+                            try {
+                                multiFg.setDimensions();
+                                draw.drawCanvas();
+                                draw1.drawFG(frames1);
+                                draw1.drawInfoElements();
+                                draw2.drawFG(frames2);
+                                draw2.drawInfoElements();
+
+                                var all1 = draw.svg.getElementById("1;all");
+                                var all2 = draw.svg.getElementById("2;all");
+
+                                multiFg.showDetails(all1);
+                                multiFg.clearDetails(all1);
+
+                                expect(fg1.details.nodeValue).toEqual(" ");
+                                expect(fg2.details.nodeValue).toEqual(" ");
+                                expect(all2.getAttribute("class")).toEqual(null);
+
+                                done();
+                            } catch (e) {
+                                done(e);
+                            }
+                        },
+                        undefined,
+                        function () {
+                            done.fail("ajax should succeed");
+                        });
+                },
+                undefined,
+                function () {
+                    done.fail("ajax should succeed");
+                });
         });
     });
 
