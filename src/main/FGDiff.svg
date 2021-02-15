@@ -59,7 +59,7 @@
 
 	var fg = new FG(undefined, undefined, "Differential Flame Graph", 700).setup().collapsedUrlFrom("url");
 	var collapsed = new MergedCollapsed(2);
-	var draw = new MergedFGDraw(fg, collapsed, fg.getParameter("visual-diff") !== "false", fg.getParameter("different-sides") !== "false");
+	var draw = new MergedFGDraw(fg, collapsed, fg.getParameter("visual-diff") !== "false", fg.getParameter("different-sides") === "true");
 
 	function init(evt) {
 	   	fg.load(function() {
