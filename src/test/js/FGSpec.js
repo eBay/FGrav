@@ -1195,14 +1195,11 @@ describe("FG", function() {
 
         it("should change dimensions based on stack frames", function () {
 
-            fg.context.currentColorScheme = {
-                legend: { red: 'a', yellow: 'b'}
-            };
             fg.calculateWidth(60, 10, 3);
             fg.calculateHeight(3);
 
             expect(fg.width).toEqual((2 * 24) + (60 * 14)); // 60 = total samples, 24 = margin
-            expect(fg.height).toEqual((3 + 2 + 1) * (15 + 2) + (24 * 4)); // 3 = maxLevel, 2 = legend size
+            expect(fg.height).toEqual((3 + 10 + 1) * (15 + 2) + (24 * 4)); // 3 = maxLevel
         });
 
         it("should change dimensions but have minimum constants take effect", function () {

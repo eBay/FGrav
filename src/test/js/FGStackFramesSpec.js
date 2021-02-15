@@ -188,16 +188,12 @@ describe("FGStackFrames", function() {
         });
 
         it("should calculate dimensions based on stack frames", function (done) {
-            fg.context.currentColorScheme.legend = {
-                red: 'items',
-                blue: 'more items'
-            };
             fg.collapsedUrl = "test.collapsed";
 
             stackFrames.loadCollapsed(fg, function() {
                 try {
                     expect(fg.width).toEqual((2 * 24) + (60 * 14));
-                    expect(fg.height).toEqual((3 + 2 + 1) * (15 + 2) + (24 * 4)); // 3 = maxLevel, 2 = legend size
+                    expect(fg.height).toEqual((3 + 10 + 1) * (15 + 2) + (24 * 4)); // 3 = maxLevel, 10 = additional (estimated max drop down menu size constant)
                     done();
                 } catch (e) {
                     done(e);
