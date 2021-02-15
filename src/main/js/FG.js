@@ -20,7 +20,7 @@ function FG(id, shiftWidth, defaultTitle, minWidth, _w, _prompt) {
     FGrav.call(this, 1200, 2200, 24, 12, defaultTitle, _w);
     this.id = id;
     this.minWidth = (typeof minWidth !== "undefined") ? minWidth : 600;
-    this.minHeight = 150;
+    this.minHeight = 320;
     this.shiftWidth = (typeof shiftWidth !== 'undefined') ? shiftWidth : 0;
     this.shiftHeight = 0;
     this.sampleCoefficient = 14;
@@ -372,8 +372,7 @@ FG.prototype.calculateHeight = function (maxLevel) {
             this.textPadding = 8;
         }
         if (!this.forcedHeight) {
-            var additional = (this.context.currentColorScheme && this.context.currentColorScheme.legend) ?
-                Object.keys(this.context.currentColorScheme.legend).length : 0;
+            var additional = 10; // max number of elements in drop down menus - legend, filters, overlays
             this.height = Math.max(this.minHeight, Math.min(this.height, ((maxLevel + additional + 1) * (this.frameHeight + 2)) + (this.margin * 4)));
         }
     }

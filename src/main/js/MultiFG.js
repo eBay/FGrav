@@ -29,6 +29,7 @@ MultiFG.prototype.constructor = MultiFG;
 MultiFG.prototype.registerFG = function(fg) {
     this.fgs[fg.id] = fg;
     fg.context = this.context;
+    fg.config = this.config;
 };
 
 MultiFG.prototype.setDimensions = function () {
