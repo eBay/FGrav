@@ -299,14 +299,14 @@ describe("MergedFGDraw", function () {
         });
 
         it('should select specific title to load', function () {
-            var drawn = false;
+            var reloaded = false;
             draw.collapsed = {
-                partialStackFrames: function (frames) {
-                    return frames;
+                nonMergedCollapsed: function (i) {
+                    return new Collapsed();
                 }
             };
-            draw.redrawFG = function () {
-                drawn = true;
+            draw.fg.reload = function () {
+                reloaded = true;
             };
             draw.drawTitle();
             draw.mergedGraphReload("title");
@@ -318,32 +318,30 @@ describe("MergedFGDraw", function () {
             expect(draw.titles[0].classList[0]).toEqual("hide");
             expect(draw.titles[1].classList.length).toBe(0);
             expect(draw.titles[2].classList[0]).toEqual("hide");
-            expect(drawn).toBe(true);
+            expect(reloaded).toBe(true);
         });
 
         it('should call collapsed impl to regenerate stackFrames with the right index', function () {
-            draw.stackFrames = new FGStackFrames();
             var passedIndex = -1;
             draw.collapsed = {
-                partialStackFrames: function (frames, index) {
+                nonMergedCollapsed: function (index) {
                     passedIndex = index;
-                    return frames;
                 }
             };
 
-            draw.graphFramesToDraw("title1");
+            draw.collapsedToReload("title1");
             expect(passedIndex).toBe(0);
 
-            draw.graphFramesToDraw("title2");
+            draw.collapsedToReload("title2");
             expect(passedIndex).toBe(1);
         });
 
         it('should return stored stackFrames for differential ', function () {
-            draw.stackFrames = new FGStackFrames();
+            draw.collapsed = new MergedCollapsed(2);
 
-            var sf = draw.graphFramesToDraw("title");
+            var c = draw.collapsedToReload("title");
 
-            expect(sf).toBe(draw.stackFrames);
+            expect(c).toBe(draw.collapsed);
         });
     });
 

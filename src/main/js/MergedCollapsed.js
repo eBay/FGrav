@@ -102,8 +102,19 @@ function increment(array1, array2) {
     return array1;
 }
 
-MergedCollapsed.prototype.partialStackFrames = function(old, sampleIndex) {
-    // var stackFrames = new FGStackFrames();
-    // TODO return stackFrames;
-    return old;
+MergedCollapsed.prototype.mergedComponentCollapsed = function (index) {
+    return new MergedComponentCollapsed(this.merged, index);
+};
+
+function MergedComponentCollapsed(mergedCount, index) {
+    MergedCollapsed.call(this, mergedCount);
+    this.index = index;
 }
+
+MergedComponentCollapsed.prototype = Object.create(MergedCollapsed.prototype);
+MergedComponentCollapsed.prototype.constructor = MergedComponentCollapsed;
+
+MergedComponentCollapsed.prototype.parseCollapsed = function(codePaths) {
+    var collapsed = MergedCollapsed.prototype.parseCollapsed.call(this, codePaths);
+    return collapsed;
+};

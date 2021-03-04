@@ -51,11 +51,6 @@ function MergedFGDraw(fg, collapsed, visualDiff, differentSides, _d) {
 MergedFGDraw.prototype = Object.create(FGDraw.prototype);
 MergedFGDraw.prototype.constructor = MergedFGDraw;
 
-MergedFGDraw.prototype.drawFG = function(stackFrames, old) {
-    this.stackFrames = (typeof old === 'undefined') ? stackFrames : this.stackFrames;
-    FGDraw.prototype.drawFG.call(this, stackFrames, old);
-};
-
 MergedFGDraw.prototype.drawTitle = function() {
     this.currentDrawnGraphTitle = "title";
     this.titles = [];
@@ -86,7 +81,7 @@ MergedFGDraw.prototype.mergedGraphReload = function(toDraw) {
     } else {
         this.currentDrawnGraphTitle = toDraw;
         this.hideMergeGraphSelection(toDraw);
-        this.redrawFG(this.graphFramesToDraw(toDraw));
+        this.fg.reload(undefined, this.collapsedToReload(toDraw));
     }
 };
 
@@ -112,14 +107,14 @@ MergedFGDraw.prototype.showMergeGraphSelection = function() {
     });
 };
 
-MergedFGDraw.prototype.graphFramesToDraw = function(toDrawTitleId) {
+MergedFGDraw.prototype.collapsedToReload = function(toDrawTitleId) {
     if (toDrawTitleId === "title1") {
-        return this.collapsed.partialStackFrames(this.stackFrames, 0);
+        return this.collapsed.mergedComponentCollapsed(0);
     }
     if (toDrawTitleId === "title2") {
-        return this.collapsed.partialStackFrames(this.stackFrames, 1);
+        return this.collapsed.mergedComponentCollapsed(1);
     }
-    return this.stackFrames;
+    return this.collapsed;
 };
 
 MergedFGDraw.prototype.drawFrame = function (colorScheme, f) {

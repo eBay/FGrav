@@ -147,7 +147,7 @@ FGStackFrames.prototype.allFrame = function(fg) {
             return fg.height - fg.margin - (2 * fg.frameHeight);
         },
         toString: function() {
-            return this.name + ", samples: " + this.samples + ", i:" + this.lastStackIndex + ", x:" + this.x() + ", y:" + this.y() + ", w: " + this.w();
+            return this.name + ", samples: " + this.samples + ", x:" + this.x() + ", y:" + this.y() + ", w: " + this.w();
         },
         getName: function () { return this.name },
         getSamples: function () { return this.samples }
