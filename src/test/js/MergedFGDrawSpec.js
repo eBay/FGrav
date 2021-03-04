@@ -259,4 +259,57 @@ describe("MergedFGDraw", function () {
 
     });
 
+    describe('graph selection', function () {
+
+        var draw;
+        var fg;
+        var collapsed;
+
+        beforeEach(function () {
+            fg = new FG("id", 13, "title", "179");
+            fg.svg = domElement();
+            draw = new MergedFGDraw(fg, collapsed, true, true);
+        });
+
+        it('should draw titles', function () {
+
+            draw.drawTitle();
+
+            expect(draw.currentLoadedGraphTitle).toEqual("title");
+            expect(draw.titles.length).toEqual(3);
+            expect(draw.titles[0].classList.length).toBe(0);
+            expect(draw.titles[1].classList[0]).toEqual("hide");
+            expect(draw.titles[2].classList[0]).toEqual("hide");
+            expect(draw.titles[0].getAttribute("id")).toBe("title");
+            expect(draw.titles[1].getAttribute("id")).toBe("title1");
+            expect(draw.titles[2].getAttribute("id")).toBe("title2");
+        });
+
+        it('should draw all titles as drop down to select', function () {
+            draw.drawTitle();
+
+            draw.mergedGraphReload("title");
+
+            expect(draw.currentLoadedGraphTitle).toEqual("selection");
+            expect(draw.titles.length).toEqual(3);
+            expect(draw.titles[0].classList.length).toBe(0);
+            expect(draw.titles[1].classList.length).toBe(0);
+            expect(draw.titles[2].classList.length).toBe(0);
+
+        });
+
+        it('should select specific title to load', function () {
+            draw.drawTitle();
+            draw.mergedGraphReload("title");
+
+            draw.mergedGraphReload("title1");
+
+            expect(draw.currentLoadedGraphTitle).toEqual("title1");
+            expect(draw.titles.length).toEqual(3);
+            expect(draw.titles[0].classList[0]).toEqual("hide");
+            expect(draw.titles[1].classList.length).toBe(0);
+            expect(draw.titles[2].classList[0]).toEqual("hide");
+        });
+    });
+
 });

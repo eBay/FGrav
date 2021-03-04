@@ -51,6 +51,62 @@ function MergedFGDraw(fg, collapsed, visualDiff, differentSides, _d) {
 MergedFGDraw.prototype = Object.create(FGDraw.prototype);
 MergedFGDraw.prototype.constructor = MergedFGDraw;
 
+MergedFGDraw.prototype.drawTitle = function() {
+    this.currentLoadedGraphTitle = "title";
+    this.titles = [];
+
+    var g = this.d.createElementNS("http://www.w3.org/2000/svg", "g");
+    g.setAttribute("id", "titleGroup");
+    var height = this.fg.frameHeight * 2;
+    var title  = this.text(this.fg.title, "title", this.fg.width / 2, this.buttonsMargin);
+    title.setAttribute("onclick", "fg.draw.mergedGraphReload(\"title\");");
+    var title1  = this.text("1st Flame Graph", "title1", this.fg.width / 2, this.buttonsMargin + height);
+    title1.setAttribute("onclick", "fg.draw.mergedGraphReload(\"title1\");");
+    var title2  = this.text("2nd Flame Graph", "title2", this.fg.width / 2, this.buttonsMargin + (2 * height));
+    title2.setAttribute("onclick", "fg.draw.mergedGraphReload(\"title2\");");
+    g.appendChild(title);
+    g.appendChild(title1);
+    g.appendChild(title2);
+    this.titles.push(title);
+    this.titles.push(title1);
+    this.titles.push(title2);
+    this.hideMergeGraphSelection(this.currentLoadedGraphTitle);
+    return g;
+};
+
+MergedFGDraw.prototype.mergedGraphReload = function(toLoad) {
+    if (toLoad === this.currentLoadedGraphTitle) {
+        this.showMergeGraphSelection();
+        this.currentLoadedGraphTitle = "selection";
+    } else {
+        this.currentLoadedGraphTitle = toLoad;
+        this.hideMergeGraphSelection(toLoad);
+    }
+    console.log(toLoad);
+};
+
+MergedFGDraw.prototype.hideMergeGraphSelection = function(currentTitle) {
+    var margin = this.buttonsMargin;
+    var height = this.fg.frameHeight * 2;
+    var i = 1;
+    $.each(this.titles, function () {
+        if (this.getAttribute("id") !== currentTitle) {
+            this.classList.add("hide");
+            this.setAttribute("y", margin + (i * height));
+            i++;
+        } else {
+            this.setAttribute("y", margin);
+        }
+    });
+};
+
+
+MergedFGDraw.prototype.showMergeGraphSelection = function() {
+    $.each(this.titles, function () {
+        this.classList.remove("hide");
+    });
+};
+
 MergedFGDraw.prototype.drawFrame = function (colorScheme, f) {
     var draw = this;
     if (f.stack === ";all") {

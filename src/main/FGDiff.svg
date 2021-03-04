@@ -35,8 +35,8 @@
 	#search, #ignorecase, #legendBtn, #overlayBtn, #filterBtn { opacity:0.1; cursor:pointer; font-size:12px }
 	#search:hover, #search.show, #ignorecase:hover, #ignorecase.show, #legendBtn:hover, #legendBtn.show,  #overlayBtn:hover, #overlayBtn.show,  #filterBtn:hover, #filterBtn.show { opacity:1; }
 	#subtitle { text-anchor:middle; font-color:rgb(160,160,160); }
-	#title { text-anchor:middle; font-size:17px; text-decoration: underline; cursor:pointer }
-	#title:hover { fill:blue }
+	#title, #title1, #title2 { text-anchor:middle; font-size:17px; text-decoration: underline; cursor:pointer }
+	#title:hover, #title1:hover, #title2:hover { fill:blue }
 	#unzoom { cursor:pointer; font-size:12px }
 	#frames > *:hover { stroke:black; stroke-width:0.5; cursor:pointer; }
 	.hide { display:none; }
