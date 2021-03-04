@@ -51,8 +51,13 @@ function MergedFGDraw(fg, collapsed, visualDiff, differentSides, _d) {
 MergedFGDraw.prototype = Object.create(FGDraw.prototype);
 MergedFGDraw.prototype.constructor = MergedFGDraw;
 
+MergedFGDraw.prototype.drawFG = function(stackFrames, old) {
+    this.stackFrames = (typeof old === 'undefined') ? stackFrames : this.stackFrames;
+    FGDraw.prototype.drawFG.call(this, stackFrames, old);
+};
+
 MergedFGDraw.prototype.drawTitle = function() {
-    this.currentLoadedGraphTitle = "title";
+    this.currentDrawnGraphTitle = "title";
     this.titles = [];
 
     var g = this.d.createElementNS("http://www.w3.org/2000/svg", "g");
@@ -70,19 +75,19 @@ MergedFGDraw.prototype.drawTitle = function() {
     this.titles.push(title);
     this.titles.push(title1);
     this.titles.push(title2);
-    this.hideMergeGraphSelection(this.currentLoadedGraphTitle);
+    this.hideMergeGraphSelection(this.currentDrawnGraphTitle);
     return g;
 };
 
-MergedFGDraw.prototype.mergedGraphReload = function(toLoad) {
-    if (toLoad === this.currentLoadedGraphTitle) {
+MergedFGDraw.prototype.mergedGraphReload = function(toDraw) {
+    if (toDraw === this.currentDrawnGraphTitle) {
         this.showMergeGraphSelection();
-        this.currentLoadedGraphTitle = "selection";
+        this.currentDrawnGraphTitle = "selection";
     } else {
-        this.currentLoadedGraphTitle = toLoad;
-        this.hideMergeGraphSelection(toLoad);
+        this.currentDrawnGraphTitle = toDraw;
+        this.hideMergeGraphSelection(toDraw);
+        this.redrawFG(this.graphFramesToDraw(toDraw));
     }
-    console.log(toLoad);
 };
 
 MergedFGDraw.prototype.hideMergeGraphSelection = function(currentTitle) {
@@ -105,6 +110,16 @@ MergedFGDraw.prototype.showMergeGraphSelection = function() {
     $.each(this.titles, function () {
         this.classList.remove("hide");
     });
+};
+
+MergedFGDraw.prototype.graphFramesToDraw = function(toDrawTitleId) {
+    if (toDrawTitleId === "title1") {
+        return this.collapsed.partialStackFrames(this.stackFrames, 0);
+    }
+    if (toDrawTitleId === "title2") {
+        return this.collapsed.partialStackFrames(this.stackFrames, 1);
+    }
+    return this.stackFrames;
 };
 
 MergedFGDraw.prototype.drawFrame = function (colorScheme, f) {

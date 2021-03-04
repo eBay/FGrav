@@ -74,7 +74,6 @@ FGStackFrames.prototype.loadCollapsed = function(fg, successCallback, errorCallb
             collapsed.calculateOffsets(fg.width, fg.margin, fg.minDisplaySample);
             fg.calculateHeight(collapsed.maxLevel);
             stackFrames.stackFrameRows = rows;
-            // stackFrames.stackFrameByPath = framesMap;
 
             successCallback(response);
         },

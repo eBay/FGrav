@@ -275,7 +275,7 @@ describe("MergedFGDraw", function () {
 
             draw.drawTitle();
 
-            expect(draw.currentLoadedGraphTitle).toEqual("title");
+            expect(draw.currentDrawnGraphTitle).toEqual("title");
             expect(draw.titles.length).toEqual(3);
             expect(draw.titles[0].classList.length).toBe(0);
             expect(draw.titles[1].classList[0]).toEqual("hide");
@@ -290,7 +290,7 @@ describe("MergedFGDraw", function () {
 
             draw.mergedGraphReload("title");
 
-            expect(draw.currentLoadedGraphTitle).toEqual("selection");
+            expect(draw.currentDrawnGraphTitle).toEqual("selection");
             expect(draw.titles.length).toEqual(3);
             expect(draw.titles[0].classList.length).toBe(0);
             expect(draw.titles[1].classList.length).toBe(0);
@@ -299,16 +299,51 @@ describe("MergedFGDraw", function () {
         });
 
         it('should select specific title to load', function () {
+            var drawn = false;
+            draw.collapsed = {
+                partialStackFrames: function (frames) {
+                    return frames;
+                }
+            };
+            draw.redrawFG = function () {
+                drawn = true;
+            };
             draw.drawTitle();
             draw.mergedGraphReload("title");
 
             draw.mergedGraphReload("title1");
 
-            expect(draw.currentLoadedGraphTitle).toEqual("title1");
+            expect(draw.currentDrawnGraphTitle).toEqual("title1");
             expect(draw.titles.length).toEqual(3);
             expect(draw.titles[0].classList[0]).toEqual("hide");
             expect(draw.titles[1].classList.length).toBe(0);
             expect(draw.titles[2].classList[0]).toEqual("hide");
+            expect(drawn).toBe(true);
+        });
+
+        it('should call collapsed impl to regenerate stackFrames with the right index', function () {
+            draw.stackFrames = new FGStackFrames();
+            var passedIndex = -1;
+            draw.collapsed = {
+                partialStackFrames: function (frames, index) {
+                    passedIndex = index;
+                    return frames;
+                }
+            };
+
+            draw.graphFramesToDraw("title1");
+            expect(passedIndex).toBe(0);
+
+            draw.graphFramesToDraw("title2");
+            expect(passedIndex).toBe(1);
+        });
+
+        it('should return stored stackFrames for differential ', function () {
+            draw.stackFrames = new FGStackFrames();
+
+            var sf = draw.graphFramesToDraw("title");
+
+            expect(sf).toBe(draw.stackFrames);
         });
     });
 

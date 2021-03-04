@@ -101,3 +101,9 @@ function increment(array1, array2) {
     }
     return array1;
 }
+
+MergedCollapsed.prototype.partialStackFrames = function(old, sampleIndex) {
+    // var stackFrames = new FGStackFrames();
+    // TODO return stackFrames;
+    return old;
+}
