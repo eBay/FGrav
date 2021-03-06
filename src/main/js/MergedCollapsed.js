@@ -114,7 +114,12 @@ function MergedComponentCollapsed(mergedCount, index) {
 MergedComponentCollapsed.prototype = Object.create(MergedCollapsed.prototype);
 MergedComponentCollapsed.prototype.constructor = MergedComponentCollapsed;
 
-MergedComponentCollapsed.prototype.parseCollapsed = function(codePaths) {
-    var collapsed = MergedCollapsed.prototype.parseCollapsed.call(this, codePaths);
-    return collapsed;
+MergedComponentCollapsed.prototype.push = function(path) {
+    this.totalIndividualSamples = (typeof this.totalIndividualSamples !== 'undefined') ?
+        increment(this.totalIndividualSamples, path.individualSamples) : path.individualSamples.slice();
+    var samples = path.individualSamples[this.index];
+    path.samples = samples;
+    this.totalSamples += samples;
+    this.paths.push(path);
+    this.minSample = Math.min(this.minSample, samples);
 };

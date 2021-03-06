@@ -286,6 +286,7 @@ describe("MergedFGDraw", function () {
         });
 
         it('should draw all titles as drop down to select', function () {
+            draw.visualDiff = true;
             draw.drawTitle();
 
             draw.mergedGraphReload("title");
@@ -295,13 +296,14 @@ describe("MergedFGDraw", function () {
             expect(draw.titles[0].classList.length).toBe(0);
             expect(draw.titles[1].classList.length).toBe(0);
             expect(draw.titles[2].classList.length).toBe(0);
+            expect(draw.visualDiff).toBe(true);
 
         });
 
         it('should select specific title to load', function () {
             var reloaded = false;
             draw.collapsed = {
-                nonMergedCollapsed: function (i) {
+                mergedComponentCollapsed: function (i) {
                     return new Collapsed();
                 }
             };
@@ -318,22 +320,18 @@ describe("MergedFGDraw", function () {
             expect(draw.titles[0].classList[0]).toEqual("hide");
             expect(draw.titles[1].classList.length).toBe(0);
             expect(draw.titles[2].classList[0]).toEqual("hide");
+            expect(draw.visualDiff).toBe(false);
             expect(reloaded).toBe(true);
         });
 
         it('should call collapsed impl to regenerate stackFrames with the right index', function () {
-            var passedIndex = -1;
-            draw.collapsed = {
-                nonMergedCollapsed: function (index) {
-                    passedIndex = index;
-                }
-            };
+            draw.collapsed = new MergedCollapsed(2);
 
-            draw.collapsedToReload("title1");
-            expect(passedIndex).toBe(0);
+            var collapsed = draw.collapsedToReload("title1");
+            expect(collapsed.index).toBe(0);
 
-            draw.collapsedToReload("title2");
-            expect(passedIndex).toBe(1);
+            collapsed = draw.collapsedToReload("title2");
+            expect(collapsed.index).toBe(1);
         });
 
         it('should return stored stackFrames for differential ', function () {

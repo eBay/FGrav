@@ -29,6 +29,7 @@ function calculateDiff(samples0, total0, samples1, total1) {
 function MergedFGDraw(fg, collapsed, visualDiff, differentSides, _d) {
     FGDraw.call(this, fg, new FG_Color_Diff(), _d);
     this.visualDiff = visualDiff;
+    this.inputVisualDiff = visualDiff;
     this.differentSides = differentSides;
     this.collapsed = collapsed;
     fg.g_details = function (g) {
@@ -109,11 +110,14 @@ MergedFGDraw.prototype.showMergeGraphSelection = function() {
 
 MergedFGDraw.prototype.collapsedToReload = function(toDrawTitleId) {
     if (toDrawTitleId === "title1") {
+        this.visualDiff = false;
         return this.collapsed.mergedComponentCollapsed(0);
     }
     if (toDrawTitleId === "title2") {
+        this.visualDiff = false;
         return this.collapsed.mergedComponentCollapsed(1);
     }
+    this.visualDiff = this.inputVisualDiff;
     return this.collapsed;
 };
 
@@ -121,6 +125,9 @@ MergedFGDraw.prototype.drawFrame = function (colorScheme, f) {
     var draw = this;
     if (f.stack === ";all") {
         f.individualSamples = draw.collapsed.totalIndividualSamples;
+        f.getDifferentialSamples = function (i) {
+            return this.individualSamples[i];
+        };
     }
     var x = f.x() + draw.fg.shiftWidth;
     var w = f.w();
