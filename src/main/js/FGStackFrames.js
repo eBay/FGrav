@@ -74,7 +74,6 @@ FGStackFrames.prototype.loadCollapsed = function(fg, successCallback, errorCallb
             collapsed.calculateOffsets(fg.width, fg.margin, fg.minDisplaySample);
             fg.calculateHeight(collapsed.maxLevel);
             stackFrames.stackFrameRows = rows;
-            // stackFrames.stackFrameByPath = framesMap;
 
             successCallback(response);
         },
@@ -148,7 +147,7 @@ FGStackFrames.prototype.allFrame = function(fg) {
             return fg.height - fg.margin - (2 * fg.frameHeight);
         },
         toString: function() {
-            return this.name + ", samples: " + this.samples + ", i:" + this.lastStackIndex + ", x:" + this.x() + ", y:" + this.y() + ", w: " + this.w();
+            return this.name + ", samples: " + this.samples + ", x:" + this.x() + ", y:" + this.y() + ", w: " + this.w();
         },
         getName: function () { return this.name },
         getSamples: function () { return this.samples }

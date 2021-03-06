@@ -34,7 +34,7 @@ FGDraw.prototype.drawCanvas = function() {
     var background = this.rect(0.0, 0, this.fg.width, this.fg.height, function (el) {
         el.setAttribute("fill",  "url(#background)");
     });
-    var title = this.text(this.fg.title, "title", this.fg.width / 2, this.buttonsMargin, Math.round(this.fg.fontSize * 1.4), "middle");
+    var title = this.drawTitle();
 
     var unzoom = this.text("Reset Zoom", "unzoom", this.buttonsMargin, this.buttonsMargin);
     unzoom.classList.add("hide");
@@ -65,6 +65,10 @@ FGDraw.prototype.drawCanvas = function() {
     if (this.d.styleSheets[0]) {
         this.d.styleSheets[0].insertRule("text { font-family:Verdana; font-size:" + this.fg.fontSize + "px; fill:rgb(0,0,0); }", 0);
     }
+};
+
+FGDraw.prototype.drawTitle = function() {
+    return this.text(this.fg.title, "title", this.fg.width / 2, this.buttonsMargin);
 };
 
 FGDraw.prototype.drawLegend = function(colorScheme, old) {

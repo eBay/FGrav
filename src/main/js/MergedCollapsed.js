@@ -101,3 +101,25 @@ function increment(array1, array2) {
     }
     return array1;
 }
+
+MergedCollapsed.prototype.mergedComponentCollapsed = function (index) {
+    return new MergedComponentCollapsed(this.merged, index);
+};
+
+function MergedComponentCollapsed(mergedCount, index) {
+    MergedCollapsed.call(this, mergedCount);
+    this.index = index;
+}
+
+MergedComponentCollapsed.prototype = Object.create(MergedCollapsed.prototype);
+MergedComponentCollapsed.prototype.constructor = MergedComponentCollapsed;
+
+MergedComponentCollapsed.prototype.push = function(path) {
+    this.totalIndividualSamples = (typeof this.totalIndividualSamples !== 'undefined') ?
+        increment(this.totalIndividualSamples, path.individualSamples) : path.individualSamples.slice();
+    var samples = path.individualSamples[this.index];
+    path.samples = samples;
+    this.totalSamples += samples;
+    this.paths.push(path);
+    this.minSample = Math.min(this.minSample, samples);
+};

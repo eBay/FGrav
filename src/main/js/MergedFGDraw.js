@@ -29,6 +29,7 @@ function calculateDiff(samples0, total0, samples1, total1) {
 function MergedFGDraw(fg, collapsed, visualDiff, differentSides, _d) {
     FGDraw.call(this, fg, new FG_Color_Diff(), _d);
     this.visualDiff = visualDiff;
+    this.inputVisualDiff = visualDiff;
     this.differentSides = differentSides;
     this.collapsed = collapsed;
     fg.g_details = function (g) {
@@ -51,10 +52,82 @@ function MergedFGDraw(fg, collapsed, visualDiff, differentSides, _d) {
 MergedFGDraw.prototype = Object.create(FGDraw.prototype);
 MergedFGDraw.prototype.constructor = MergedFGDraw;
 
+MergedFGDraw.prototype.drawTitle = function() {
+    this.currentDrawnGraphTitle = "title";
+    this.titles = [];
+
+    var g = this.d.createElementNS("http://www.w3.org/2000/svg", "g");
+    g.setAttribute("id", "titleGroup");
+    var height = this.fg.frameHeight * 2;
+    var title  = this.text(this.fg.title, "title", this.fg.width / 2, this.buttonsMargin);
+    title.setAttribute("onclick", "fg.draw.mergedGraphReload(\"title\");");
+    var title1  = this.text("1st Flame Graph", "title1", this.fg.width / 2, this.buttonsMargin + height);
+    title1.setAttribute("onclick", "fg.draw.mergedGraphReload(\"title1\");");
+    var title2  = this.text("2nd Flame Graph", "title2", this.fg.width / 2, this.buttonsMargin + (2 * height));
+    title2.setAttribute("onclick", "fg.draw.mergedGraphReload(\"title2\");");
+    g.appendChild(title);
+    g.appendChild(title1);
+    g.appendChild(title2);
+    this.titles.push(title);
+    this.titles.push(title1);
+    this.titles.push(title2);
+    this.hideMergeGraphSelection(this.currentDrawnGraphTitle);
+    return g;
+};
+
+MergedFGDraw.prototype.mergedGraphReload = function(toDraw) {
+    if (toDraw === this.currentDrawnGraphTitle) {
+        this.showMergeGraphSelection();
+        this.currentDrawnGraphTitle = "selection";
+    } else {
+        this.currentDrawnGraphTitle = toDraw;
+        this.hideMergeGraphSelection(toDraw);
+        this.fg.reload(undefined, this.collapsedToReload(toDraw));
+    }
+};
+
+MergedFGDraw.prototype.hideMergeGraphSelection = function(currentTitle) {
+    var margin = this.buttonsMargin;
+    var height = this.fg.frameHeight * 2;
+    var i = 1;
+    $.each(this.titles, function () {
+        if (this.getAttribute("id") !== currentTitle) {
+            this.classList.add("hide");
+            this.setAttribute("y", margin + (i * height));
+            i++;
+        } else {
+            this.setAttribute("y", margin);
+        }
+    });
+};
+
+
+MergedFGDraw.prototype.showMergeGraphSelection = function() {
+    $.each(this.titles, function () {
+        this.classList.remove("hide");
+    });
+};
+
+MergedFGDraw.prototype.collapsedToReload = function(toDrawTitleId) {
+    if (toDrawTitleId === "title1") {
+        this.visualDiff = false;
+        return this.collapsed.mergedComponentCollapsed(0);
+    }
+    if (toDrawTitleId === "title2") {
+        this.visualDiff = false;
+        return this.collapsed.mergedComponentCollapsed(1);
+    }
+    this.visualDiff = this.inputVisualDiff;
+    return this.collapsed;
+};
+
 MergedFGDraw.prototype.drawFrame = function (colorScheme, f) {
     var draw = this;
     if (f.stack === ";all") {
         f.individualSamples = draw.collapsed.totalIndividualSamples;
+        f.getDifferentialSamples = function (i) {
+            return this.individualSamples[i];
+        };
     }
     var x = f.x() + draw.fg.shiftWidth;
     var w = f.w();

@@ -259,4 +259,88 @@ describe("MergedFGDraw", function () {
 
     });
 
+    describe('graph selection', function () {
+
+        var draw;
+        var fg;
+        var collapsed;
+
+        beforeEach(function () {
+            fg = new FG("id", 13, "title", "179");
+            fg.svg = domElement();
+            draw = new MergedFGDraw(fg, collapsed, true, true);
+        });
+
+        it('should draw titles', function () {
+
+            draw.drawTitle();
+
+            expect(draw.currentDrawnGraphTitle).toEqual("title");
+            expect(draw.titles.length).toEqual(3);
+            expect(draw.titles[0].classList.length).toBe(0);
+            expect(draw.titles[1].classList[0]).toEqual("hide");
+            expect(draw.titles[2].classList[0]).toEqual("hide");
+            expect(draw.titles[0].getAttribute("id")).toBe("title");
+            expect(draw.titles[1].getAttribute("id")).toBe("title1");
+            expect(draw.titles[2].getAttribute("id")).toBe("title2");
+        });
+
+        it('should draw all titles as drop down to select', function () {
+            draw.visualDiff = true;
+            draw.drawTitle();
+
+            draw.mergedGraphReload("title");
+
+            expect(draw.currentDrawnGraphTitle).toEqual("selection");
+            expect(draw.titles.length).toEqual(3);
+            expect(draw.titles[0].classList.length).toBe(0);
+            expect(draw.titles[1].classList.length).toBe(0);
+            expect(draw.titles[2].classList.length).toBe(0);
+            expect(draw.visualDiff).toBe(true);
+
+        });
+
+        it('should select specific title to load', function () {
+            var reloaded = false;
+            draw.collapsed = {
+                mergedComponentCollapsed: function (i) {
+                    return new Collapsed();
+                }
+            };
+            draw.fg.reload = function () {
+                reloaded = true;
+            };
+            draw.drawTitle();
+            draw.mergedGraphReload("title");
+
+            draw.mergedGraphReload("title1");
+
+            expect(draw.currentDrawnGraphTitle).toEqual("title1");
+            expect(draw.titles.length).toEqual(3);
+            expect(draw.titles[0].classList[0]).toEqual("hide");
+            expect(draw.titles[1].classList.length).toBe(0);
+            expect(draw.titles[2].classList[0]).toEqual("hide");
+            expect(draw.visualDiff).toBe(false);
+            expect(reloaded).toBe(true);
+        });
+
+        it('should call collapsed impl to regenerate stackFrames with the right index', function () {
+            draw.collapsed = new MergedCollapsed(2);
+
+            var collapsed = draw.collapsedToReload("title1");
+            expect(collapsed.index).toBe(0);
+
+            collapsed = draw.collapsedToReload("title2");
+            expect(collapsed.index).toBe(1);
+        });
+
+        it('should return stored stackFrames for differential ', function () {
+            draw.collapsed = new MergedCollapsed(2);
+
+            var c = draw.collapsedToReload("title");
+
+            expect(c).toBe(draw.collapsed);
+        });
+    });
+
 });

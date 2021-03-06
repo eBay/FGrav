@@ -87,18 +87,18 @@ Showing FlameGraph Comparison is done by requesting [FGCompare.svg](./src/main/F
 
 ## FlameGraph Diff
 
-A Differential FlameGraph similar but not identical to the one suggested by [Brendan Gregg](http://www.brendangregg.com/blog/2014-11-09/differential-flame-graphs.html).
+A Differential FlameGraph similar but with a lot more options to the one suggested by [Brendan Gregg](http://www.brendangregg.com/blog/2014-11-09/differential-flame-graphs.html).
 
 Like the original differential FlameGraph, this FlameGraph is also generated from a collapsed stack file that contains two sample count values for every code path.
 
-See [simplediff.collapsed](./src/test/resources/collapsed/simplediff.collapsed) for example.
+See [simplediff.collapsed](./src/test/resources/collapsed/simplediff.collapsed) for a simple small example.
 
 The original suggestion used the difference in measurements to color the frames (blue/red) but the FlameGraph that was drawn was according the second measurement.
 
-The main difference in our approach is that our differential FlameGraph show flames which represent the sum of both measurements and color only part of the frame to show the difference between the two measurements.
+Our approach allows to choose dynamically between viewing the first, second graph or a graph which represent the sum of both measurements and can color only part of the frame to show the difference between the two measurements.
 
 This allows us to:
-1. See the difference between the two measurements visually.
+1. See the difference between the two measurements **visually**.
 1. Avoid having the blind spot of a frame which existed in the first measurement but was not measured at all in the second.
 
 ![FlameGraph Diff Detail Example](img/FGDiffDetail.png? "FlameGraph Diff Detail Example")
@@ -116,11 +116,18 @@ Showing Differential FlameGraph is done by requesting [FGDiff.svg](./src/main/FG
 | visual-diff    | if set to true, only relative part of frame is painted (default = true)| no |
 | different-sides| if set to true (and visual-diff = true), paints relative growth from the right and relative reduction from the left (default = false)| no |
 
-![FlameGraph Diff Example](img/FGDiff.png? "FlameGraph Example")
+![FlameGraph Diff Example](img/FGDiff.png? "FlameGraph Diff Example")
+
+Selection between which graph to choose is done by cicking on the title:
+![FlameGraph Diff Selection Example](img/FGDiff_select_graph.png? "FlameGraph Diff Selection Example")
+
+After choosing the first graph, we get framges based on the first measurement:
+![FlameGraph Diff 1st Graph Example](img/FGDiff_1st_graph.png? "FlameGraph Diff 1st Graph Example")
+
 
 The dynamic nature of the FGrav library also allows us to switch with one click between the "diff" color scheme and any other color scheme, for example:
 
-![FlameGraph Diff Example](img/FGDiff_other_color_scheme.png? "FlameGraph Example")
+![FlameGraph Diff Example](img/FGDiff_other_color_scheme.png? "FlameGraph Diff color schemes Example")
 
 
 ## Calendar View 
