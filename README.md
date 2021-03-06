@@ -118,7 +118,7 @@ Showing Differential FlameGraph is done by requesting [FGDiff.svg](./src/main/FG
 
 ![FlameGraph Diff Example](img/FGDiff.png? "FlameGraph Diff Example")
 
-Selection between which graph to choose is done by cicking on the title:
+Selection between which graph to choose is done by clicking on the title:
 ![FlameGraph Diff Selection Example](img/FGDiff_select_graph.png? "FlameGraph Diff Selection Example")
 
 After choosing the first graph, we get framges based on the first measurement:
