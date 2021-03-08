@@ -17,6 +17,10 @@ describe("FGStackFrames", function() {
         return value.samples;
     };
 
+    var extractIndividualSamples = function (value, index, array) {
+        return value.individualSamples;
+    };
+
     describe("when loadCollapsed invoked ", function () {
 
         beforeEach(function() {
@@ -124,6 +128,87 @@ describe("FGStackFrames", function() {
             }, function () {
                 done.fail("ajax should succeed");
             });
+        });
+    });
+
+    describe("when loadMultipleCollapsed invoked ", function () {
+
+        beforeEach(function() {
+            jasmine.Ajax.install();
+            jasmine.Ajax.stubRequest("test1.collapsed").andReturn({
+                responseText:
+                    "a;b;c 1\n" +
+                    "a;b;d 2\n" +
+                    "a;x;d 3\n"
+            });
+            jasmine.Ajax.stubRequest("test2.collapsed").andReturn({
+                responseText:
+                    "a;x;d 1\n" +
+                    "a;b;c 2\n" +
+                    "a;y;z 3\n"
+            });
+        });
+
+        afterEach(function() {
+            jasmine.Ajax.uninstall();
+        });
+
+        it("should load multiple collapsed files", function (done) {
+            var fg = new FG();
+            fg.collapsedUrl = ["test1.collapsed", "test2.collapsed"];
+            fg.margin = 12;
+            fg.frameHeight = 7;
+            stackFrames.loadMultipleCollapsed(fg, function () {
+
+                try {
+                    expect(stackFrames.stackFrameRows.length).toEqual(3);
+                    expect(stackFrames.stackFrameRows[0].map(extractName)).toEqual(['a']);
+                    expect(stackFrames.stackFrameRows[0].map(extractSamples)).toEqual([12]);
+                    expect(stackFrames.stackFrameRows[0].map(extractIndividualSamples)).toEqual([[6, 6]]);
+                    expect(stackFrames.stackFrameRows[1].map(extractName)).toEqual(['b', 'x', 'y']);
+                    expect(stackFrames.stackFrameRows[1].map(extractSamples)).toEqual([5, 4, 3]);
+                    expect(stackFrames.stackFrameRows[1].map(extractIndividualSamples)).toEqual([[3, 2], [3, 1], [0, 3]]);
+                    expect(stackFrames.stackFrameRows[2].map(extractName)).toEqual(['c', 'd', 'd', 'z']);
+                    expect(stackFrames.stackFrameRows[2].map(extractSamples)).toEqual([3, 2, 4, 3]);
+                    expect(stackFrames.stackFrameRows[2].map(extractIndividualSamples)).toEqual([[1, 2], [2, 0], [3, 1], [0, 3]]);
+                    done();
+                } catch (e) {
+                    done(e);
+                }
+            }, function () {
+                done.fail("ajax should succeed");
+            }, new MergedCollapsed(2));
+        });
+
+        it("should filter frames according to provided filters", function (done) {
+            var fg = new FG();
+            fg.collapsedUrl = ["test1.collapsed", "test2.collapsed"];
+            fg.context.frameFilter.filters.push({
+                filter: function (path) {
+                    return (path.includes("x")) ? null : path;
+                }
+            });
+
+            stackFrames.loadMultipleCollapsed(fg, function () {
+
+                try {
+                    expect(stackFrames.stackFrameRows.length).toEqual(3);
+                    expect(stackFrames.stackFrameRows[0].map(extractName)).toEqual(['a']);
+                    expect(stackFrames.stackFrameRows[0].map(extractSamples)).toEqual([8]);
+                    expect(stackFrames.stackFrameRows[0].map(extractIndividualSamples)).toEqual([[3, 5]]);
+                    expect(stackFrames.stackFrameRows[1].map(extractName)).toEqual(['b', 'y']);
+                    expect(stackFrames.stackFrameRows[1].map(extractSamples)).toEqual([5, 3]);
+                    expect(stackFrames.stackFrameRows[1].map(extractIndividualSamples)).toEqual([[3, 2], [0, 3]]);
+                    expect(stackFrames.stackFrameRows[2].map(extractName)).toEqual(['c', 'd', 'z']);
+                    expect(stackFrames.stackFrameRows[2].map(extractSamples)).toEqual([3, 2, 3]);
+                    expect(stackFrames.stackFrameRows[2].map(extractIndividualSamples)).toEqual([[1, 2], [2, 0], [0, 3]]);
+                    done();
+                } catch (e) {
+                    done(e);
+                }
+            }, function () {
+                done.fail("ajax should succeed");
+            }, new MergedCollapsed(2));
         });
     });
 

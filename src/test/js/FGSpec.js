@@ -438,34 +438,27 @@ describe("FG", function() {
     it('should set collapsed url', function () {
         fg.setup("url", undefined, "?url=VALUE");
 
-        expect(fg.getCollapsedUrl()).toEqual("VALUE");
+        expect(fg.collapsedUrl).toEqual("VALUE");
     });
 
     it('should set collapsed url from param', function () {
         fg.collapsedUrlFrom("param", "?param=VALUE");
 
-        var url = fg.getCollapsedUrl();
-
-        expect(url).toEqual("VALUE");
+        expect(fg.collapsedUrl).toEqual("VALUE");
     });
 
     it('should set collapsed urls and get them by index', function () {
         fg.collapsedUrlFrom([["1st", "2nd"]], "?1st=VALUE1&2nd=VALUE2");
 
-        var url1 = fg.getCollapsedUrl(0);
-        var url2 = fg.getCollapsedUrl(1);
-
-        expect(url1).toEqual("VALUE1");
-        expect(url2).toEqual("VALUE2");
+        expect(fg.collapsedUrl[0]).toEqual("VALUE1");
+        expect(fg.collapsedUrl[1]).toEqual("VALUE2");
     });
 
 
     it('should set collapsed url to first available parameter', function () {
         fg.collapsedUrlFrom(["a", ["url", "another"], "url", "c"], "?url=VALUE");
 
-        var url = fg.getCollapsedUrl();
-
-        expect(url).toEqual("VALUE");
+        expect(fg.collapsedUrl).toEqual("VALUE");
     });
 
     it('should throw exception when url parameter does not exist', function () {

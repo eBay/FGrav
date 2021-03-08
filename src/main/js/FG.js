@@ -151,13 +151,6 @@ FG.prototype.collapsedUrlFrom = function(params, _loc) {
     }
 };
 
-FG.prototype.getCollapsedUrl = function(i) {
-    if (typeof i !== "undefined") {
-        return this.collapsedUrl[i];
-    }
-    return this.collapsedUrl;
-};
-
 FG.prototype.loadCollapsed = function(successCallback, collapsed,  errorCallback) {
     var fg = this;
     fg.collapsed = collapsed;

@@ -20,6 +20,30 @@ describe("MergedCollapsed", function() {
             expect(collapsed.totalIndividualSamples[0]).toEqual(4);
             expect(collapsed.totalIndividualSamples[1]).toEqual(6);
         });
+
+        it("should parsed merged collapsed samples", function () {
+            collapsed.parseCollapsed(["a;b;c 1 2","a;b;d 3 4","a;x;d 5 6"]);
+
+            expect(collapsed.paths.length).toEqual(3);
+            expect(collapsed.paths[0].individualSamples[0]).toEqual(1);
+            expect(collapsed.paths[0].individualSamples[1]).toEqual(2);
+            expect(collapsed.paths[1].individualSamples[0]).toEqual(3);
+            expect(collapsed.paths[1].individualSamples[1]).toEqual(4);
+            expect(collapsed.paths[2].individualSamples[0]).toEqual(5);
+            expect(collapsed.paths[2].individualSamples[1]).toEqual(6);
+        });
+
+        it("should parsed single collapsed sample as merged via index", function () {
+            collapsed.parseCollapsed(["a;b;c 1","a;b;d 3","a;x;d 5"], 1);
+
+            expect(collapsed.paths.length).toEqual(3);
+            expect(collapsed.paths[0].individualSamples[0]).toEqual(0);
+            expect(collapsed.paths[0].individualSamples[1]).toEqual(1);
+            expect(collapsed.paths[1].individualSamples[0]).toEqual(0);
+            expect(collapsed.paths[1].individualSamples[1]).toEqual(3);
+            expect(collapsed.paths[2].individualSamples[0]).toEqual(0);
+            expect(collapsed.paths[2].individualSamples[1]).toEqual(5);
+        });
     });
 
 

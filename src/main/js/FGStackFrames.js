@@ -19,30 +19,50 @@ function FGStackFrames() {
     this.stackFrameRows = null;
 }
 
-// TODO FGStackFrames.prototype.loadMultipleCollapsed = function(fg, successCallback, errorCallback, response) {
-//     var ajaxObjs = [];
-//     var jsSrc = [];
-//     $.each(fg.collapsedUrl, function (i, l) {
-//         var ajax = loadCollapsed(i);
-//         ajaxObjs.push(ajax);
-//     });
-//
-//     $.when.apply($, ajaxObjs).then(
-//         function () {
-//             TODO
-//             successCallback(response);
-//         }, function () {
-//             errorCallback(response);
-//         });
-// };
+FGStackFrames.prototype.loadMultipleCollapsed = function(fg, successCallback, errorCallback, collapsed) {
+    var response = new FGravResponse();
+    var stackFrames = this;
+    var ajaxObjs = [];
+    $.each(fg.collapsedUrl, function (i, url) {
+        var ajax = $.ajax({
+            type: "GET",
+            url: url,
+            dataType: "text",
+            processData: false,
+            success : function(data) {
+                var codePaths = data.split("\n");
+                $.each(fg.context.frameFilter.filters, function () {
+                    codePaths = codePaths.map(this.filter).filter(ignoreNull);
+                });
+                collapsed.parseCollapsed(codePaths, i);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                response.setError(errorThrown, textStatus);
+            }
+        });
+        ajaxObjs.push(ajax);
+    });
+    $.when.apply($, ajaxObjs).then(
+        function () {
+            collapsed.sort();
+            stackFrames.generateStackFrameRows(fg, collapsed);
+            successCallback(response);
+        }, function () {
+            errorCallback(response);
+    });
+
+    function ignoreNull(f) {
+        return f != null;
+    }
+};
 
 FGStackFrames.prototype.loadCollapsed = function(fg, successCallback, errorCallback, collapsed) {
     collapsed = (typeof collapsed !== 'undefined') ? collapsed : new Collapsed();
     var response = new FGravResponse();
     var stackFrames = this;
-    return $.ajax({
+    $.ajax({
         type: "GET",
-        url: fg.getCollapsedUrl(),
+        url: fg.collapsedUrl,
         dataType: "text",
         processData: false,
         success : function(data) {
@@ -85,7 +105,6 @@ FGStackFrames.prototype.generateStackFrameRows = function(fg, collapsed) {
             }
             else {
                 currentFrame = stackFrame(p, collapsed, ptr, level, collapsed.paths[ptr]);
-                // framesMap[collapsed.paths[ptr].pathStr] = currentFrame;
             }
             lastP = collapsed.paths[ptr].pathStr;
             row.push(currentFrame);
