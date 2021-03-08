@@ -89,9 +89,11 @@ Showing FlameGraph Comparison is done by requesting [FGCompare.svg](./src/main/F
 
 A Differential FlameGraph similar but with a lot more options to the one suggested by [Brendan Gregg](http://www.brendangregg.com/blog/2014-11-09/differential-flame-graphs.html).
 
-Like the original differential FlameGraph, this FlameGraph is also generated from a collapsed stack file that contains two sample count values for every code path.
+Like the original differential FlameGraph, this FlameGraph can also be generated from a collapsed stack file that contains two sample count values for every code path.
+See [simplediff.collapsed](./src/test/resources/collapsed/simplediff.collapsed) for a simple example of such file.
 
-See [simplediff.collapsed](./src/test/resources/collapsed/simplediff.collapsed) for a simple small example.
+**However**, our FlameGraph can also be generated from **two separate regular collapsed files**. It simply merges the code paths dynamically.
+This gives us much more flexibility and allows us to decides what to "diff" from the browser.
 
 The original suggestion used the difference in measurements to color the frames (blue/red) but the FlameGraph that was drawn was according the second measurement.
 
@@ -105,9 +107,11 @@ This allows us to:
 
 Showing Differential FlameGraph is done by requesting [FGDiff.svg](./src/main/FGDiff.svg).
 
-| Parameter      | Description                                                         | Required           |
-| -------------- |:-------------------------------------------------------------------:| ------------------:|
-| url            | url of the differential collapsed stack file to visualize           | yes |
+| Parameter      | Description                                                         | Required             |
+| -------------- |:-------------------------------------------------------------------:| --------------------:|
+| url            | url of the differential collapsed stack file to visualize           | unless 1st, 2nd used |
+| 1st            | url of first collapsed file in diff                                 | (with 2nd) unless url used |     
+| 2nd            | url of second collapsed file in diff                                 | (with 2st) unless url used |     
 | config         | path to configuration file (default = fgrav.json)                   | no |
 | color          | set specific [color scheme](#color-scheme) to use (default = Diff)  | no |
 | frameFilter    | set specific [frame filter](#frame-filter) to use                   | no |
