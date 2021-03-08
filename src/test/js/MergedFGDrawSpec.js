@@ -178,7 +178,7 @@ describe("MergedFGDraw", function () {
             var stackFrames = new FGStackFrames();
             fg.collapsedUrl =  "diff.collapsed";
 
-            stackFrames.loadCollapsed(fg, function () {
+            stackFrames.load(fg, function () {
 
                 try {
                     var request = jasmine.Ajax.requests.mostRecent();
@@ -215,7 +215,7 @@ describe("MergedFGDraw", function () {
             var stackFrames = new FGStackFrames();
             fg.collapsedUrl =  "diff.collapsed";
 
-            stackFrames.loadCollapsed(fg, function () {
+            stackFrames.load(fg, function () {
 
                 try {
                     var request = jasmine.Ajax.requests.mostRecent();

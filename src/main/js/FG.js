@@ -155,7 +155,7 @@ FG.prototype.loadCollapsed = function(successCallback, collapsed,  errorCallback
     var fg = this;
     fg.collapsed = collapsed;
     var stackFrames = new FGStackFrames();
-    stackFrames.loadCollapsed(fg, function () {
+    stackFrames.load(fg, function () {
         successCallback(stackFrames);
     }, function (response) {
         fg.draw.drawError("Failed to load collapsed file " + fg.collapsedUrl + ": " + response.errorMessage());
