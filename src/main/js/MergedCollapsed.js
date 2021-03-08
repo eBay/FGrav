@@ -67,6 +67,7 @@ MergedCollapsed.prototype.parseCollapsed = function(codePaths) {
 
     function path(pathStr, samplesArray) {
         var p = {
+            sortBy: pathStr,
             pathStr: "",
             popFrame: function() {
                 var p = this.path.pop();
