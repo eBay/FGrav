@@ -51,7 +51,7 @@ Java8 filter:
 <![CDATA[
 	"use strict";
 	console.time("setup");
-	var fg = new FG().setup().collapsedUrlFrom("url");
+	var fg = new FG().setup("url");
 	var draw = new FGDraw(fg);
 
 	function init(evt) {

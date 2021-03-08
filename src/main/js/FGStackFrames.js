@@ -19,14 +19,30 @@ function FGStackFrames() {
     this.stackFrameRows = null;
 }
 
+// TODO FGStackFrames.prototype.loadMultipleCollapsed = function(fg, successCallback, errorCallback, response) {
+//     var ajaxObjs = [];
+//     var jsSrc = [];
+//     $.each(fg.collapsedUrl, function (i, l) {
+//         var ajax = loadCollapsed();
+//         ajaxObjs.push(ajax);
+//     });
+//
+//     $.when.apply($, ajaxObjs).then(
+//         function () {
+//             TODO
+//             successCallback(response);
+//         }, function () {
+//             errorCallback(response);
+//         });
+// };
 
-FGStackFrames.prototype.loadCollapsed = function(fg, successCallback, errorCallback, collapsed) {
+FGStackFrames.prototype.loadCollapsed = function(fg, successCallback, errorCallback, collapsed, i) {
     collapsed = (typeof collapsed !== 'undefined') ? collapsed : new Collapsed();
     var response = new FGravResponse();
     var stackFrames = this;
-    $.ajax({
+    return $.ajax({
         type: "GET",
-        url: fg.collapsedUrl,
+        url: fg.getCollapsedUrl(i),
         dataType: "text",
         processData: false,
         success : function(data) {

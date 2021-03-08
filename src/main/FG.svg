@@ -56,7 +56,7 @@
 <![CDATA[
 	"use strict";
 
-	var fg = new FG().setup().collapsedUrlFrom("url");
+	var fg = new FG().setup("url");
 	var draw = new FGDraw(fg);
 
 	function init(evt) {
