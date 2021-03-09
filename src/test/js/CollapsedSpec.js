@@ -19,6 +19,18 @@ describe("Collapsed", function() {
         });
     });
 
+    it('should sort paths by original string', function () {
+        collapsed.parseCollapsed(["a;b;z 1","a;b;d 2","a;x;d 3", "a;b;d 4"]);
+
+        collapsed.sort();
+
+        expect(collapsed.paths.length).toEqual(4);
+        expect(collapsed.paths[0].sortBy).toEqual("a;b;d");
+        expect(collapsed.paths[1].sortBy).toEqual("a;b;d");
+        expect(collapsed.paths[2].sortBy).toEqual("a;b;z");
+        expect(collapsed.paths[3].sortBy).toEqual("a;x;d");
+    });
+
     describe("when calculating offsets ", function () {
 
         it("should caculate offsets", function () {

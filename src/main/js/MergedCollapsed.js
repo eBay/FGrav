@@ -36,22 +36,23 @@ MergedCollapsed.prototype.clear = function() {
     this.totalIndividualSamples = undefined;
 };
 
-MergedCollapsed.prototype.parseCollapsed = function(codePaths) {
+MergedCollapsed.prototype.parseCollapsed = function(codePaths, index) {
     var collapsed = this;
     $.each(codePaths, function() {
         var codePath = this.trim();
         if (codePath) {
             var i;
-            var pattern = '(.*?)';
-            for (i = 0; i < collapsed.merged; i++) {
-                pattern = pattern + '\\s+(\\d+)';
+            var pattern = '(.*?)\\s+(\\d+)';
+            if (typeof index === 'undefined') {
+                for (i = 1; i < collapsed.merged; i++) {
+                    pattern = pattern + '\\s+(\\d+)';
+                }
             }
             pattern = pattern + '$';
             var s = codePath.match(new RegExp(pattern));
-            var samples = [];
-            for (i = 0; i < collapsed.merged; i++) {
-                samples.push(parseInt(s[2 + i]));
-            }
+            var samples = (typeof index !== 'undefined') ?
+                parseSingleSamplesCount(s, collapsed.merged, index) :
+                parseMergedSamplesCount(s, collapsed.merged);
             collapsed.push(path(s[1], samples));
         }
     });
@@ -65,8 +66,29 @@ MergedCollapsed.prototype.parseCollapsed = function(codePaths) {
         return m;
     }
 
+    function parseSingleSamplesCount(s, merged, index) {
+        var samples = [];
+        for (i = 0; i < merged; i++) {
+            if (i === index) {
+                samples.push(parseInt(s[2]));
+            } else {
+                samples.push(0);
+            }
+        }
+        return samples;
+    }
+
+    function parseMergedSamplesCount(s, merged) {
+        var samples = [];
+        for (i = 0; i < merged; i++) {
+            samples.push(parseInt(s[2 + i]));
+        }
+        return samples;
+    }
+
     function path(pathStr, samplesArray) {
         var p = {
+            sortBy: pathStr,
             pathStr: "",
             popFrame: function() {
                 var p = this.path.pop();

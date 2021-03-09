@@ -423,9 +423,9 @@ describe("FG", function() {
         });
     });
 
-    it('should add window listener', function () {
+    it('should add window listeners', function () {
 
-        fg.setup(myWindow);
+        fg.setup(undefined, myWindow);
 
         expect(myWindow.events.length).toBe(5);
         expect(myWindow.events[0]).toBe("click");
@@ -435,9 +435,42 @@ describe("FG", function() {
         expect(myWindow.events[4]).toBe("keydown");
     });
 
-    it('should set collapsed url to param value', function () {
-            fg.collapsedUrlFrom("param", "?param=VALUE");
-            expect(fg.collapsedUrl).toEqual("VALUE");
+    it('should set collapsed url', function () {
+        fg.setup("url", undefined, "?url=VALUE");
+
+        expect(fg.collapsedUrl).toEqual("VALUE");
+    });
+
+    it('should set collapsed url from param', function () {
+        fg.collapsedUrlFrom("param", "?param=VALUE");
+
+        expect(fg.collapsedUrl).toEqual("VALUE");
+    });
+
+    it('should set collapsed urls and get them by index', function () {
+        fg.collapsedUrlFrom([["1st", "2nd"]], "?1st=VALUE1&2nd=VALUE2");
+
+        expect(fg.collapsedUrl[0]).toEqual("VALUE1");
+        expect(fg.collapsedUrl[1]).toEqual("VALUE2");
+    });
+
+
+    it('should set collapsed url to first available parameter', function () {
+        fg.collapsedUrlFrom(["a", ["url", "another"], "url", "c"], "?url=VALUE");
+
+        expect(fg.collapsedUrl).toEqual("VALUE");
+    });
+
+    it('should throw exception when url parameter does not exist', function () {
+        expect(function () {
+            fg.collapsedUrlFrom("another", "?url=VALUE")
+        }).toThrow("You must provide an input parameter 'another'");
+    });
+
+    it('should throw exception when no option for url parameter exist', function () {
+        expect(function () {
+            fg.collapsedUrlFrom(["another", ["a", "b"], ["url", "more"]], "?url=VALUE")
+        }).toThrow("You must provide an input parameter from 'another,a,b,url,more'");
     });
 
     describe("loading collapsed", function () {

@@ -45,6 +45,7 @@ Collapsed.prototype.parseCollapsed = function(codePaths) {
 
     function path(pathStr, samplesCount) {
         var p = {
+            sortBy: pathStr,
             pathStr: "",
             popFrame: function() {
                 var p = this.path.pop();
@@ -59,6 +60,21 @@ Collapsed.prototype.parseCollapsed = function(codePaths) {
         };
         p.levels = p.path.length;
         return p;
+    }
+};
+
+Collapsed.prototype.sort = function() {
+    this.paths = this.paths.sort(comparator);
+    return this;
+
+    function comparator(a, b) {
+        if (a.sortBy < b.sortBy) {
+            return -1;
+        }
+        if (a.sortBy > b.sortBy) {
+            return 1;
+        }
+        return 0;
     }
 };
 

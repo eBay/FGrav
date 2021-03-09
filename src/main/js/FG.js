@@ -58,8 +58,11 @@ function FG(id, shiftWidth, defaultTitle, minWidth, _w, _prompt) {
 FG.prototype = Object.create(FGrav.prototype);
 FG.prototype.constructor = FG;
 
-FG.prototype.setup = function(_w) {
+FG.prototype.setup = function(urlParams, _w, _loc) {
     var fg = this;
+    if (typeof urlParams !== 'undefined') {
+        fg.collapsedUrlFrom(urlParams, _loc);
+    }
     _w = (typeof _w !== 'undefined') ? _w : window;
     _w.addEventListener("click", function(e) {
         var target = fg.find_group(e.target);
@@ -111,16 +114,48 @@ FG.prototype.setup = function(_w) {
     fg.context.frameFilter.reset();
     return fg;
 };
-FG.prototype.collapsedUrlFrom = function(param, _loc) {
-    this.collapsedUrl = this.getRequiredParameter(param, _loc);
+
+FG.prototype.collapsedUrlFrom = function(params, _loc) {
+    if (Array.isArray(params)) {
+        var i;
+        for (i = 0; i < params.length; i++) {
+            if (Array.isArray(params[i])) {
+                if (mutipleUrlsFrom(this, params[i], _loc)) return this;
+            }
+            else {
+                if (singleUrlFrom(this, params[i], _loc)) return this;
+            }
+        }
+        throw "You must provide an input parameter from \'" + params + "\'";
+    } else {
+        if (!singleUrlFrom(this, params, _loc)) {
+            throw "You must provide an input parameter \'" + params + "\'";
+        }
+    }
     return this;
+
+    function singleUrlFrom(fg, param, _loc) {
+        fg.collapsedUrl = fg.getParameter(param, undefined, _loc);
+        return (typeof fg.collapsedUrl !== 'undefined');
+    }
+
+    function mutipleUrlsFrom(fg, params, _loc) {
+        fg.collapsedUrl = [];
+        $.each(params, function (i, param) {
+            var url = fg.getParameter(param, undefined, _loc);
+            if (typeof url !== 'undefined') {
+                fg.collapsedUrl.push(url);
+            }
+        });
+        return (fg.collapsedUrl.length === params.length);
+    }
 };
 
 FG.prototype.loadCollapsed = function(successCallback, collapsed,  errorCallback) {
     var fg = this;
     fg.collapsed = collapsed;
     var stackFrames = new FGStackFrames();
-    stackFrames.loadCollapsed(fg, function () {
+    stackFrames.load(fg, function () {
         successCallback(stackFrames);
     }, function (response) {
         fg.draw.drawError("Failed to load collapsed file " + fg.collapsedUrl + ": " + response.errorMessage());

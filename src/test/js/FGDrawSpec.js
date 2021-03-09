@@ -38,7 +38,7 @@ describe("FGDraw", function () {
 
             var stackFrames = new FGStackFrames();
             fg.collapsedUrl = "test.collapsed";
-            stackFrames.loadCollapsed(fg, function () {
+            stackFrames.load(fg, function () {
 
                 try {
                     var request = jasmine.Ajax.requests.mostRecent();
@@ -67,7 +67,7 @@ describe("FGDraw", function () {
 
             var stackFrames = new FGStackFrames();
             fg.collapsedUrl = "test.collapsed";
-            stackFrames.loadCollapsed(fg, function () {
+            stackFrames.load(fg, function () {
 
                 try {
                     var request = jasmine.Ajax.requests.mostRecent();
@@ -81,7 +81,7 @@ describe("FGDraw", function () {
 
                     stackFrames = new FGStackFrames();
                     fg.collapsedUrl = "test2.collapsed";
-                    stackFrames.loadCollapsed(fg, function () {
+                    stackFrames.load(fg, function () {
                         try {
                             draw.redrawFG(stackFrames);
 
@@ -118,7 +118,7 @@ describe("FGDraw", function () {
             };
 
             fg.collapsedUrl = "test.collapsed";
-            stackFrames.loadCollapsed(fg, function () {
+            stackFrames.load(fg, function () {
 
                 try {
                     var request = jasmine.Ajax.requests.mostRecent();

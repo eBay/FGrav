@@ -20,69 +20,113 @@ function FGStackFrames() {
 }
 
 
-FGStackFrames.prototype.loadCollapsed = function(fg, successCallback, errorCallback, collapsed) {
-    collapsed = (typeof collapsed !== 'undefined') ? collapsed : new Collapsed();
-    var response = new FGravResponse();
-    var stackFrames = this;
-    $.ajax({
-        type: "GET",
-        url: fg.collapsedUrl,
-        dataType: "text",
-        processData: false,
-        success : function(data) {
-            var rows = [];
-            // var framesMap = {};
-            var codePaths = data.split("\n");
-            $.each(fg.context.frameFilter.filters, function () {
-                codePaths = codePaths.map(this.filter).filter(ignoreNull);
+FGStackFrames.prototype.load = function(fg, successCallback, errorCallback, collapsed) {
+
+    if (Array.isArray(fg.collapsedUrl)) {
+        loadMultipleCollapsed(this, fg, successCallback, errorCallback, collapsed);
+    } else {
+        loadCollapsed(this, fg, successCallback, errorCallback, collapsed)
+    }
+
+
+    function loadMultipleCollapsed(stackFrames, fg, successCallback, errorCallback, collapsed) {
+        var response = new FGravResponse();
+        var ajaxObjs = [];
+        $.each(fg.collapsedUrl, function (i, url) {
+            var ajax = $.ajax({
+                type: "GET",
+                url: url,
+                dataType: "text",
+                processData: false,
+                success : function(data) {
+                    var codePaths = data.split("\n");
+                    $.each(fg.context.frameFilter.filters, function () {
+                        codePaths = codePaths.map(this.filter).filter(ignoreNull);
+                    });
+                    collapsed.parseCollapsed(codePaths, i);
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    response.setError(errorThrown, textStatus);
+                }
             });
-            codePaths = codePaths.sort();
-            collapsed.parseCollapsed(codePaths);
-            fg.calculateWidth(collapsed.totalSamples, collapsed.minSample, collapsed.paths.length);
-            stackFrames.totalSamples = collapsed.totalSamples;
-            var row = [];
-            var ptr = 0;
-            var lastP;
-            var level = 0;
-            while (ptr >= 0) {
-                var p = collapsed.paths[ptr].popFrame();
-                if (p) {
-                    var currentFrame;
-                    if (collapsed.paths[ptr].pathStr === lastP) {
-                        currentFrame = row.pop();
-                        collapsed.updateFrame(currentFrame, collapsed.paths[ptr], ptr);
-                    }
-                    else {
-                        currentFrame = stackFrame(p, collapsed, ptr, level, collapsed.paths[ptr]);
-                        // framesMap[collapsed.paths[ptr].pathStr] = currentFrame;
-                    }
-                    lastP = collapsed.paths[ptr].pathStr;
-                    row.push(currentFrame);
-                }
-                var currentPtr = ptr + 1;
-                ptr = containsPaths(collapsed.paths, currentPtr);
-                if (ptr < currentPtr) {
-                    rows.push(row);
-                    row = [];
-                    level++;
-                    lastP = undefined;
-                }
+            ajaxObjs.push(ajax);
+        });
+        $.when.apply($, ajaxObjs).then(
+            function () {
+                collapsed.sort();
+                generateStackFrameRows(stackFrames, fg, collapsed);
+                successCallback(response);
+            }, function () {
+                errorCallback(response);
+        });
+    }
+
+    function loadCollapsed(stackFrames, fg, successCallback, errorCallback, collapsed) {
+        collapsed = (typeof collapsed !== 'undefined') ? collapsed : new Collapsed();
+        var response = new FGravResponse();
+        $.ajax({
+            type: "GET",
+            url: fg.collapsedUrl,
+            dataType: "text",
+            processData: false,
+            success: function (data) {
+                var codePaths = data.split("\n");
+                $.each(fg.context.frameFilter.filters, function () {
+                    codePaths = codePaths.map(this.filter).filter(ignoreNull);
+                });
+                collapsed.parseCollapsed(codePaths).sort();
+                generateStackFrameRows(stackFrames, fg, collapsed);
+                successCallback(response);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                response.setError(errorThrown, textStatus);
+                errorCallback(response);
             }
-            if (row.length > 0) {
+        });
+    }
+
+    function ignoreNull(f) {
+        return f != null;
+    }
+
+    function generateStackFrameRows(stackFrames, fg, collapsed) {
+        var rows = [];
+        fg.calculateWidth(collapsed.totalSamples, collapsed.minSample, collapsed.paths.length);
+        stackFrames.totalSamples = collapsed.totalSamples;
+        var row = [];
+        var ptr = 0;
+        var lastP;
+        var level = 0;
+        while (ptr >= 0) {
+            var p = collapsed.paths[ptr].popFrame();
+            if (p) {
+                var currentFrame;
+                if (collapsed.paths[ptr].pathStr === lastP) {
+                    currentFrame = row.pop();
+                    collapsed.updateFrame(currentFrame, collapsed.paths[ptr], ptr);
+                }
+                else {
+                    currentFrame = stackFrame(p, collapsed, ptr, level, collapsed.paths[ptr]);
+                }
+                lastP = collapsed.paths[ptr].pathStr;
+                row.push(currentFrame);
+            }
+            var currentPtr = ptr + 1;
+            ptr = containsPaths(collapsed.paths, currentPtr);
+            if (ptr < currentPtr) {
                 rows.push(row);
+                row = [];
+                level++;
+                lastP = undefined;
             }
-            collapsed.calculateOffsets(fg.width, fg.margin, fg.minDisplaySample);
-            fg.calculateHeight(collapsed.maxLevel);
-            stackFrames.stackFrameRows = rows;
-
-            successCallback(response);
-        },
-        error: function(jqXHR, textStatus, errorThrown) {
-            response.setError(errorThrown, textStatus);
-            errorCallback(response);
         }
-    });
-
+        if (row.length > 0) {
+            rows.push(row);
+        }
+        collapsed.calculateOffsets(fg.width, fg.margin, fg.minDisplaySample);
+        fg.calculateHeight(collapsed.maxLevel);
+        stackFrames.stackFrameRows = rows;
+    }
 
     function stackFrame(name, collapsed, col, level, path) {
         var frame = {
@@ -124,10 +168,6 @@ FGStackFrames.prototype.loadCollapsed = function(fg, successCallback, errorCallb
             }
         }
         return -1;
-    }
-    
-    function ignoreNull(f) {
-        return f != null;
     }
 };
 
