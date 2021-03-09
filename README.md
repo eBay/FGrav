@@ -111,7 +111,7 @@ Showing Differential FlameGraph is done by requesting [FGDiff.svg](./src/main/FG
 | -------------- |:-------------------------------------------------------------------:| --------------------:|
 | url            | url of the differential collapsed stack file to visualize           | unless 1st, 2nd used |
 | 1st            | url of first collapsed file in diff                                 | (with 2nd) unless url used |     
-| 2nd            | url of second collapsed file in diff                                 | (with 2st) unless url used |     
+| 2nd            | url of second collapsed file in diff                                 | (with 1st) unless url used |     
 | config         | path to configuration file (default = fgrav.json)                   | no |
 | color          | set specific [color scheme](#color-scheme) to use (default = Diff)  | no |
 | frameFilter    | set specific [frame filter](#frame-filter) to use                   | no |
