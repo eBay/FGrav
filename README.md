@@ -122,6 +122,9 @@ Showing Differential FlameGraph is done by requesting [FGDiff.svg](./src/main/FG
 
 ![FlameGraph Diff Example](img/FGDiff.png? "FlameGraph Diff Example")
 
+We can generate a Differential FlameGraph from two sources:
+![FlameGraph Diff Two Sources Example](img/FGDiff_from_two_sources.png? "FlameGraph Diff Two sources Example")
+
 Selection between which graph to choose is done by clicking on the title:
 ![FlameGraph Diff Selection Example](img/FGDiff_select_graph.png? "FlameGraph Diff Selection Example")
 
