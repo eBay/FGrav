@@ -51,7 +51,12 @@
     .form:hover {
         box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
     }
-
+    hr {
+        border: 0;
+        border-top: 3px double #8c8c8c;
+        text-align: center;
+        width: 100%;
+    }
     ul {
         display:inline;
         list-style-type: none;
@@ -86,7 +91,7 @@
 <script type="text/javascript">
     $(document).ready(function() {
         getOptions( "/collapsed/", itemEndsWith(".collapsed"), identity, prepend("/collapsed/"),
-            ["#fgUrl", "#fcLeftUrl", "#fcRightUrl"]);
+            ["#fgUrl", "#fcLeftUrl", "#fcRightUrl", "#fd1st", "#fd2nd"]);
         getOptions( "/js/color/", jsFiles("FG_Color_"), optionKey("FG_Color_"), identity,
             ["#fgColor", "#fcColor"]);
         getOptions( "/js/color/", jsFiles("FG_Color_"), optionKey("FG_Color_"), identity,
@@ -94,7 +99,9 @@
         getOptions( "/js/frame/", jsFiles("FG_Filter_"), optionKey("FG_Filter_"), identity,
             ["#fgFilter", "#fdFilter", "#fcFilter"]);
         $("#fdUrl").multipleSelect({data: {
-                "/collapsed/diff.collapsed": "diff.collapsed"
+                "/collapsed/diff.collapsed": "diff.collapsed",
+                "/collapsed/diff3.collapsed": "diff3.collapsed",
+                "/collapsed/simplediff.collapsed": "simplediff.collapsed",
         }});
 
 
@@ -132,6 +139,8 @@
     function fdParams() {
         return {
             url: urlVal("#fdUrl"),
+            first: urlVal("#fd1st"),
+            second: urlVal("#fd2nd"),
             color: colorVal("#fdColor"),
             frameFilter: filterValues("#fdFilter")
         };
@@ -233,11 +242,11 @@ Color scheme and frame filters are configurable and color schemes also have an o
 </p>
 URL: <select   id="fgUrl">
     <option value="">-- Select --</option>
-</select><br/>
-Color Scheme: <select   id="fgColor">
+</select><br/><hr />
+Color Scheme (optional): <select   id="fgColor">
         <option value="">-- Select --</option>
     </select><br/>
-Frame Filters: <select class="multiple-select"  id="fgFilter" multiple>
+Frame Filters (optional): <select class="multiple-select"  id="fgFilter" multiple>
         <option value="">-- Select --</option>
     </select><br/>
     <button id="loadFg">Load</button>
@@ -250,14 +259,20 @@ Frame Filters: <select class="multiple-select"  id="fgFilter" multiple>
     Compare two sets of samples counting placed in the same raw collapsed file. Also has a special <b>Diff</b> color scheme of red for growth and blue for reductions.<br/>
     Main difference in this FlameGraph Diff is that the difference is shown visually as we color only the portion of the frame cell that matches the difference (before growth or after reduction).<br/>
     This has the advantage of both showing frames who disappeared in the second sampling and also giving a visual cue (in terms of length comparison) of exactly how big is the difference.<br/>
+    We can also quickly switch between the first and second profiling results, retaining the diff color scheme<br/>
 </p>
 URL: <select   id="fdUrl">
     <option value="">-- Select --</option>
-</select><br/>
-Color Scheme: <select   id="fdColor">
+</select><br/><div style="text-align: center;">OR</div><br/>
+    <div style="width: 100%">
+    1st:&nbsp;&nbsp;<select id="fd1st" style="width: 46%"><option value="">-- Select --</option></select>&nbsp;&nbsp;&nbsp;2nd:&nbsp;&nbsp;<select id="fd2nd" style="width: 46%"><option value="">-- Select --</option></select>
+    </div>
+    <br/>
+    <hr />
+    Color Scheme (optional): <select   id="fdColor">
         <option value="">-- Select --</option>
     </select><br/>
-Frame Filters: <select class="multiple-select"  id="fdFilter" multiple>
+Frame Filters (optional): <select class="multiple-select"  id="fdFilter" multiple>
         <option value="">-- Select --</option>
     </select><br/>
     <button id="loadFd">Load</button>
@@ -275,11 +290,11 @@ Left: <select   id="fcLeftUrl">
 </select><br/>
 Right: <select   id="fcRightUrl">
     <option value="">-- Select --</option>
-</select><br/>
-Color Scheme: <select   id="fcColor">
+</select><br/><hr />
+Color Scheme (optional): <select   id="fcColor">
         <option value="">-- Select --</option>
     </select><br/>
-Frame Filters: <select class="multiple-select" id="fcFilter" multiple>
+Frame Filters (optional): <select class="multiple-select" id="fcFilter" multiple>
         <option value="">-- Select --</option>
     </select><br/>
 <button id="loadFc">Load</button>
